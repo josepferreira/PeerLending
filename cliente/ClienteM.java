@@ -11,7 +11,10 @@ import cliente.Ccs.*;
 
 
 public class ClienteM{
-    
+    public static int little2big(int i) {
+        return (i&0xff)<<24 | (i&0xff00)<<8 | (i&0xff0000)>>8 | (i>>24)&0xff;
+    }
+
     public static void autenticaCliente(BufferedReader inP, CodedOutputStream cos){
         try{
             String username, password;
@@ -34,11 +37,11 @@ public class ClienteM{
       
             byte[] ba = aut.toByteArray();
 
-            //System.out.println("Len: " + ba.length);
-            cos.writeFixed32NoTag(ba.length);
-            //System.out.println("Wrote Len");
+            System.out.println("Len: " + ba.length);
+            cos.writeSFixed32NoTag(little2big(ba.length));
+            System.out.println("Wrote Len");
             cos.writeRawBytes(ba);
-            //System.out.println("Wrote " + ba.length + " bytes");
+            System.out.println("Wrote " + ba.length + " bytes");
             cos.flush();
         }catch(Exception e){
             System.out.println(e);

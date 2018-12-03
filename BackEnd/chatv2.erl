@@ -4,7 +4,7 @@
 
 server(Port) ->
   login_manager:start(),
-  {ok, LSock} = gen_tcp:listen(Port, [binary, {packet, line}, {reuseaddr, true}]),
+  {ok, LSock} = gen_tcp:listen(Port, [binary, {packet, 4}, {active, true}, {reuseaddr, true}]),
   acceptor(LSock).
 
 acceptor(LSock) ->
@@ -15,9 +15,12 @@ acceptor(LSock) ->
 
   
 autenticaCliente(Sock) ->
-  
+   io:format("Vou receber\n"),
    receive
-    {tcp,_,Message} -> io:format(ccs:decode_msg(Message,'Autenticacao'));
+    {tcp,_,Autenticacao} -> io:format("cheguei~n",[]),
+            {'Autenticacao',User,Pass} = ccs:decode_msg(Autenticacao,'Autenticacao'),
+            Resposta = login_manager:login(User,Pass),
+            io:format(Resposta);
 
     %          Res = login_manager:login(User, Password),
      %         case Res of
