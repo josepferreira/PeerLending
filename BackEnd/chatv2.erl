@@ -17,22 +17,40 @@ acceptor(LSock) ->
 autenticaCliente(Sock) ->
    io:format("Vou receber\n"),
    receive
-    {tcp,_,Autenticacao} -> io:format("cheguei~n",[]),
-            {'Autenticacao',User,Pass} = ccs:decode_msg(Autenticacao,'Autenticacao'),
-            Resposta = login_manager:login(User,Pass),
-            io:format(Resposta);
-
-    %          Res = login_manager:login(User, Password),
-     %         case Res of
-      %          ok -> %entra no chat    
-       %         invalid ->
-        %          gen_tcp:send(Sock, "Autenticação inválida\n"),
-         %         userNaoAutenticado(Sock)
-          %    end;
-    {tcp_closed,_} ->
-          io:format("utilizador nao se autenticou nem registou e saiu~n",[]),
-          true
-  end.
+      {tcp,_,Autenticacao} -> io:format("cheguei~n",[]),
+              {'Autenticacao',User,Pass} = ccs:decode_msg(Autenticacao,'Autenticacao'),
+              io:format("User: "),
+              io:format(User),
+              io:format("!\nPass: "),
+              io:format(Pass),
+              io:format("!\n"),
+              Resposta = login_manager:login(User,Pass),
+              io:format(Resposta),
+              io:format("\n"),
+              case Resposta of
+                ok -> user(Sock, User);
+                invalid -> autenticaCliente(Sock)
+              end;
+          %          gen_tcp:send(Sock, "Autenticação inválida\n"),
+      {tcp_closed,_} ->
+            io:format("utilizador nao se autenticou nem registou e saiu~n",[]),
+            true
+    end.
 
 user(Sock, User) ->
-    io:format("User: " ++ User ++ " autenticado com sucesso!").
+    receive
+      {tcp,_,Data} -> io:format("User: " ++ User ++ " autenticado com sucesso!\n"),
+                    user(Sock, User);
+      {tcp_closed, _} ->
+        Res = login_manager:logout(User),
+        case Res of
+          ok -> io:format("utilizador desautenticado~n",[]);
+          _ -> io:format("algum erro de desautenticacao~n",[])
+        end;
+      {tcp_error, _, _} ->
+        Res = login_manager:logout(User),
+        case Res of 
+          ok -> io:format("utilizador desautenticado~n",[]);
+          _ -> io:format("algum erro de desautenticacao~n",[])
+        end
+    end.
