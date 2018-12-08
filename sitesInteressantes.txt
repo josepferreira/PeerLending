@@ -1,0 +1,6 @@
+---ERLANG PROTOCOL BUFFERS---
+https://github.com/squidfunk/gpb-bindings
+https://github.com/tomas-abrahamsson/gpb
+
+---ZeroMQ e protocolbuffers---
+https://www.dotkam.com/2011/09/09/zeromq-and-google-protocol-buffers/
