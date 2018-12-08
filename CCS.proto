@@ -49,3 +49,17 @@ message SubscricaoTaxaFixa{
     required string empresa = 1;
     required int64 montante = 2;
 }
+
+# possivelmente vai ser necessario uma resposta tanto para a empresa
+# como para o inestidor a informar o resultado da sua operacao
+
+
+# Mensagem para o resultado tanto das licitacoes como leiloes
+# na string pode vir logo todo o texto, pois nao sei se sera facil
+# apresentar arrays e assim tambem mostra logo tudo
+message Resultado{
+    required TipoMensagem tipo = 1 [default = LEILAO];
+    requires string empresa = 2;
+    required string texto = 3;
+}
+

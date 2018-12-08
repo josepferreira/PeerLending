@@ -1,0 +1,16 @@
+----------------O QUE CONTÉM----------------------
+-> Contem uma lista de empresas
+
+-> Cada empresa contem uma lista de leiloes/emissoes efetuados (ou cancelados) ordenada temporalmente!
+
+-> Cada empresa contem um leilao/emissao em curso
+
+-> Leilao e emissao podem ser subclasses da mesma superclasse
+
+-> Cada leilao/emissao contem as diferentes licitacoes dos clientes, pode ter tambem o tempo de vida
+Quando passa a concluido apenas contem as que ficaram efetivas
+
+-------------------------Estrategias--------------------
+Para finalizar um leilao podemos ter 2 estrategias:
+    -sempre que se inicia um leilao inicia-se uma thread que dorme durante um x segundos (tempo de vida do leilao) e quando acorda termina aquele leilao
+    -temos uma thread que está a dormir à espera que sejam adicionados leiloes e de x em x tempo verifica se pode terminar um leilao

@@ -1,6 +1,6 @@
 syntax = "proto2";
 
-
+# se calhar tambem podemos por aqui o resultado
 enum TipoNotificacao {
     CRIACAOLEILAO = 1;
     LICITACAOLEILAO = 2;

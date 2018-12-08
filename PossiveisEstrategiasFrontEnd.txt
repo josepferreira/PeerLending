@@ -1,0 +1,9 @@
+Ter 1 (ou 2) sockets zeroMQ para conectar a cada Exchange, depois distribui as mensagens pelos clientes correspondentes.
+
+Necessário ter atenção, visto que pode receber 2 tipos de mensagens:
+    -Resposta ao cliente
+    -Resultado de um leilao
+
+-> Para responder ao cliente se calhar é necessario acrescentar um campo no protobuf com o username do cliente, para saber a qual responder.
+
+-> Para distribuir a resposta do leilao/emissao pelos respetivos interessados é necessário guardar um mapa com todos os clientes que licitaram aquela empresa. Depois ao responder responde-se para todos esses e apaga-se essa entrada do mapa.
