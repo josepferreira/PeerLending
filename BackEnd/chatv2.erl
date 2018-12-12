@@ -1,5 +1,6 @@
 -module(chatv2).
 -export([server/1]).
+-include("ccs.hrl").
 
 
 server(Port) ->
@@ -28,7 +29,9 @@ autenticaCliente(Sock) ->
               io:format(Resposta),
               io:format("\n"),
               case Resposta of
-                ok -> user(Sock, User);
+                ok -> Bin = ccs:encode_msg(#'RespostaAutenticacao'{sucesso = true, papel = "empresa"}),
+                    gen_tcp:send(Sock, Bin),
+                    user(Sock, User);
                 invalid -> autenticaCliente(Sock)
               end;
           %          gen_tcp:send(Sock, "Autenticação inválida\n"),
@@ -38,6 +41,7 @@ autenticaCliente(Sock) ->
     end.
 
 user(Sock, User) ->
+    
     receive
       {tcp,_,Data} -> io:format("User: " ++ User ++ " autenticado com sucesso!\n"),
                     user(Sock, User);

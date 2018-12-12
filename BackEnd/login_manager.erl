@@ -1,16 +1,18 @@
 -module(login_manager).
--export([start/0, create_account/2,close_account/2,login/2,logout/1,online/0]).
+-export([start/0,login/2,logout/1,online/0]).
 
 % interface functions
 
 start() ->
-        register( login_manager,spawn( fun() -> loop( #{} ) end ) ).
+        Mapa = carregaMapa(#{}),
+        register( login_manager,spawn( fun() -> loop( Mapa ) end ) ).
 
-create_account( User,Pass ) ->
-    rpc( { create_account,User,Pass,self() } ).
-
-close_account( User,Pass ) ->
-    rpc( { close_account,User,Pass,self() } ).
+carregaMapa(Map) ->
+    M1 = maps:put( "emp1",{ "123",false },Map ),
+    M2 = maps:put( "emp2",{ "123",false },M1 ),
+    M3 = maps:put( "cli1",{ "123",false },M2 ),
+    M4 = maps:put( "cli2",{ "123",false },M3 ),
+    M4.
 
 login( User,Pass ) ->
     rpc( { login,User,Pass,self() } ).
@@ -30,26 +32,6 @@ rpc( Req ) -> login_manager ! Req,
 
 loop( Map ) ->
     receive
-        { create_account,U,P,From } -> 
-            case maps:find( U,Map ) of
-                error ->
-                    From ! { login_manager,ok },
-                    loop( maps:put( U,{ P,true },Map ) );
-                
-                _ -> 
-                    From ! { login_manager,user_exists },
-                    loop( Map )
-            end;
-        
-        { close_account,U,P,From } ->
-            case maps:find( U,Map ) of
-                { ok,{ P,_ } } -> % se existir uma entrada e a password for igual então dá sucesso, senao não dá
-                    From ! { login_manager,ok },
-                    loop( maps:remove( U,Map ) );
-                _ -> 
-                    From ! { login_manager,error },
-                    loop( Map )
-            end;
         { login,U,P,From } ->
             case maps:find( U,Map ) of
                 { ok,{ P,false } } ->

@@ -11,11 +11,42 @@ import cliente.Ccs.*;
 
 
 public class ClienteM{
+
     public static int little2big(int i) {
         return (i&0xff)<<24 | (i&0xff00)<<8 | (i&0xff0000)>>8 | (i>>24)&0xff;
     }
 
-    public static void autenticaCliente(BufferedReader inP, CodedOutputStream cos){
+    /**
+     * Devolve null senao estiver autenticado
+     * Devolve o papel "empresa" ou "cliente" consoante o papel do utilizador
+     */
+    public static String leMensagemInicial(CodedInputStream cis){
+
+        try{
+            int len = cis.readRawLittleEndian32();
+            len = little2big(len);
+            System.out.println("Len: " + len);
+            byte[] ba = cis.readRawBytes(len);
+            System.out.println("Read " + len + " bytes");
+            RespostaAutenticacao resposta = RespostaAutenticacao.parseFrom(ba);
+            
+            boolean sucesso = resposta.getSucesso();
+            if( sucesso == true){
+                String papel = resposta.getPapel();
+                System.out.println("O papel deste utilizador é " + papel);
+                return papel;
+            }else{
+                System.out.println("Utilizador nao valido!");
+                return null;
+            }
+        }
+        catch(Exception e){
+            System.out.println(e);
+            return null;
+        }
+    }
+
+    public static String autenticaCliente(BufferedReader inP, CodedOutputStream cos){
         try{
             String username, password;
             System.out.println("Username: ");
@@ -23,12 +54,6 @@ public class ClienteM{
 
             System.out.println("Password: ");
             password = inP.readLine();
-
-            //construir mensagem;
-
-            //System.out.println("Email: ");
-            
-            //System.out.println("Nome: ");
 
             Autenticacao aut = Autenticacao.newBuilder().
                 setUsername(username).
@@ -43,8 +68,12 @@ public class ClienteM{
             cos.writeRawBytes(ba);
             System.out.println("Wrote " + ba.length + " bytes");
             cos.flush();
+            
+            return username;
+
         }catch(Exception e){
             System.out.println(e);
+            return null;
         }
     }
 
@@ -105,10 +134,24 @@ public class ClienteM{
                 } catch(Exception e){
                     System.out.println(e);
                 }
+                
+                String user = null;
+                String papel = null;
 
                 switch(opcao){
-                    case 1: autenticaCliente(inP,cos);// autenticado = leMensagemInicial(cis); break;
-                    default: break;//deu merda e é para sair
+                    //Se calhar só vamos buscar o papel se o user nao for nulo (poed acontecer se der uma exceçao)
+                    case 1: user = autenticaCliente(inP,cos); papel = leMensagemInicial(cis); break;
+                    default: break;
+                }
+                
+                if(user==null || papel==null){
+                    System.out.println("Nao foi validado o login");
+                }else{
+                    switch(papel){
+                        case "empresa": break; //mandar para a empresa
+                        case "licitador": break; //mandar para o licitador
+                        default: break;
+                    }
                 }
 
             }
