@@ -1,0 +1,3 @@
+Uitlizadores existentes:
+
+-> emp1, emp2, cli1, cli2 : palavra pass 123
