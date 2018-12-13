@@ -51,15 +51,20 @@ message SubscricaoTaxaFixa{
 }
 
 # possivelmente vai ser necessario uma resposta tanto para a empresa
-# como para o inestidor a informar o resultado da sua operacao
-
+# como para o investidor a informar o resultado da sua operacao
+message NotificacaoUltrapassado{
+    required TipoMensagem tipo = 1 [default = LEILAO];
+    required float64 taxa = 2;
+    required int64 valor = 3;
+    optional string mensagem = 4;
+}
 
 # Mensagem para o resultado tanto das licitacoes como leiloes
 # na string pode vir logo todo o texto, pois nao sei se sera facil
 # apresentar arrays e assim tambem mostra logo tudo
 message Resultado{
     required TipoMensagem tipo = 1 [default = LEILAO];
-    requires string empresa = 2;
+    required string empresa = 2;
     required string texto = 3;
 }
 

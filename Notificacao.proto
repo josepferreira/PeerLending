@@ -4,7 +4,7 @@ syntax = "proto2";
 enum TipoNotificacao {
     CRIACAOLEILAO = 1;
     LICITACAOLEILAO = 2;
-    CRIACOEMISSAO = 3;
+    CRIACAOEMISSAO = 3;
     LICITACAOEMISSAO = 4;
 }
 
