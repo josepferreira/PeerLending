@@ -9,6 +9,193 @@ import com.google.protobuf.CodedOutputStream;
 
 import cliente.Ccs.*;
 
+public class Empresa{
+
+    String username;
+    Socket s;
+    BufferedReader inP;
+    CodedInputStream cis;
+    CodedOutputStream cos;
+
+    public Empresa(String username, Socket s){
+        this.username = username;
+        this.s = s;
+        inP = new BufferedReader(new InputStreamReader(System.in));
+        cis = CodedInputStream.newInstance(s.getInputStream());
+        cos = CodedOutputStream.newInstance(s.getOutputStream());
+    }
+
+    public static int lerOpcao(Scanner sc){
+        boolean lido = false;
+        int opcao = -1;
+        
+        while(!lido){
+
+            try{
+                opcao = sc.nextInt();
+                lido = true;
+                System.out.println("OPCAO: " + opcao);
+            }
+            catch(Exception e){}
+        }
+        //sc.close();
+
+        return opcao;
+    }
+
+    public void apresentaCriacaoLeilao(){
+        long montante = 0;
+        int taxa = 0;
+        boolean lido = false;
+        do{
+            System.out.print("Insira o Montante: ");
+            try{
+                montante = Long.parseLong(inP.readLine());
+                if(montante > 0)
+                    lido = true;
+                /**
+                 * Tenho de validar se é multiplo de 100?
+                 */
+            } catch(Exception e){
+                System.out.println("O valor introduzido não é valido!");
+            }
+        }while(!lido);
+
+        lido = false;
+
+        do{
+            System.out.print("Insira a Taxa: ");
+            try{
+                taxa = Integer.parseInt(inP.readLine());
+                if(taxa > 0 && taxa < 101)
+                    lido = true;
+                /**
+                 * Tenho de validar se é multiplo de 100?
+                 */
+            } catch(Exception e){
+                System.out.println("O valor introduzido não é valido!");
+            }
+        }while(!lido);
+
+        float taxaAux = (float) taxa;
+
+        CriacaoLeilao leilao = CriacaoLeilao.newBuilder()
+                                            .setMontante(montante)
+                                            .setTaxa(taxaAux)
+                                            .build();
+
+        MensagemEmpresa mensagem = MensagemEmpresa.newBuilder()
+                                                .setTipo(1)
+                                                .setLeilao(leilao)
+                                                .serUsername(this.username)
+                                                .build();
+      
+        byte[] ba = mensagem.toByteArray();
+
+        System.out.println("Len: " + ba.length);
+        cos.writeSFixed32NoTag(little2big(ba.length));
+        cos.writeRawBytes(ba);
+        System.out.println("Wrote " + ba.length + " bytes");
+        cos.flush();
+
+        System.out.println("-----");
+        System.out.println("A esperar resposta por parte do servidor ...");
+        System.out.println("-----");
+
+        int len = cis.readRawLittleEndian32();
+        len = little2big(len);
+        System.out.println("Len: " + len);
+        byte[] bResposta = cis.readRawBytes(len);
+        System.out.println("Read " + len + " bytes");
+        /**
+         * A partir daqui tenho de fazer decode da resposta que chegou e apresentar o texto com a mensagem de sucesso ou de erro ...
+         */
+        //RespostaAutenticacao resposta = RespostaAutenticacao.parseFrom(ba);
+
+
+    }
+
+    public void apresentaEmissaoTaxaFixa(){
+        
+        long montante = 0;
+        boolean lido = false;
+        do{
+            System.out.print("Insira o Montante: ");
+            try{
+                montante = Long.parseLong(inP.readLine());
+                if(montante > 0)
+                    lido = true;
+                /**
+                 * Tenho de validar se é multiplo de 100?
+                 */
+            } catch(Exception e){
+                System.out.println("O valor introduzido não é valido!");
+            }
+        }while(!lido);
+
+        EmissaoTaxaFixa emissao = EmissaoTaxaFixa.newBuilder()
+                                            .setMontante(montante)
+                                            .build();
+
+        MensagemEmpresa mensagem = MensagemEmpresa.newBuilder()
+                                                .setTipo(2)
+                                                .setEmissao(emissao)
+                                                .serUsername(this.username)
+                                                .build();
+      
+        byte[] ba = mensagem.toByteArray();
+
+        System.out.println("Len: " + ba.length);
+        cos.writeSFixed32NoTag(little2big(ba.length));
+        cos.writeRawBytes(ba);
+        System.out.println("Wrote " + ba.length + " bytes");
+        cos.flush();
+
+        System.out.println("-----");
+        System.out.println("A esperar resposta por parte do servidor ...");
+        System.out.println("-----");
+
+        int len = cis.readRawLittleEndian32();
+        len = little2big(len);
+        System.out.println("Len: " + len);
+        byte[] bResposta = cis.readRawBytes(len);
+        System.out.println("Read " + len + " bytes");
+        /**
+         * A partir daqui tenho de fazer decode da resposta que chegou e apresentar o texto com a mensagem de sucesso ou de erro ...
+         */
+        //RespostaAutenticacao resposta = RespostaAutenticacao.parseFrom(ba);
+
+    }
+
+    /**
+     * Neste menu inicial será apresentada uma interface básica para a empresa
+     */
+    public void menuInicial(){
+
+        System.out.println("1 - Criar Leilao");
+        System.out.println("2 - Emissão Taxa Fixa");
+        System.out.print("Opção: ");
+        boolean lido = false;
+        int opcao = 0;
+        while(!lido){
+            try{
+                opcao = Integer.parseInt(inP.readLine());
+                if(opcao == 1 || opcao == 2)
+                    lido = true;
+            } catch(Exception e){
+                System.out.println("O valor introduzido não é valido!");
+                System.out.print("Opção: ");
+            }
+        }
+
+        switch(opcao){
+            case 1: apresentaCriacaoLeilao(); break;
+            case 2: apresentaEmissaoTaxaFixa(); break;
+        }
+
+    }
+
+}
 
 public class ClienteM{
 
