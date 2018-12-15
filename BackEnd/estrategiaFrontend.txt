@@ -1,0 +1,20 @@
+Para cada cliente ligado, temos um ator 
+
+
+Dados a guardar sobre cada cliente:
+- username
+- papel
+- socket respetivo
+
+
+
+Dados sobre empresa: 
+- username
+- papel
+- socket
+- se já tem leilao
+- ultima taxa (-1 se ainda nao emitiu leilao com sucesso)
+
+
+No ator de gestao das Exchanges:
+- pid e username de cada um dos possiveis licitadores, no mapa empresa -> lista de objetos apostador

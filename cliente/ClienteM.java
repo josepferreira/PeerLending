@@ -9,7 +9,8 @@ import com.google.protobuf.CodedOutputStream;
 
 import cliente.Ccs.*;
 
-public class Empresa{
+ class Empresa{
+
 
     String username;
     Socket s;
@@ -17,12 +18,16 @@ public class Empresa{
     CodedInputStream cis;
     CodedOutputStream cos;
 
-    public Empresa(String username, Socket s){
+    public Empresa(String username, Socket s) throws Exception{
         this.username = username;
         this.s = s;
         inP = new BufferedReader(new InputStreamReader(System.in));
         cis = CodedInputStream.newInstance(s.getInputStream());
         cos = CodedOutputStream.newInstance(s.getOutputStream());
+    }
+
+     public static int little2big(int i) {
+        return (i&0xff)<<24 | (i&0xff00)<<8 | (i&0xff0000)>>8 | (i>>24)&0xff;
     }
 
     public static int lerOpcao(Scanner sc){
@@ -43,7 +48,7 @@ public class Empresa{
         return opcao;
     }
 
-    public void apresentaCriacaoLeilao(){
+    public void apresentaCriacaoLeilao() throws Exception{
         long montante = 0;
         int taxa = 0;
         boolean lido = false;
@@ -85,9 +90,9 @@ public class Empresa{
                                             .build();
 
         MensagemEmpresa mensagem = MensagemEmpresa.newBuilder()
-                                                .setTipo(1)
+                                                .setTipo(TipoMensagem.LEILAO)
                                                 .setLeilao(leilao)
-                                                .serUsername(this.username)
+                                                .setUtilizador(this.username)
                                                 .build();
       
         byte[] ba = mensagem.toByteArray();
@@ -115,7 +120,7 @@ public class Empresa{
 
     }
 
-    public void apresentaEmissaoTaxaFixa(){
+    public void apresentaEmissaoTaxaFixa() throws Exception{
         
         long montante = 0;
         boolean lido = false;
@@ -138,9 +143,9 @@ public class Empresa{
                                             .build();
 
         MensagemEmpresa mensagem = MensagemEmpresa.newBuilder()
-                                                .setTipo(2)
+                                                .setTipo(TipoMensagem.EMISSAO)
                                                 .setEmissao(emissao)
-                                                .serUsername(this.username)
+                                                .setUtilizador(this.username)
                                                 .build();
       
         byte[] ba = mensagem.toByteArray();
@@ -170,7 +175,7 @@ public class Empresa{
     /**
      * Neste menu inicial será apresentada uma interface básica para a empresa
      */
-    public void menuInicial(){
+    public void menuInicial() throws Exception {
 
         System.out.println("1 - Criar Leilao");
         System.out.println("2 - Emissão Taxa Fixa");
