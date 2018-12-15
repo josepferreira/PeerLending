@@ -1,12 +1,12 @@
 import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.util.TreeSet;
 
 public class Leilao{
-    private int id;
+    public int id;
     private int ultimaProposta = 0;
     private int montante;
     private float taxaMaxima;
-    private TreeSet<Proposta> propostas = new ArrayList<>();
+    private TreeSet<Proposta> propostas = new TreeSet<>();
     private boolean terminado = false;
     private boolean sucesso;
     private LocalDateTime fim;
@@ -39,7 +39,8 @@ public class Leilao{
                                     .mapToInt(p -> p.montante)    
                                     .sum();
         sucesso = (montanteAmealhado >= montante ? true : false);
-        propostas.get(prpostas.size()-1).montante -= (montanteAmealhado - montante);
+        int diferenca = montanteAmealhado - montante;
+        propostas.get(propostas.size()-1).montante -= (diferenca > 0 ? diferenca : 0);
         return sucesso;
     }
 }

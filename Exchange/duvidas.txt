@@ -1,0 +1,8 @@
+Duvidas:
+
+-> na emissao como é a taxa? 1.1 vezes a ultima emissao, se n foi subscrita? 
+valor da ultima emissao? ou valor do ultimo leilao?
+o mais recente refere-se ao inicio ou ao fim???
+
+-> podemos ter uma poroposta sem taxa e uma sublcasse propostaleilao com taxa!
+-> cada emissao e leilao pode ter também o montante amealhado não?
