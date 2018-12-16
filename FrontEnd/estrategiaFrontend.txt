@@ -12,8 +12,12 @@ Dados sobre empresa:
 - username
 - papel
 - socket
-- se já tem leilao
-- ultima taxa (-1 se ainda nao emitiu leilao com sucesso)
+- se já tem leilao e tambem se ja tem emissao
+- ultima taxa, ou seja, a taxa que tem de usar na emissao (-1 se ainda nao emitiu leilao com sucesso) : ou entao podemos colocar um "boolean" para saber se ele pode criar uma emissao
+
+No enunciado diz que, caso uma emissao nao tenha sucesso, pode criar um novo leilao para mudar a taxa ou fazer uma emissao a uma taxa 1.1vezes maior que a anterior
+--> A questão é se ele tiver sucesso na emissao e entretanto teve outro leilao com sucesso, qual deve ser a taxa a ser usada?
+    Se tivermos de escolher entre as duas taxas, vamos ter de guardar uma taxa da emissao e outra do leilao
 
 
 No ator de gestao das Exchanges:
