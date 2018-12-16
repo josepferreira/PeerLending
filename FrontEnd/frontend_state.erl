@@ -1,5 +1,5 @@
 -module(frontend_state).
--export([start/0]).
+-export([start/0, getPapel/1]).
 
 -include("ccs.hrl").
 
@@ -10,18 +10,22 @@
 
 start() ->
   io:format("State ja esta a correr!"),
-  register ( frontend_state, spawn (fun() -> loop (#{}, #{"emp1" => "empresa", "emp2" => "empresa", "cli1" => "cliente", "cli2" => "cliente"}) end ))
+  register ( frontend_state, spawn (fun() -> loop ( #{"emp1" => "empresa", "emp2" => "empresa", "cli1" => "cliente", "cli2" => "cliente"}, #{}) end ))
 .
 
 loop (MapUser, MapEstado) -> 
     receive
         {getPapel, User, From} ->
+            io:format("Loop recebeu getPapel"),
+            io:format("User : ~p", [User]),
             case maps:find(User, MapUser) of
                 {ok, Papel} ->
-                    From ! Papel,
+                    io:format("Encontrou"),
+                    From ! {frontend_state, Papel},
                     loop(MapUser, MapEstado);
                 _ -> 
-                    From ! invalid,
+                    io:format("Não Encontrou"),
+                    From ! {frontend_state, invalid},
                     loop(MapUser, MapEstado)
                 
             end
@@ -33,11 +37,15 @@ loop (MapUser, MapEstado) ->
 rpc( Req ) ->
     frontend_state ! Req,
     receive
-        {frontend_state, Res } -> Res
+        {frontend_state, Res } -> 
+            io:format("RPC recebeu ~p~n", [Res]),
+            Res
     end
 .
 
 getPapel (User) ->
-    rpc ({getPapel, User})
+    io:format("Dentro do getPapel do frontend_state"),
+    rpc ({getPapel, User, self()}) 
+    
 .
 

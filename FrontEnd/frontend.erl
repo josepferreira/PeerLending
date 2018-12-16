@@ -21,8 +21,10 @@ acceptor(LSock) ->
 autenticaCliente(Sock) ->
    io:format("Vou receber\n"),
    receive
-      {tcp,_,Autenticacao} -> io:format("cheguei~n",[]),
-              {'Autenticacao',User,Pass} = ccs:decode_msg(Autenticacao,'Autenticacao'),
+      {tcp, _, Autenticacao} -> 
+
+              io:format("cheguei~n",[]),
+              {'Autenticacao', User, Pass} = ccs:decode_msg(Autenticacao,'Autenticacao'),
               io:format("User: "),
               io:format(User),
               io:format("!\nPass: "),
@@ -33,12 +35,16 @@ autenticaCliente(Sock) ->
               io:format("\n"),
               case Resposta of
                 ok -> 
+                    io:format("Vou pedir papel"),
                     Papel = frontend_state:getPapel(User),
+                    io:format("Já recebi papel do State e papel : ~p",[Papel]),
                     Bin = ccs:encode_msg(#'RespostaAutenticacao'{sucesso = true, papel = Papel}),
                     gen_tcp:send(Sock, Bin),
                     user(Sock, User);
+
                 invalid -> autenticaCliente(Sock)
-              end;
+              end
+            ;
           %          gen_tcp:send(Sock, "Autenticação inválida\n"),
       {tcp_closed,_} ->
             io:format("utilizador nao se autenticou nem registou e saiu~n",[]),
