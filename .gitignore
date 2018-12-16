@@ -1,4 +1,4 @@
 cliente/*.class
-BackEnd/*.beam
-BackEnd/*.dump
+FrontEnd/*.beam
+FrontEnd/*.dump
 cliente/cliente/*.class
