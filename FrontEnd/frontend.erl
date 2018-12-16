@@ -1,11 +1,13 @@
--module(chatv2).
--export([server/1]).
+-module(frontend).
+-export([start/0]).
+
 -include("ccs.hrl").
 
 
-server(Port) ->
+start() ->
   login_manager:start(),
-  {ok, LSock} = gen_tcp:listen(Port, [binary, {packet, 4}, {active, true}, {reuseaddr, true}]),
+  io:format("Servidor ja esta a correr!"),
+  {ok, LSock} = gen_tcp:listen(12345, [binary, {packet, 4}, {active, true}, {reuseaddr, true}]),
   acceptor(LSock).
 
 acceptor(LSock) ->
