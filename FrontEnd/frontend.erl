@@ -6,7 +6,8 @@
 
 start() ->
   login_manager:start(),
-  io:format("Servidor ja esta a correr!"),
+  frontend_state:start(),
+  io:format("Servidor principal ja esta a correr!"),
   {ok, LSock} = gen_tcp:listen(12345, [binary, {packet, 4}, {active, true}, {reuseaddr, true}]),
   acceptor(LSock).
 
@@ -31,7 +32,9 @@ autenticaCliente(Sock) ->
               io:format(Resposta),
               io:format("\n"),
               case Resposta of
-                ok -> Bin = ccs:encode_msg(#'RespostaAutenticacao'{sucesso = true, papel = "empresa"}),
+                ok -> 
+                    Papel = frontend_state:getPapel(User),
+                    Bin = ccs:encode_msg(#'RespostaAutenticacao'{sucesso = true, papel = Papel}),
                     gen_tcp:send(Sock, Bin),
                     user(Sock, User);
                 invalid -> autenticaCliente(Sock)
@@ -45,7 +48,7 @@ autenticaCliente(Sock) ->
 user(Sock, User) ->
     
     receive
-      {tcp,_,Data} -> io:format("User: " ++ User ++ " autenticado com sucesso!\n"),
+      {tcp,_,_} -> io:format("User: " ++ User ++ " autenticado com sucesso!\n"),
                     user(Sock, User);
       {tcp_closed, _} ->
         Res = login_manager:logout(User),

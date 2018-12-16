@@ -5,7 +5,7 @@
 
 start() ->
         Mapa = carregaMapa(#{}),
-        register( login_manager,spawn( fun() -> loop( Mapa ) end ) ).
+        register( login_manager, spawn( fun() -> loop( Mapa ) end ) ).
 
 carregaMapa(Map) ->
     M1 = maps:put( "emp1",{ "123",false },Map ),
