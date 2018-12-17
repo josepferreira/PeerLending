@@ -1,21 +1,11 @@
 import java.time.LocalDateTime;
 import java.util.TreeSet;
 
-public class Leilao{
-    public int id;
-    private int ultimaProposta = 0;
-    private int montante;
-    private float taxaMaxima;
-    private TreeSet<Proposta> propostas = new TreeSet<>();
-    private boolean terminado = false;
+public class Leilao extends Emprestimo{
     private boolean sucesso;
-    private LocalDateTime fim;
-
+    
     public Leilao(int id, int montante, float taxa, LocalDateTime fim){
-        this.id = id;
-        this.montante = montante;
-        this.taxaMaxima = taxa;
-        this.fim = fim;
+        super(id, montante, taxa, fim);
     }
 
     private Proposta adicionaProposta(Proposta p){

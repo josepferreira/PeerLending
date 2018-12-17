@@ -1,19 +1,10 @@
 import java.time.LocalDateTime;
 
-public class Emissao{
-    public int id;
-    private int ultimaProposta = 0;
-    private int montante;
-    private float taxa;
-    private TreeSet<Proposta> propostas = new TreeSet<>();
-    private boolean terminado = false;
-    private LocalDateTime fim;
+public class Emissao extends Emprestimo{
+    
 
     public Emissao(int id, int montante, float taxa, LocalDateTime fim){
-        this.id = id;
-        this.montante = montante;
-        this.taxa = taxa;
-        this.fim = fim;
+        super(id, montante, taxa, fim);
     }
 
     private boolean possoTerminar(){

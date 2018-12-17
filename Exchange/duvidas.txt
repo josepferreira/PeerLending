@@ -1,11 +1,7 @@
 Duvidas:
 
--> na emissao como é a taxa? 1.1 vezes a ultima emissao, se n foi subscrita? 
-valor da ultima emissao? ou valor do ultimo leilao?
-o mais recente refere-se ao inicio ou ao fim??? Esta pergunta nao se percebe
-
-Resposta: Segundo o enunciado só pode realizar a emissão se tiver um leilão com sucesso. Na primeira emissão a taxa deve ser igual à maior taxa oferecida por um licitador. Para as restantes vai depender ... caso a subscrição tenha sucesso entao pode criar uma nova a mesma taxa, senao terá de criar um nova com uma taxa 1.1vezes maior ou então criar um novo leilão!
-
--> podemos ter uma poroposta sem taxa e uma sublcasse propostaleilao com taxa!
--> cada emissao e leilao pode ter também o montante amealhado não?
-Resposta: Na emissao sim. No leilão não sei se vale a pena, já que ele tem um tempo fixo, e só acaba quando o tempo terminar e depois temos de fazer a seleção de todas as apostas e ver quais as que cobrem todo o total às taxas mais baixas
+ao licitar, pode-se retornar:   
+    -> excecao a dizer q leilao ja acabou
+    -> excecao a dizer q foi ultrapassado
+    -> ou uma mensagem resposta mesmo, no entanto é necessario q o 
+    emprestimo conheça o protocolo de comunicacao
