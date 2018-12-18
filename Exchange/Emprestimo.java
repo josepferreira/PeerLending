@@ -1,10 +1,13 @@
+import java.util.TreeSet; 
+import java.time.LocalDateTime;
+
 public abstract class Emprestimo{
 
     public int id;
     int ultimaProposta = 0;
     int montante;
     float taxa;
-    TreeSet<Proposta> propostas = new TreeSet<>();
+    TreeSet<Proposta> propostas = new TreeSet<>(); //pode estar ordenado ao contrário, ou seja a melhor proposta está no fim
     boolean terminado = false;
     LocalDateTime fim;
 
