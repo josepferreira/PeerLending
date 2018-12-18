@@ -32,8 +32,12 @@ public class Empresa{
         return false;
     }
 
-    public boolean licitaLeilao(int id, String cliente, int montante, float taxa){
+    public boolean licitaLeilao(int id, String cliente, int montante, float taxa) 
+    throws ExcecaoUltrapassado, ExcecaoFinalizado{
         //para licitar um leilao (o id será necessário?)
+        if(ememprestimoCurso == null){
+            throw new  ExcecaoFinalizado(nome, "O leilão pretendido já não se encontra ativo!");
+        }
         if(!(emprestimoCurso instanceof Leilao)){
             return false;
         }
@@ -41,9 +45,7 @@ public class Empresa{
             return ((Leilao)emprestimoCurso).licita(cliente, montante, taxa);
         }
         else{
-            //se calhar aqui podia ser uma excecao 
-            //para dizer que o leilao ja acabou
-            return false;
+            throw new  ExcecaoFinalizado(nome, "O leilão pretendido já não se encontra ativo!");
         }
     }
 

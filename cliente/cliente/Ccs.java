@@ -3822,6 +3822,20 @@ public final class Ccs {
      * <code>optional .cliente.SubscricaoTaxaFixa emissao = 3;</code>
      */
     cliente.Ccs.SubscricaoTaxaFixaOrBuilder getEmissaoOrBuilder();
+
+    /**
+     * <code>required string utilizador = 4;</code>
+     */
+    boolean hasUtilizador();
+    /**
+     * <code>required string utilizador = 4;</code>
+     */
+    java.lang.String getUtilizador();
+    /**
+     * <code>required string utilizador = 4;</code>
+     */
+    com.google.protobuf.ByteString
+        getUtilizadorBytes();
   }
   /**
    * Protobuf type {@code cliente.MensagemInvestidor}
@@ -3837,6 +3851,7 @@ public final class Ccs {
     }
     private MensagemInvestidor() {
       tipo_ = 1;
+      utilizador_ = "";
     }
 
     @java.lang.Override
@@ -3899,6 +3914,12 @@ public final class Ccs {
                 emissao_ = subBuilder.buildPartial();
               }
               bitField0_ |= 0x00000004;
+              break;
+            }
+            case 34: {
+              com.google.protobuf.ByteString bs = input.readBytes();
+              bitField0_ |= 0x00000008;
+              utilizador_ = bs;
               break;
             }
             default: {
@@ -3993,6 +4014,48 @@ public final class Ccs {
       return emissao_ == null ? cliente.Ccs.SubscricaoTaxaFixa.getDefaultInstance() : emissao_;
     }
 
+    public static final int UTILIZADOR_FIELD_NUMBER = 4;
+    private volatile java.lang.Object utilizador_;
+    /**
+     * <code>required string utilizador = 4;</code>
+     */
+    public boolean hasUtilizador() {
+      return ((bitField0_ & 0x00000008) == 0x00000008);
+    }
+    /**
+     * <code>required string utilizador = 4;</code>
+     */
+    public java.lang.String getUtilizador() {
+      java.lang.Object ref = utilizador_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          utilizador_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>required string utilizador = 4;</code>
+     */
+    public com.google.protobuf.ByteString
+        getUtilizadorBytes() {
+      java.lang.Object ref = utilizador_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        utilizador_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
     private byte memoizedIsInitialized = -1;
     @java.lang.Override
     public final boolean isInitialized() {
@@ -4001,6 +4064,10 @@ public final class Ccs {
       if (isInitialized == 0) return false;
 
       if (!hasTipo()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasUtilizador()) {
         memoizedIsInitialized = 0;
         return false;
       }
@@ -4032,6 +4099,9 @@ public final class Ccs {
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
         output.writeMessage(3, getEmissao());
       }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 4, utilizador_);
+      }
       unknownFields.writeTo(output);
     }
 
@@ -4052,6 +4122,9 @@ public final class Ccs {
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(3, getEmissao());
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, utilizador_);
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -4083,6 +4156,11 @@ public final class Ccs {
         result = result && getEmissao()
             .equals(other.getEmissao());
       }
+      result = result && (hasUtilizador() == other.hasUtilizador());
+      if (hasUtilizador()) {
+        result = result && getUtilizador()
+            .equals(other.getUtilizador());
+      }
       result = result && unknownFields.equals(other.unknownFields);
       return result;
     }
@@ -4105,6 +4183,10 @@ public final class Ccs {
       if (hasEmissao()) {
         hash = (37 * hash) + EMISSAO_FIELD_NUMBER;
         hash = (53 * hash) + getEmissao().hashCode();
+      }
+      if (hasUtilizador()) {
+        hash = (37 * hash) + UTILIZADOR_FIELD_NUMBER;
+        hash = (53 * hash) + getUtilizador().hashCode();
       }
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
@@ -4255,6 +4337,8 @@ public final class Ccs {
           emissaoBuilder_.clear();
         }
         bitField0_ = (bitField0_ & ~0x00000004);
+        utilizador_ = "";
+        bitField0_ = (bitField0_ & ~0x00000008);
         return this;
       }
 
@@ -4303,6 +4387,10 @@ public final class Ccs {
         } else {
           result.emissao_ = emissaoBuilder_.build();
         }
+        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+          to_bitField0_ |= 0x00000008;
+        }
+        result.utilizador_ = utilizador_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -4361,6 +4449,11 @@ public final class Ccs {
         if (other.hasEmissao()) {
           mergeEmissao(other.getEmissao());
         }
+        if (other.hasUtilizador()) {
+          bitField0_ |= 0x00000008;
+          utilizador_ = other.utilizador_;
+          onChanged();
+        }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
         return this;
@@ -4369,6 +4462,9 @@ public final class Ccs {
       @java.lang.Override
       public final boolean isInitialized() {
         if (!hasTipo()) {
+          return false;
+        }
+        if (!hasUtilizador()) {
           return false;
         }
         if (hasLeilao()) {
@@ -4675,6 +4771,82 @@ public final class Ccs {
           emissao_ = null;
         }
         return emissaoBuilder_;
+      }
+
+      private java.lang.Object utilizador_ = "";
+      /**
+       * <code>required string utilizador = 4;</code>
+       */
+      public boolean hasUtilizador() {
+        return ((bitField0_ & 0x00000008) == 0x00000008);
+      }
+      /**
+       * <code>required string utilizador = 4;</code>
+       */
+      public java.lang.String getUtilizador() {
+        java.lang.Object ref = utilizador_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            utilizador_ = s;
+          }
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>required string utilizador = 4;</code>
+       */
+      public com.google.protobuf.ByteString
+          getUtilizadorBytes() {
+        java.lang.Object ref = utilizador_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          utilizador_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>required string utilizador = 4;</code>
+       */
+      public Builder setUtilizador(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000008;
+        utilizador_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required string utilizador = 4;</code>
+       */
+      public Builder clearUtilizador() {
+        bitField0_ = (bitField0_ & ~0x00000008);
+        utilizador_ = getDefaultInstance().getUtilizador();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required string utilizador = 4;</code>
+       */
+      public Builder setUtilizadorBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000008;
+        utilizador_ = value;
+        onChanged();
+        return this;
       }
       @java.lang.Override
       public final Builder setUnknownFields(
@@ -8037,20 +8209,21 @@ public final class Ccs {
       "ssao\030\003 \001(\0132\030.cliente.EmissaoTaxaFixa\022\022\n\n" +
       "utilizador\030\004 \002(\t\"/\n\rCriacaoLeilao\022\020\n\010mon" +
       "tante\030\001 \002(\003\022\014\n\004taxa\030\002 \002(\002\"#\n\017EmissaoTaxa" +
-      "Fixa\022\020\n\010montante\030\001 \002(\003\"\231\001\n\022MensagemInves" +
+      "Fixa\022\020\n\010montante\030\001 \002(\003\"\255\001\n\022MensagemInves" +
       "tidor\022+\n\004tipo\030\001 \002(\0162\025.cliente.TipoMensag" +
       "em:\006LEILAO\022(\n\006leilao\030\002 \001(\0132\030.cliente.Lic" +
       "itacaoLeilao\022,\n\007emissao\030\003 \001(\0132\033.cliente." +
-      "SubscricaoTaxaFixa\"B\n\017LicitacaoLeilao\022\017\n" +
-      "\007empresa\030\001 \002(\t\022\020\n\010montante\030\002 \002(\003\022\014\n\004taxa" +
-      "\030\003 \002(\002\"7\n\022SubscricaoTaxaFixa\022\017\n\007empresa\030" +
-      "\001 \002(\t\022\020\n\010montante\030\002 \002(\003\"u\n\027NotificacaoUl" +
-      "trapassado\022+\n\004tipo\030\001 \002(\0162\025.cliente.TipoM" +
-      "ensagem:\006LEILAO\022\014\n\004taxa\030\002 \002(\002\022\r\n\005valor\030\003" +
-      " \002(\003\022\020\n\010mensagem\030\004 \001(\t\"X\n\tResultado\022+\n\004t" +
-      "ipo\030\001 \002(\0162\025.cliente.TipoMensagem:\006LEILAO" +
-      "\022\017\n\007empresa\030\002 \002(\t\022\r\n\005texto\030\003 \002(\t*\'\n\014Tipo" +
-      "Mensagem\022\n\n\006LEILAO\020\001\022\013\n\007EMISSAO\020\002"
+      "SubscricaoTaxaFixa\022\022\n\nutilizador\030\004 \002(\t\"B" +
+      "\n\017LicitacaoLeilao\022\017\n\007empresa\030\001 \002(\t\022\020\n\010mo" +
+      "ntante\030\002 \002(\003\022\014\n\004taxa\030\003 \002(\002\"7\n\022Subscricao" +
+      "TaxaFixa\022\017\n\007empresa\030\001 \002(\t\022\020\n\010montante\030\002 " +
+      "\002(\003\"u\n\027NotificacaoUltrapassado\022+\n\004tipo\030\001" +
+      " \002(\0162\025.cliente.TipoMensagem:\006LEILAO\022\014\n\004t" +
+      "axa\030\002 \002(\002\022\r\n\005valor\030\003 \002(\003\022\020\n\010mensagem\030\004 \001" +
+      "(\t\"X\n\tResultado\022+\n\004tipo\030\001 \002(\0162\025.cliente." +
+      "TipoMensagem:\006LEILAO\022\017\n\007empresa\030\002 \002(\t\022\r\n" +
+      "\005texto\030\003 \002(\t*\'\n\014TipoMensagem\022\n\n\006LEILAO\020\001" +
+      "\022\013\n\007EMISSAO\020\002"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -8099,7 +8272,7 @@ public final class Ccs {
     internal_static_cliente_MensagemInvestidor_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_cliente_MensagemInvestidor_descriptor,
-        new java.lang.String[] { "Tipo", "Leilao", "Emissao", });
+        new java.lang.String[] { "Tipo", "Leilao", "Emissao", "Utilizador", });
     internal_static_cliente_LicitacaoLeilao_descriptor =
       getDescriptor().getMessageTypes().get(6);
     internal_static_cliente_LicitacaoLeilao_fieldAccessorTable = new

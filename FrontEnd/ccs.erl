@@ -208,7 +208,8 @@ encode_msg_MensagemInvestidor(Msg, TrUserData) ->
 
 encode_msg_MensagemInvestidor(#'MensagemInvestidor'{tipo
 							= F1,
-						    leilao = F2, emissao = F3},
+						    leilao = F2, emissao = F3,
+						    utilizador = F4},
 			      Bin, TrUserData) ->
     B1 = begin
 	   TrF1 = id(F1, TrUserData),
@@ -223,13 +224,18 @@ encode_msg_MensagemInvestidor(#'MensagemInvestidor'{tipo
 						     TrUserData)
 		end
 	 end,
-    if F3 == undefined -> B2;
-       true ->
-	   begin
-	     TrF3 = id(F3, TrUserData),
-	     e_mfield_MensagemInvestidor_emissao(TrF3,
-						 <<B2/binary, 26>>, TrUserData)
-	   end
+    B3 = if F3 == undefined -> B2;
+	    true ->
+		begin
+		  TrF3 = id(F3, TrUserData),
+		  e_mfield_MensagemInvestidor_emissao(TrF3,
+						      <<B2/binary, 26>>,
+						      TrUserData)
+		end
+	 end,
+    begin
+      TrF4 = id(F4, TrUserData),
+      e_type_string(TrF4, <<B3/binary, 34>>, TrUserData)
     end.
 
 encode_msg_LicitacaoLeilao(Msg, TrUserData) ->
@@ -1250,88 +1256,102 @@ decode_msg_MensagemInvestidor(Bin, TrUserData) ->
 					  id(undefined, TrUserData),
 					  id(undefined, TrUserData),
 					  id(undefined, TrUserData),
+					  id(undefined, TrUserData),
 					  TrUserData).
 
 dfp_read_field_def_MensagemInvestidor(<<8,
 					Rest/binary>>,
-				      Z1, Z2, F@_1, F@_2, F@_3, TrUserData) ->
+				      Z1, Z2, F@_1, F@_2, F@_3, F@_4,
+				      TrUserData) ->
     d_field_MensagemInvestidor_tipo(Rest, Z1, Z2, F@_1,
-				    F@_2, F@_3, TrUserData);
+				    F@_2, F@_3, F@_4, TrUserData);
 dfp_read_field_def_MensagemInvestidor(<<18,
 					Rest/binary>>,
-				      Z1, Z2, F@_1, F@_2, F@_3, TrUserData) ->
+				      Z1, Z2, F@_1, F@_2, F@_3, F@_4,
+				      TrUserData) ->
     d_field_MensagemInvestidor_leilao(Rest, Z1, Z2, F@_1,
-				      F@_2, F@_3, TrUserData);
+				      F@_2, F@_3, F@_4, TrUserData);
 dfp_read_field_def_MensagemInvestidor(<<26,
 					Rest/binary>>,
-				      Z1, Z2, F@_1, F@_2, F@_3, TrUserData) ->
+				      Z1, Z2, F@_1, F@_2, F@_3, F@_4,
+				      TrUserData) ->
     d_field_MensagemInvestidor_emissao(Rest, Z1, Z2, F@_1,
-				       F@_2, F@_3, TrUserData);
+				       F@_2, F@_3, F@_4, TrUserData);
+dfp_read_field_def_MensagemInvestidor(<<34,
+					Rest/binary>>,
+				      Z1, Z2, F@_1, F@_2, F@_3, F@_4,
+				      TrUserData) ->
+    d_field_MensagemInvestidor_utilizador(Rest, Z1, Z2,
+					  F@_1, F@_2, F@_3, F@_4, TrUserData);
 dfp_read_field_def_MensagemInvestidor(<<>>, 0, 0, F@_1,
-				      F@_2, F@_3, _) ->
+				      F@_2, F@_3, F@_4, _) ->
     #'MensagemInvestidor'{tipo = F@_1, leilao = F@_2,
-			  emissao = F@_3};
+			  emissao = F@_3, utilizador = F@_4};
 dfp_read_field_def_MensagemInvestidor(Other, Z1, Z2,
-				      F@_1, F@_2, F@_3, TrUserData) ->
+				      F@_1, F@_2, F@_3, F@_4, TrUserData) ->
     dg_read_field_def_MensagemInvestidor(Other, Z1, Z2,
-					 F@_1, F@_2, F@_3, TrUserData).
+					 F@_1, F@_2, F@_3, F@_4, TrUserData).
 
 dg_read_field_def_MensagemInvestidor(<<1:1, X:7,
 				       Rest/binary>>,
-				     N, Acc, F@_1, F@_2, F@_3, TrUserData)
+				     N, Acc, F@_1, F@_2, F@_3, F@_4, TrUserData)
     when N < 32 - 7 ->
     dg_read_field_def_MensagemInvestidor(Rest, N + 7,
-					 X bsl N + Acc, F@_1, F@_2, F@_3,
+					 X bsl N + Acc, F@_1, F@_2, F@_3, F@_4,
 					 TrUserData);
 dg_read_field_def_MensagemInvestidor(<<0:1, X:7,
 				       Rest/binary>>,
-				     N, Acc, F@_1, F@_2, F@_3, TrUserData) ->
+				     N, Acc, F@_1, F@_2, F@_3, F@_4,
+				     TrUserData) ->
     Key = X bsl N + Acc,
     case Key of
       8 ->
 	  d_field_MensagemInvestidor_tipo(Rest, 0, 0, F@_1, F@_2,
-					  F@_3, TrUserData);
+					  F@_3, F@_4, TrUserData);
       18 ->
 	  d_field_MensagemInvestidor_leilao(Rest, 0, 0, F@_1,
-					    F@_2, F@_3, TrUserData);
+					    F@_2, F@_3, F@_4, TrUserData);
       26 ->
 	  d_field_MensagemInvestidor_emissao(Rest, 0, 0, F@_1,
-					     F@_2, F@_3, TrUserData);
+					     F@_2, F@_3, F@_4, TrUserData);
+      34 ->
+	  d_field_MensagemInvestidor_utilizador(Rest, 0, 0, F@_1,
+						F@_2, F@_3, F@_4, TrUserData);
       _ ->
 	  case Key band 7 of
 	    0 ->
 		skip_varint_MensagemInvestidor(Rest, 0, 0, F@_1, F@_2,
-					       F@_3, TrUserData);
+					       F@_3, F@_4, TrUserData);
 	    1 ->
 		skip_64_MensagemInvestidor(Rest, 0, 0, F@_1, F@_2, F@_3,
-					   TrUserData);
+					   F@_4, TrUserData);
 	    2 ->
 		skip_length_delimited_MensagemInvestidor(Rest, 0, 0,
-							 F@_1, F@_2, F@_3,
+							 F@_1, F@_2, F@_3, F@_4,
 							 TrUserData);
 	    3 ->
 		skip_group_MensagemInvestidor(Rest, Key bsr 3, 0, F@_1,
-					      F@_2, F@_3, TrUserData);
+					      F@_2, F@_3, F@_4, TrUserData);
 	    5 ->
 		skip_32_MensagemInvestidor(Rest, 0, 0, F@_1, F@_2, F@_3,
-					   TrUserData)
+					   F@_4, TrUserData)
 	  end
     end;
 dg_read_field_def_MensagemInvestidor(<<>>, 0, 0, F@_1,
-				     F@_2, F@_3, _) ->
+				     F@_2, F@_3, F@_4, _) ->
     #'MensagemInvestidor'{tipo = F@_1, leilao = F@_2,
-			  emissao = F@_3}.
+			  emissao = F@_3, utilizador = F@_4}.
 
 d_field_MensagemInvestidor_tipo(<<1:1, X:7,
 				  Rest/binary>>,
-				N, Acc, F@_1, F@_2, F@_3, TrUserData)
+				N, Acc, F@_1, F@_2, F@_3, F@_4, TrUserData)
     when N < 57 ->
     d_field_MensagemInvestidor_tipo(Rest, N + 7,
-				    X bsl N + Acc, F@_1, F@_2, F@_3,
+				    X bsl N + Acc, F@_1, F@_2, F@_3, F@_4,
 				    TrUserData);
 d_field_MensagemInvestidor_tipo(<<0:1, X:7,
 				  Rest/binary>>,
-				N, Acc, _, F@_2, F@_3, TrUserData) ->
+				N, Acc, _, F@_2, F@_3, F@_4, TrUserData) ->
     {NewFValue, RestF} = {id(d_enum_TipoMensagem(begin
 						   <<Res:32/signed-native>> =
 						       <<(X bsl N +
@@ -1341,18 +1361,19 @@ d_field_MensagemInvestidor_tipo(<<0:1, X:7,
 			     TrUserData),
 			  Rest},
     dfp_read_field_def_MensagemInvestidor(RestF, 0, 0,
-					  NewFValue, F@_2, F@_3, TrUserData).
+					  NewFValue, F@_2, F@_3, F@_4,
+					  TrUserData).
 
 d_field_MensagemInvestidor_leilao(<<1:1, X:7,
 				    Rest/binary>>,
-				  N, Acc, F@_1, F@_2, F@_3, TrUserData)
+				  N, Acc, F@_1, F@_2, F@_3, F@_4, TrUserData)
     when N < 57 ->
     d_field_MensagemInvestidor_leilao(Rest, N + 7,
-				      X bsl N + Acc, F@_1, F@_2, F@_3,
+				      X bsl N + Acc, F@_1, F@_2, F@_3, F@_4,
 				      TrUserData);
 d_field_MensagemInvestidor_leilao(<<0:1, X:7,
 				    Rest/binary>>,
-				  N, Acc, F@_1, Prev, F@_3, TrUserData) ->
+				  N, Acc, F@_1, Prev, F@_3, F@_4, TrUserData) ->
     {NewFValue, RestF} = begin
 			   Len = X bsl N + Acc,
 			   <<Bs:Len/binary, Rest2/binary>> = Rest,
@@ -1367,18 +1388,19 @@ d_field_MensagemInvestidor_leilao(<<0:1, X:7,
 									   NewFValue,
 									   TrUserData)
 					  end,
-					  F@_3, TrUserData).
+					  F@_3, F@_4, TrUserData).
 
 d_field_MensagemInvestidor_emissao(<<1:1, X:7,
 				     Rest/binary>>,
-				   N, Acc, F@_1, F@_2, F@_3, TrUserData)
+				   N, Acc, F@_1, F@_2, F@_3, F@_4, TrUserData)
     when N < 57 ->
     d_field_MensagemInvestidor_emissao(Rest, N + 7,
-				       X bsl N + Acc, F@_1, F@_2, F@_3,
+				       X bsl N + Acc, F@_1, F@_2, F@_3, F@_4,
 				       TrUserData);
 d_field_MensagemInvestidor_emissao(<<0:1, X:7,
 				     Rest/binary>>,
-				   N, Acc, F@_1, F@_2, Prev, TrUserData) ->
+				   N, Acc, F@_1, F@_2, Prev, F@_4,
+				   TrUserData) ->
     {NewFValue, RestF} = begin
 			   Len = X bsl N + Acc,
 			   <<Bs:Len/binary, Rest2/binary>> = Rest,
@@ -1394,50 +1416,73 @@ d_field_MensagemInvestidor_emissao(<<0:1, X:7,
 									      NewFValue,
 									      TrUserData)
 					  end,
-					  TrUserData).
+					  F@_4, TrUserData).
+
+d_field_MensagemInvestidor_utilizador(<<1:1, X:7,
+					Rest/binary>>,
+				      N, Acc, F@_1, F@_2, F@_3, F@_4,
+				      TrUserData)
+    when N < 57 ->
+    d_field_MensagemInvestidor_utilizador(Rest, N + 7,
+					  X bsl N + Acc, F@_1, F@_2, F@_3, F@_4,
+					  TrUserData);
+d_field_MensagemInvestidor_utilizador(<<0:1, X:7,
+					Rest/binary>>,
+				      N, Acc, F@_1, F@_2, F@_3, _,
+				      TrUserData) ->
+    {NewFValue, RestF} = begin
+			   Len = X bsl N + Acc,
+			   <<Utf8:Len/binary, Rest2/binary>> = Rest,
+			   {id(unicode:characters_to_list(Utf8, unicode),
+			       TrUserData),
+			    Rest2}
+			 end,
+    dfp_read_field_def_MensagemInvestidor(RestF, 0, 0, F@_1,
+					  F@_2, F@_3, NewFValue, TrUserData).
 
 skip_varint_MensagemInvestidor(<<1:1, _:7,
 				 Rest/binary>>,
-			       Z1, Z2, F@_1, F@_2, F@_3, TrUserData) ->
+			       Z1, Z2, F@_1, F@_2, F@_3, F@_4, TrUserData) ->
     skip_varint_MensagemInvestidor(Rest, Z1, Z2, F@_1, F@_2,
-				   F@_3, TrUserData);
+				   F@_3, F@_4, TrUserData);
 skip_varint_MensagemInvestidor(<<0:1, _:7,
 				 Rest/binary>>,
-			       Z1, Z2, F@_1, F@_2, F@_3, TrUserData) ->
+			       Z1, Z2, F@_1, F@_2, F@_3, F@_4, TrUserData) ->
     dfp_read_field_def_MensagemInvestidor(Rest, Z1, Z2,
-					  F@_1, F@_2, F@_3, TrUserData).
+					  F@_1, F@_2, F@_3, F@_4, TrUserData).
 
 skip_length_delimited_MensagemInvestidor(<<1:1, X:7,
 					   Rest/binary>>,
-					 N, Acc, F@_1, F@_2, F@_3, TrUserData)
+					 N, Acc, F@_1, F@_2, F@_3, F@_4,
+					 TrUserData)
     when N < 57 ->
     skip_length_delimited_MensagemInvestidor(Rest, N + 7,
 					     X bsl N + Acc, F@_1, F@_2, F@_3,
-					     TrUserData);
+					     F@_4, TrUserData);
 skip_length_delimited_MensagemInvestidor(<<0:1, X:7,
 					   Rest/binary>>,
-					 N, Acc, F@_1, F@_2, F@_3,
+					 N, Acc, F@_1, F@_2, F@_3, F@_4,
 					 TrUserData) ->
     Length = X bsl N + Acc,
     <<_:Length/binary, Rest2/binary>> = Rest,
     dfp_read_field_def_MensagemInvestidor(Rest2, 0, 0, F@_1,
-					  F@_2, F@_3, TrUserData).
+					  F@_2, F@_3, F@_4, TrUserData).
 
 skip_group_MensagemInvestidor(Bin, FNum, Z2, F@_1, F@_2,
-			      F@_3, TrUserData) ->
+			      F@_3, F@_4, TrUserData) ->
     {_, Rest} = read_group(Bin, FNum),
     dfp_read_field_def_MensagemInvestidor(Rest, 0, Z2, F@_1,
-					  F@_2, F@_3, TrUserData).
+					  F@_2, F@_3, F@_4, TrUserData).
 
 skip_32_MensagemInvestidor(<<_:32, Rest/binary>>, Z1,
-			   Z2, F@_1, F@_2, F@_3, TrUserData) ->
+			   Z2, F@_1, F@_2, F@_3, F@_4, TrUserData) ->
     dfp_read_field_def_MensagemInvestidor(Rest, Z1, Z2,
-					  F@_1, F@_2, F@_3, TrUserData).
+					  F@_1, F@_2, F@_3, F@_4, TrUserData).
 
 skip_64_MensagemInvestidor(<<_:64, Rest/binary>>, Z1,
-			   Z2, F@_1, F@_2, F@_3, TrUserData) ->
+			   Z2, F@_1, F@_2, F@_3, F@_4, TrUserData) ->
     dfp_read_field_def_MensagemInvestidor(Rest, Z1, Z2,
-					  F@_1, F@_2, F@_3, TrUserData).
+					  F@_1, F@_2, F@_3, F@_4, TrUserData).
 
 decode_msg_LicitacaoLeilao(Bin, TrUserData) ->
     dfp_read_field_def_LicitacaoLeilao(Bin, 0, 0,
@@ -2321,7 +2366,8 @@ merge_msg_MensagemInvestidor(#'MensagemInvestidor'{leilao
 						   emissao = PFemissao},
 			     #'MensagemInvestidor'{tipo = NFtipo,
 						   leilao = NFleilao,
-						   emissao = NFemissao},
+						   emissao = NFemissao,
+						   utilizador = NFutilizador},
 			     TrUserData) ->
     #'MensagemInvestidor'{tipo = NFtipo,
 			  leilao =
@@ -2340,7 +2386,8 @@ merge_msg_MensagemInvestidor(#'MensagemInvestidor'{leilao
 								  TrUserData);
 				 PFemissao == undefined -> NFemissao;
 				 NFemissao == undefined -> PFemissao
-			      end}.
+			      end,
+			  utilizador = NFutilizador}.
 
 -compile({nowarn_unused_function,merge_msg_LicitacaoLeilao/3}).
 merge_msg_LicitacaoLeilao(#'LicitacaoLeilao'{},
@@ -2495,7 +2542,8 @@ v_msg_EmissaoTaxaFixa(X, Path, _TrUserData) ->
 -dialyzer({nowarn_function,v_msg_MensagemInvestidor/3}).
 v_msg_MensagemInvestidor(#'MensagemInvestidor'{tipo =
 						   F1,
-					       leilao = F2, emissao = F3},
+					       leilao = F2, emissao = F3,
+					       utilizador = F4},
 			 Path, TrUserData) ->
     v_enum_TipoMensagem(F1, [tipo | Path], TrUserData),
     if F2 == undefined -> ok;
@@ -2507,6 +2555,7 @@ v_msg_MensagemInvestidor(#'MensagemInvestidor'{tipo =
 	   v_msg_SubscricaoTaxaFixa(F3, [emissao | Path],
 				    TrUserData)
     end,
+    v_type_string(F4, [utilizador | Path], TrUserData),
     ok;
 v_msg_MensagemInvestidor(X, Path, _TrUserData) ->
     mk_type_error({expected_msg, 'MensagemInvestidor'}, X,
@@ -2724,7 +2773,9 @@ get_msg_defs() ->
 	      opts = []},
        #field{name = emissao, fnum = 3, rnum = 4,
 	      type = {msg, 'SubscricaoTaxaFixa'},
-	      occurrence = optional, opts = []}]},
+	      occurrence = optional, opts = []},
+       #field{name = utilizador, fnum = 4, rnum = 5,
+	      type = string, occurrence = required, opts = []}]},
      {{msg, 'LicitacaoLeilao'},
       [#field{name = empresa, fnum = 1, rnum = 2,
 	      type = string, occurrence = required, opts = []},
@@ -2832,7 +2883,9 @@ find_msg_def('MensagemInvestidor') ->
 	    opts = []},
      #field{name = emissao, fnum = 3, rnum = 4,
 	    type = {msg, 'SubscricaoTaxaFixa'},
-	    occurrence = optional, opts = []}];
+	    occurrence = optional, opts = []},
+     #field{name = utilizador, fnum = 4, rnum = 5,
+	    type = string, occurrence = required, opts = []}];
 find_msg_def('LicitacaoLeilao') ->
     [#field{name = empresa, fnum = 1, rnum = 2,
 	    type = string, occurrence = required, opts = []},
