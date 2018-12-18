@@ -39,6 +39,7 @@ message MensagemInvestidor{
     required TipoMensagem tipo = 1 [default = LEILAO];
     optional LicitacaoLeilao leilao = 2;
     optional SubscricaoTaxaFixa emissao = 3;
+    required string utilizador = 4;
 }
 
 message LicitacaoLeilao{

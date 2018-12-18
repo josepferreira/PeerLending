@@ -53,7 +53,8 @@
 -record('MensagemInvestidor',
         {tipo = 'LEILAO'        :: 'LEILAO' | 'EMISSAO' | integer(), % = 1, enum TipoMensagem
          leilao                 :: ccs:'LicitacaoLeilao'() | undefined, % = 2
-         emissao                :: ccs:'SubscricaoTaxaFixa'() | undefined % = 3
+         emissao                :: ccs:'SubscricaoTaxaFixa'() | undefined, % = 3
+         utilizador             :: iolist()         % = 4
         }).
 -endif.
 

@@ -9,6 +9,219 @@ import com.google.protobuf.CodedOutputStream;
 
 import cliente.Ccs.*;
 
+class Licitador{
+
+
+    String username;
+    Socket s;
+    BufferedReader inP;
+    CodedInputStream cis;
+    CodedOutputStream cos;
+
+    public Licitador(String username, Socket s) throws Exception{
+        this.username = username;
+        this.s = s;
+        inP = new BufferedReader(new InputStreamReader(System.in));
+        cis = CodedInputStream.newInstance(s.getInputStream());
+        cos = CodedOutputStream.newInstance(s.getOutputStream());
+    }
+
+     public static int little2big(int i) {
+        return (i&0xff)<<24 | (i&0xff00)<<8 | (i&0xff0000)>>8 | (i>>24)&0xff;
+    }
+
+    public static int lerOpcao(Scanner sc){
+        boolean lido = false;
+        int opcao = -1;
+        
+        while(!lido){
+
+            try{
+                opcao = sc.nextInt();
+                lido = true;
+                System.out.println("OPCAO: " + opcao);
+            }
+            catch(Exception e){}
+        }
+        //sc.close();
+
+        return opcao;
+    }
+
+    public void apresentaLicitacaoLeilao() throws Exception{
+        String empresa = null;
+
+        do{
+            System.out.println("Insira a empresa: ");
+            empresa = inP.readLine();
+        }while(empresa != null);
+        
+        long montante = 0;
+        int taxa = 0;
+        boolean lido = false;
+        do{
+            System.out.print("Insira o Montante: ");
+            try{
+                montante = Long.parseLong(inP.readLine());
+                if(montante > 0)
+                    lido = true;
+                /**
+                 * Tenho de validar se é multiplo de 100?
+                 */
+            } catch(Exception e){
+                System.out.println("O valor introduzido não é valido!");
+            }
+        }while(!lido);
+
+        lido = false;
+
+        do{
+            System.out.print("Insira a Taxa: ");
+            try{
+                taxa = Integer.parseInt(inP.readLine());
+                if(taxa > 0 && taxa < 101)
+                    lido = true;
+                /**
+                 * Tenho de validar se é multiplo de 100?
+                 */
+            } catch(Exception e){
+                System.out.println("O valor introduzido não é valido!");
+            }
+        }while(!lido);
+
+        float taxaAux = (float) taxa;
+
+        LicitacaoLeilao leilao = LicitacaoLeilao.newBuilder()
+                                            .setEmpresa(empresa)
+                                            .setMontante(montante)
+                                            .setTaxa(taxaAux)
+                                            .build();
+
+        MensagemInvestidor mensagem = MensagemInvestidor.newBuilder()
+                                                .setTipo(TipoMensagem.LEILAO)
+                                                .setLeilao(leilao)
+                                                .setUtilizador(this.username)
+                                                .build();
+      
+        byte[] ba = mensagem.toByteArray();
+
+        System.out.println("Len: " + ba.length);
+        cos.writeSFixed32NoTag(little2big(ba.length));
+        cos.writeRawBytes(ba);
+        System.out.println("Wrote " + ba.length + " bytes");
+        cos.flush();
+
+        System.out.println("-----");
+        System.out.println("A esperar resposta por parte do servidor ...");
+        System.out.println("-----");
+
+        int len = cis.readRawLittleEndian32();
+        len = little2big(len);
+        System.out.println("Len: " + len);
+        byte[] bResposta = cis.readRawBytes(len);
+        System.out.println("Read " + len + " bytes");
+        /**
+         * A partir daqui tenho de fazer decode da resposta que chegou e apresentar o texto com a mensagem de sucesso ou de erro ...
+         */
+        Resultado resposta = Resultado.parseFrom(bResposta);
+        System.out.println("O resultado da licitacao do leilao foi " + resposta.getTexto());
+
+
+    }
+
+    public void apresentaSubscricaoTaxaFixa() throws Exception{
+        String empresa = null;
+
+        do{
+            System.out.println("Insira a empresa: ");
+            empresa = inP.readLine();
+        }while(empresa != null);
+
+        long montante = 0;
+        boolean lido = false;
+        do{
+            System.out.print("Insira o Montante: ");
+            try{
+                montante = Long.parseLong(inP.readLine());
+                if(montante > 0)
+                    lido = true;
+                /**
+                 * Tenho de validar se é multiplo de 100?
+                 */
+            } catch(Exception e){
+                System.out.println("O valor introduzido não é valido!");
+            }
+        }while(!lido);
+
+        SubscricaoTaxaFixa emissao = SubscricaoTaxaFixa.newBuilder()
+                                            .setEmpresa(empresa)
+                                            .setMontante(montante)
+                                            .build();
+
+        MensagemInvestidor mensagem = MensagemInvestidor.newBuilder()
+                                                .setTipo(TipoMensagem.EMISSAO)
+                                                .setEmissao(emissao)
+                                                .setUtilizador(this.username)
+                                                .build();
+      
+        byte[] ba = mensagem.toByteArray();
+
+        System.out.println("Len: " + ba.length);
+        cos.writeSFixed32NoTag(little2big(ba.length));
+        cos.writeRawBytes(ba);
+        System.out.println("Wrote " + ba.length + " bytes");
+        cos.flush();
+
+        System.out.println("-----");
+        System.out.println("A esperar resposta por parte do servidor ...");
+        System.out.println("-----");
+
+        int len = cis.readRawLittleEndian32();
+        len = little2big(len);
+        System.out.println("Len: " + len);
+        byte[] bResposta = cis.readRawBytes(len);
+        System.out.println("Read " + len + " bytes");
+        /**
+         * A partir daqui tenho de fazer decode da resposta que chegou e apresentar o texto com a mensagem de sucesso ou de erro ...
+         */
+        //RespostaAutenticacao resposta = RespostaAutenticacao.parseFrom(ba);
+
+    }
+
+
+    /**
+     * Neste menu inicial será apresentada uma interface básica para a empresa
+     */
+    public void menuInicial() throws Exception {
+        boolean continua = true;
+        while(continua){
+
+            System.out.println("1 - Criar Leilao");
+            System.out.println("2 - Emissão Taxa Fixa");
+            System.out.print("Opção: ");
+            boolean lido = false;
+            int opcao = 0;
+            while(!lido){
+                try{
+                    opcao = Integer.parseInt(inP.readLine());
+                    lido = true;
+                } catch(Exception e){
+                    System.out.println("O valor introduzido não é valido!");
+                    System.out.print("Opção: ");
+                }
+            }
+
+            switch(opcao){
+                case 1: apresentaLicitacaoLeilao(); break;
+                case 2: apresentaSubscricaoTaxaFixa(); break;
+                default: continua = false;
+            }
+        }
+
+    }
+
+}
+
  class Empresa{
 
 
@@ -115,7 +328,8 @@ import cliente.Ccs.*;
         /**
          * A partir daqui tenho de fazer decode da resposta que chegou e apresentar o texto com a mensagem de sucesso ou de erro ...
          */
-        //RespostaAutenticacao resposta = RespostaAutenticacao.parseFrom(ba);
+        Resultado resposta = Resultado.parseFrom(bResposta);
+        System.out.println("O resultado da criacao do leilao foi " + resposta.getTexto());
 
 
     }
@@ -172,30 +386,34 @@ import cliente.Ccs.*;
 
     }
 
+
     /**
      * Neste menu inicial será apresentada uma interface básica para a empresa
      */
     public void menuInicial() throws Exception {
+        boolean continua = true;
+        while(continua){
 
-        System.out.println("1 - Criar Leilao");
-        System.out.println("2 - Emissão Taxa Fixa");
-        System.out.print("Opção: ");
-        boolean lido = false;
-        int opcao = 0;
-        while(!lido){
-            try{
-                opcao = Integer.parseInt(inP.readLine());
-                if(opcao == 1 || opcao == 2)
+            System.out.println("1 - Criar Leilao");
+            System.out.println("2 - Emissão Taxa Fixa");
+            System.out.print("Opção: ");
+            boolean lido = false;
+            int opcao = 0;
+            while(!lido){
+                try{
+                    opcao = Integer.parseInt(inP.readLine());
                     lido = true;
-            } catch(Exception e){
-                System.out.println("O valor introduzido não é valido!");
-                System.out.print("Opção: ");
+                } catch(Exception e){
+                    System.out.println("O valor introduzido não é valido!");
+                    System.out.print("Opção: ");
+                }
             }
-        }
 
-        switch(opcao){
-            case 1: apresentaCriacaoLeilao(); break;
-            case 2: apresentaEmissaoTaxaFixa(); break;
+            switch(opcao){
+                case 1: apresentaCriacaoLeilao(); break;
+                case 2: apresentaEmissaoTaxaFixa(); break;
+                default: continua = false;
+            }
         }
 
     }
@@ -316,6 +534,7 @@ import cliente.Ccs.*;
 
             while(!autenticado){
                 System.out.println("1 - Autenticar");
+                System.out.println("2 - Visualizar Leilões Ativos");
                 System.out.println("Outro para sair");
 
                 System.out.print("Opção: ");
@@ -333,15 +552,16 @@ import cliente.Ccs.*;
                 switch(opcao){
                     //Se calhar só vamos buscar o papel se o user nao for nulo (poed acontecer se der uma exceçao)
                     case 1: user = autenticaCliente(inP,cos); papel = leMensagemInicial(cis); break;
-                    default: break;
+                    case 2: System.out.println("A funcionalidade ainda nao esta implementada"); break;
+                    default: autenticado = true; break;
                 }
                 
                 if(user==null || papel==null){
-                    System.out.println("Nao foi validado o login");
+                    System.out.println("bye!");
                 }else{
                     switch(papel){
-                        case "empresa": break; //mandar para a empresa
-                        case "licitador": break; //mandar para o licitador
+                        case "empresa": autenticado=true; System.out.println("É uma empresa"); (new Empresa(user, s)).menuInicial(); System.out.println("bye!"); break; //mandar para a empresa
+                        case "cliente": autenticado=true; System.out.println("É um licitador"); (new Licitador(user, s)).menuInicial(); System.out.println("bye!"); break; //mandar para o licitador
                         default: break;
                     }
                 }

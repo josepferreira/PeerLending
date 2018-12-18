@@ -14,7 +14,8 @@ start() ->
 acceptor(LSock) ->
   {ok, Sock} = gen_tcp:accept(LSock),
   spawn(fun() -> acceptor(LSock) end),
-  autenticaCliente(Sock).
+  autenticaCliente(Sock),
+  acceptor(LSock).
 
 
   
@@ -35,12 +36,15 @@ autenticaCliente(Sock) ->
               io:format("\n"),
               case Resposta of
                 ok -> 
-                    io:format("Vou pedir papel"),
+                    io:format("Vou pedir papel~n"),
                     Papel = frontend_state:getPapel(User),
-                    io:format("Já recebi papel do State e papel : ~p",[Papel]),
+                    io:format("Já recebi papel do State e papel : ~p~n",[Papel]),
                     Bin = ccs:encode_msg(#'RespostaAutenticacao'{sucesso = true, papel = Papel}),
                     gen_tcp:send(Sock, Bin),
-                    user(Sock, User);
+                    %%Agora vou iniciar o ator que vai tratar do cliente
+                    Pid = spawn(frontend_client, start, [Sock, Papel]),
+                    io:format("O PID do processo criado é: ~p~n", [Pid]),
+                    user(Sock, User, Pid);
 
                 invalid -> autenticaCliente(Sock)
               end
@@ -51,11 +55,17 @@ autenticaCliente(Sock) ->
             true
     end.
 
-user(Sock, User) ->
+
+%Este ator vai receber a mensaggem e reenchaminhar para o respetivo ator ... Eu nao consegui com que fosse o outro a esperar pela mensagem ...
+user(Sock, User, Pid) ->
     
     receive
-      {tcp,_,_} -> io:format("User: " ++ User ++ " autenticado com sucesso!\n"),
-                    user(Sock, User);
+      {tcp,_,Msg} -> io:format("User: " ++ User ++ " autenticado com sucesso!\n"),
+                   Pid ! {self(), Msg},
+                   receive
+                     {Pid, ok} -> io:format("Recebi um okay~n")
+                   end,
+                   user(Sock, User, Pid);
       {tcp_closed, _} ->
         Res = login_manager:logout(User),
         case Res of
