@@ -75,13 +75,24 @@
         }).
 -endif.
 
+-ifndef('RESPOSTAEXCHANGE_PB_H').
+-define('RESPOSTAEXCHANGE_PB_H', true).
+-record('RespostaExchange',
+        {tipo = 'RESULTADO'     :: 'RESULTADO' | 'NOTIFICACAO' | integer(), % = 1, enum TipoResposta
+         notificacao            :: ccs:'NotificacaoUltrapassado'() | undefined, % = 2
+         resultado              :: ccs:'Resultado'() | undefined % = 3
+        }).
+-endif.
+
 -ifndef('NOTIFICACAOULTRAPASSADO_PB_H').
 -define('NOTIFICACAOULTRAPASSADO_PB_H', true).
 -record('NotificacaoUltrapassado',
         {tipo = 'LEILAO'        :: 'LEILAO' | 'EMISSAO' | integer(), % = 1, enum TipoMensagem
-         taxa                   :: float() | integer() | infinity | '-infinity' | nan, % = 2
-         valor                  :: integer(),       % = 3, 32 bits
-         mensagem               :: iolist() | undefined % = 4
+         empresa                :: iolist(),        % = 2
+         utilizador             :: iolist(),        % = 3
+         taxa                   :: float() | integer() | infinity | '-infinity' | nan | undefined, % = 4
+         valor                  :: integer(),       % = 5, 32 bits
+         texto                  :: iolist() | undefined % = 6
         }).
 -endif.
 

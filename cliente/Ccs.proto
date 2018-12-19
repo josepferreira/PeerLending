@@ -53,16 +53,28 @@ message SubscricaoTaxaFixa{
     required int64 montante = 2;
 }
 
+enum TipoResposta {
+    RESULTADO = 1;
+    NOTIFICACAO = 2;
+}
+
+message RespostaExchange{
+    required TipoResposta tipo = 1 [default = RESULTADO];
+    optional NotificacaoUltrapassado notificacao = 2;
+    optional Resultado resultado = 3;
+}
+
 /* possivelmente vai ser necessario uma resposta tanto para a empresa
 # como para o investidor a informar o resultado da sua operacao
 */
 message NotificacaoUltrapassado{
     required TipoMensagem tipo = 1 [default = LEILAO];
-    required float taxa = 2;
-    required int64 valor = 3;
-    optional string mensagem = 4;
+    required string empresa = 2;
+    required string utilizador = 3;
+    optional float taxa = 4;
+    required int64 valor = 5;
+    optional string texto = 6;
 }
-
 /*
 # Mensagem para o resultado tanto das licitacoes como leiloes
 # na string pode vir logo todo o texto, pois nao sei se sera facil

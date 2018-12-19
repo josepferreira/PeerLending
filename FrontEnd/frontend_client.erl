@@ -1,5 +1,5 @@
 -module(frontend_client).
--export([start/2]).
+-export([start/4]).
 
 -include("ccs.hrl").
 
@@ -7,19 +7,30 @@
 % Estes módulos não serão registados e cada "ator" tratara de um cliente
 % Esta dividio em duas partes ... Um para tratar do cliente e outro para tratar da empresa
 
-start(Sock, Papel) ->
-  io:format("Foi aceite a conexao para um cliente: ~p~n", [Papel]),
-  case Papel of
-      "empresa" -> io:format("Tou na empresa~n"), loopEmpresa(Sock);
-      "cliente" -> loopLicitador(Sock)
+%Função que dá o PID do state correspondente à empresa
+pidEmpresa(MapState, Empresa) ->
+    Lista = maps:to_list(MapState),
+    [{PidState, _}|_] = lists:filter ( fun( {_, ListEmpresas}) -> lists:member(Empresa, ListEmpresas) end, Lista),
+    PidState. 
+
+start(Sock, User, Papel, MapState) ->
+    io:format("Foi aceite a conexao para um cliente: ~p~n", [Papel]),
+    case Papel of
+        "empresa" -> 
+            io:format("Tou na empresa~n"),
+            PidState = pidEmpresa(MapState, User), 
+            loopEmpresa(Sock, User, PidState);
+        "licitador" -> loopLicitador(Sock, User, MapState)
   end.
 
 % vou criar 4 funções para comunicar com o exterior ... Criar leilao, criar emissao, licitar em leilao, licitar em emissao
 
 %Se for para manter assim, para receber a mensagme do "state" posso por isso numa função a parte
-loopEmpresa(Sock) ->
+loopEmpresa(Sock, User, PidState) ->
+    io:format("Vou tratatr da empersa~n"),
     receive
-        {PidFront, MensagemEmpresa} ->
+        %{tcp,_, _} -> io:format("Recebi uma mensagem~n");
+        {tcp, _, MensagemEmpresa} ->
             io:format("Recebi uma mensagem do utilizador e agora vou tratar dela~n"),
             {'MensagemEmpresa', Tipo, _, _, Utilizador} = ccs:decode_msg(MensagemEmpresa,'MensagemEmpresa'),
             case Tipo of
@@ -28,40 +39,59 @@ loopEmpresa(Sock) ->
                     %Depois tenho de esperar a resposta dele
                     %No final reenviar para o cliente
                     %{iniciaLeilao, Empresa, From, ProtoBufBin}
-                    frontend_state ! {iniciaLeilao, Utilizador, self(), MensagemEmpresa},
+                    PidState ! {iniciaLeilao, Utilizador, self(), MensagemEmpresa},
                     receive
-                        {frontend_state, RespostaBinaria} ->
+                        {PidState, RespostaBinaria} ->
                             gen_tcp:send(Sock, RespostaBinaria),
-                            PidFront ! {self(), ok},
-                            loopEmpresa(Sock);
-                        {frontend_state, invalid} ->
+                            %PidFront ! {self(), ok},
+                            loopEmpresa(Sock, User, PidState);
+                        {PidState, invalid} ->
                             io:format("A resposta foi invalida ... Necessário tratar da resposta ao cliente!"),
-                            loopEmpresa(Sock)
+                            loopEmpresa(Sock, User, PidState)
                     end;
                 'EMISSAO' ->
                     %{iniciaEmissao, Empresa, From, ProtoBufBin}
-                    frontend_state ! {iniciaEmissao, Utilizador, self(), MensagemEmpresa},
+                    PidState ! {iniciaEmissao, Utilizador, self(), MensagemEmpresa},
                     receive
-                        {frontend_state, RespostaBinaria} ->
+                        {PidState, RespostaBinaria} ->
                             gen_tcp:send(Sock, RespostaBinaria),
-                            PidFront ! {self(), ok},
-                            loopEmpresa(Sock);
-                        {frontend_state, invalid} ->
+                            %PidFront ! {self(), ok},
+                            loopEmpresa(Sock, User, PidState);
+                        {PidState, invalid} ->
                             io:format("A resposta foi invalida ... Necessário tratar da resposta ao cliente!"),
-                            loopEmpresa(Sock)
+                            loopEmpresa(Sock, User, PidState)
                     end;
                 _ -> 
                     io:format("Não recebemos uma Emissao nem Leilao, algo aqui correu mesmo muito mal"),
                     Binario = ccs:encode_msg(#'Resultado'{tipo='EMISSAO',empresa=Utilizador,texto="INSUCESSO"}),
                     gen_tcp:send(Sock, Binario),
-                    PidFront ! {self(), ok},
-                    loopEmpresa(Sock)
+                    %PidFront ! {self(), ok},
+                    loopEmpresa(Sock, User, PidState)
             end
+        ;
+        {tcp_closed, _} ->
+            Res = login_manager:logout(User),
+            case Res of
+                ok -> io:format("utilizador desautenticado~n",[]);
+                _ -> io:format("algum erro de desautenticacao~n",[])
+            end
+        ;
+        {tcp_error, _, _} ->
+            Res = login_manager:logout(User),
+            case Res of 
+            ok -> io:format("utilizador desautenticado~n",[]);
+            _ -> io:format("algum erro de desautenticacao~n",[])
+            end
+        ;
+        %A receber a resposta do frontend_state
+        {PidState, Resposta} ->
+            gen_tcp:send(Sock, Resposta),
+            loopEmpresa(Sock, User, PidState)
     end.
 
-loopLicitador(Sock) ->
+loopLicitador(Sock, User, MapState) ->
     receive
-        {PidFront, MensagemLicitador} ->
+        {tcp, _ , MensagemLicitador} ->
             io:format("Recebi uma mensagem do utilizador e agora vou tratar dela~n"),
             {'MensagemLicitador', Tipo, Leilao, Emissao, Utilizador} = ccs:decode_msg(MensagemLicitador,'MensagemLicitador'),
             case Tipo of
@@ -71,35 +101,63 @@ loopLicitador(Sock) ->
                     %No final reenviar para o cliente
                     %{licitacao, Empresa, User, From, ProtoBufBin}
                     {'LicitacaoLeilao', Empresa, _, _} = Leilao,
-                    frontend_state ! {licitacao, Empresa, Utilizador, self(), MensagemLicitador},
+                    PidState = pidEmpresa(MapState, User),
+                    PidState ! {licitacao, Empresa, Utilizador, self(), MensagemLicitador},
                     receive
-                        {frontend_state, RespostaBinaria} ->
+                        {PidState, RespostaBinaria} ->
                             gen_tcp:send(Sock, RespostaBinaria),
-                            PidFront ! {self(), ok},
-                            loopLicitador(Sock);
-                        {frontend_state, invalid} ->
+                         %   PidFront ! {self(), ok},
+                            loopLicitador(Sock, User, MapState);
+                        {PidState, invalid} ->
                             io:format("A resposta foi invalida ... Necessário tratar da resposta ao cliente!"),
-                            loopLicitador(Sock)
+                            loopLicitador(Sock, User, MapState)
                     end;
                 'EMISSAO' ->
                     %{emissao, Empresa, User, From, ProtoBufBin}
                     {'SubscricaoTaxaFixa', Empresa, _} = Emissao,
-                    frontend_state ! {emissao, Empresa, Utilizador, self(), MensagemLicitador},
+                    PidState = pidEmpresa(MapState, User),
+                    PidState ! {emissao, Empresa, Utilizador, self(), MensagemLicitador},
                     receive
-                        {frontend_state, RespostaBinaria} ->
+                        {PidState, RespostaBinaria} ->
                             gen_tcp:send(Sock, RespostaBinaria),
-                            PidFront ! {self(), ok},
-                            loopLicitador(Sock);
-                        {frontend_state, invalid} ->
+                            %PidFront ! {self(), ok},
+                            loopLicitador(Sock, User, MapState);
+                        {PidState, invalid} ->
                             io:format("A resposta foi invalida ... Necessário tratar da resposta ao cliente!"),
-                            loopLicitador(Sock)
+                            loopLicitador(Sock, User, MapState)
                     end;
                 _ -> 
                     io:format("Não recebemos uma Emissao nem Leilao, algo aqui correu mesmo muito mal"),
                     Binario = ccs:encode_msg(#'Resultado'{tipo='EMISSAO',empresa=Utilizador,texto="INSUCESSO"}),
                     gen_tcp:send(Sock, Binario),
-                    PidFront ! {self(), ok},
-                    loopLicitador(Sock)
+                    %PidFront ! {self(), ok},
+                    loopLicitador(Sock, User, MapState)
+            end
+        ;
+        {tcp_closed, _} ->
+            Res = login_manager:logout(User),
+            case Res of
+            ok -> io:format("utilizador desautenticado~n",[]);
+            _ -> io:format("algum erro de desautenticacao~n",[])
+            end
+        ;
+        {tcp_error, _, _} ->
+            Res = login_manager:logout(User),
+            case Res of 
+            ok -> io:format("utilizador desautenticado~n",[]);
+            _ -> io:format("algum erro de desautenticacao~n",[])
+            end
+        ;
+        %A receber a resposta do frontend_state
+        {Pid, Resposta} ->
+            case maps:is_key(Pid, MapState) of
+                true -> 
+                    gen_tcp:send(Sock, Resposta),
+                    loopLicitador(Sock, User, MapState)
+                ;
+                false ->
+                    io:format("Erro na linha 156~n"),
+                    loopLicitador(Sock, User, MapState)
             end
     end
 .

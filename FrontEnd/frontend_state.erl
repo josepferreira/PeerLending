@@ -1,97 +1,106 @@
 -module(frontend_state).
--export([start/0]).
+-export([start/1]).
 
 -include("ccs.hrl").
 
 %Neste modulo vao ser implementadas funcoes de comunicacao com exchange e gestao da logica dessa comunicacao
 % MapEstado :  empresa -> {Socket da Exchange, Leilao, Emissao, UltimaTaxa, UtilizadoresInteressados = []}
-% MapUser : username -> papel
 
 
 
 %Falta ligar aos sockets da exchange e atualizar ultima taxa, se for para manter isso aqui
 
 
-start() ->
+start(SockExch) ->
   io:format("State ja esta a correr!"),
   %Ligacao aos sockets da exchange
-  loop ( #{"emp1" => "empresa", "emp2" => "empresa", "cli1" => "cliente", "cli2" => "cliente"}, #{})
+  MyPid = spawn (fun() -> loop (SockExch, #{}) end),
+  MyPid
 .
 
-loop (MapUser, MapEstado) -> 
+loop (SockExch, MapEstado) -> 
     receive
-        {getPapel, User, From} ->
-            io:format("Loop recebeu getPapel"),
-            io:format("User : ~p", [User]),
-            case maps:find(User, MapUser) of
-                {ok, Papel} ->
-                    io:format("Encontrou"),
-                    From ! {frontend_state, Papel},
-                    loop(MapUser, MapEstado);
-                _ -> 
-                    io:format("Não Encontrou"),
-                    From ! {frontend_state, invalid},
-                    loop(MapUser, MapEstado)
-                
-            end
-        ;
+        %Receive para as mensagens vindas do frontend_client
         {licitacao, Empresa, User, From, ProtoBufBin}->
             io:format("Loop recebeu licitacao ~n"),
             case maps:find(Empresa, MapEstado) of
-                {ok, {SockExch, Leilao, Emissao, UltimaTaxa, UtilizadoresInteressados }} when Leilao == true -> 
+                {ok, {Leilao, Emissao, UltimaTaxa, UtilizadoresInteressados }} when Leilao == true -> 
                     NovaLista = [{User, From} | UtilizadoresInteressados],
-                    NewMap = maps:put(Empresa, {SockExch, Leilao, Emissao, UltimaTaxa, NovaLista}, MapEstado),
+                    NewMap = maps:put(Empresa, {Leilao, Emissao, UltimaTaxa, NovaLista}, MapEstado),
                     gen_tcp:send(SockExch, ProtoBufBin),
-                    loop(MapUser, NewMap)
+                    loop(SockExch, NewMap)
                 ;
                 _-> 
-                    From ! invalid,
-                    loop(MapUser, MapEstado)
+                    From ! {self(), invalid, "Não ha um leilao em curso para a empresa" ++ Empresa},
+                    loop(SockExch, MapEstado)
             end
         ;
         {emissao, Empresa, User, From, ProtoBufBin}->
             io:format("Loop recebeu emissao ~n"),
             case maps:find(Empresa, MapEstado) of
-                {ok, {SockExch, Leilao, Emissao, UltimaTaxa, UtilizadoresInteressados }} when Emissao == true -> 
+                {ok, {Leilao, Emissao, UltimaTaxa, UtilizadoresInteressados }} when Emissao == true -> 
                     NovaLista = [{User, From} | UtilizadoresInteressados],
-                    NewMap = maps:put(Empresa, {SockExch, Leilao, Emissao, UltimaTaxa, NovaLista}, MapEstado),
+                    NewMap = maps:put(Empresa, {Leilao, Emissao, UltimaTaxa, NovaLista}, MapEstado),
                     gen_tcp:send(SockExch, ProtoBufBin),
-                    loop(MapUser, NewMap)
+                    loop(SockExch, NewMap)
                 ;
                 _-> 
-                    From ! invalid,
-                    loop(MapUser, MapEstado)
+                    From ! {self(), invalid, "Não ha uma emissao em curso para a empresa" ++ Empresa},
+                    loop(SockExch, MapEstado)
             end
         ;
         {iniciaLeilao, Empresa, From, ProtoBufBin}->
             io:format("Loop recebeu iniciaLeilao ~n"),
             case maps:find(Empresa, MapEstado) of
-                {ok, {SockExch, Leilao, Emissao, UltimaTaxa, _}} when Leilao == false -> 
+                {ok, {Leilao, Emissao, UltimaTaxa, _}} when Leilao == false , Emissao == false -> 
                     NovaLista = [],
-                    NewMap = maps:put(Empresa, {SockExch, true, Emissao, UltimaTaxa, NovaLista}, MapEstado),
+                    NewMap = maps:put(Empresa, {true, Emissao, UltimaTaxa, NovaLista}, MapEstado),
                     gen_tcp:send(SockExch, ProtoBufBin),
-                    loop(MapUser, NewMap)
+                    loop(SockExch, NewMap)
                 ;
                 _-> 
-                    From ! invalid,
-                    loop(MapUser, MapEstado)
+                    From ! {self(), invalid, "Não pode criar um leilao de momento! Já se encontra em atividade!"},
+                    loop(SockExch, MapEstado)
             end
         ;
         {iniciaEmissao, Empresa, From, ProtoBufBin}->
             io:format("Loop recebeu iniciaEmissao ~n"),
             case maps:find(Empresa, MapEstado) of
-                {ok, {SockExch, Leilao, Emissao, UltimaTaxa, _}} when Emissao == false -> 
+                {ok, {Leilao, Emissao, UltimaTaxa, _}} when Emissao == false , Leilao == false -> 
                     NovaLista = [],
-                    NewMap = maps:put(Empresa, {SockExch, Leilao, true, UltimaTaxa, NovaLista}, MapEstado),
+                    NewMap = maps:put(Empresa, {Leilao, true, UltimaTaxa, NovaLista}, MapEstado),
                     gen_tcp:send(SockExch, ProtoBufBin),
-                    loop(MapUser, NewMap)
+                    loop(SockExch, NewMap)
                 ;
                 _-> 
-                    From ! invalid,
-                    loop(MapUser, MapEstado)
+                    From ! {self(), invalid, "Não pode criar uma emissao de momento! Já se encontra em atividade!"},
+                    loop(SockExch, MapEstado)
             end
-        
-
+        ;
+        %Receive para as mensagens das exchanges
+        {tcp, _, RespostaExchange} ->
+            {'RespostaExchange', Tipo, Notificacao, Resultado} = ccs:decode_msg(RespostaExchange,'RespostaExchange'),
+            case Tipo of
+                'RESULTADO' -> 
+                    {_, Empresa, _} = Resultado,
+                    case maps:find(Empresa, MapEstado) of 
+                        {ok, {_, _, UltimaTaxa, ListaUsers}} ->
+                            [UserPid ! {self(), RespostaExchange} || {_, UserPid} <- ListaUsers ],
+                            NewMap = maps:put(Empresa, {false, false, UltimaTaxa, []}),
+                            loop(SockExch, NewMap)
+                    end
+                ;
+                'NOTIFICACAO' ->
+                    {_, Empresa, Utilizador, _, _, _} = Notificacao,
+                    case maps:find(Empresa, MapEstado) of 
+                        {ok, {_, _, _, ListaUsers}} ->
+                            [{_, UserPid }] = lists:filter( fun({U,_}) -> U == Utilizador end, ListaUsers),
+                            UserPid ! {self(), RespostaExchange}
+                        ;
+                        _ ->
+                            io:format("Erro na linha 101")
+                    end
+            end
     end
 .
 

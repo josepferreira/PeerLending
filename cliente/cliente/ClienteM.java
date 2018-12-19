@@ -561,7 +561,7 @@ class Licitador{
                 }else{
                     switch(papel){
                         case "empresa": autenticado=true; System.out.println("É uma empresa"); (new Empresa(user, s)).menuInicial(); System.out.println("bye!"); break; //mandar para a empresa
-                        case "cliente": autenticado=true; System.out.println("É um licitador"); (new Licitador(user, s)).menuInicial(); System.out.println("bye!"); break; //mandar para o licitador
+                        case "licitador": autenticado=true; System.out.println("É um licitador"); (new Licitador(user, s)).menuInicial(); System.out.println("bye!"); break; //mandar para o licitador
                         default: break;
                     }
                 }

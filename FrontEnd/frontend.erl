@@ -4,22 +4,29 @@
 -include("ccs.hrl").
 
 
+%Função para criar um mapa: PidState - [Empresa]
+mapaStateEmpresa(Map) ->
+  PidStateA = frontend_state:start(12),
+  Map2 = maps:put(PidStateA, ["emp1", "emp2"], Map),
+  Map2
+.
+
 start() ->
   login_manager:start(),
-  frontend_state:start(),
+  MapState = mapaStateEmpresa(#{}),
   io:format("Servidor principal ja esta a correr!"),
   {ok, LSock} = gen_tcp:listen(12345, [binary, {packet, 4}, {active, true}, {reuseaddr, true}]),
-  acceptor(LSock).
+  acceptor(LSock, MapState).
 
-acceptor(LSock) ->
+acceptor(LSock, MapState) ->
   {ok, Sock} = gen_tcp:accept(LSock),
-  spawn(fun() -> acceptor(LSock) end),
-  autenticaCliente(Sock),
-  acceptor(LSock).
+  spawn(fun() -> acceptor(LSock, MapState) end),
+  autenticaCliente(Sock, MapState),
+  acceptor(LSock, MapState).
 
 
   
-autenticaCliente(Sock) ->
+autenticaCliente(Sock, MapState) ->
    io:format("Vou receber\n"),
    receive
       {tcp, _, Autenticacao} -> 
@@ -35,18 +42,31 @@ autenticaCliente(Sock) ->
               io:format(Resposta),
               io:format("\n"),
               case Resposta of
-                ok -> 
+                "licitador" -> 
                     io:format("Vou pedir papel~n"),
-                    Papel = frontend_state:getPapel(User),
+                    Papel = Resposta,
                     io:format("Já recebi papel do State e papel : ~p~n",[Papel]),
                     Bin = ccs:encode_msg(#'RespostaAutenticacao'{sucesso = true, papel = Papel}),
                     gen_tcp:send(Sock, Bin),
                     %%Agora vou iniciar o ator que vai tratar do cliente
-                    Pid = spawn(frontend_client, start, [Sock, Papel]),
-                    io:format("O PID do processo criado é: ~p~n", [Pid]),
-                    user(Sock, User, Pid);
+                    Pid = spawn(frontend_client, start, [Sock, User, Papel, MapState]),
+                    io:format("O PID do processo criado é: ~p~n", [Pid]);
 
-                invalid -> autenticaCliente(Sock)
+                "empresa" -> 
+                    io:format("Vou pedir papel~n"),
+                    Papel = Resposta,
+                    io:format("Já recebi papel do State e papel : ~p~n",[Papel]),
+                    Bin = ccs:encode_msg(#'RespostaAutenticacao'{sucesso = true, papel = Papel}),
+                    gen_tcp:send(Sock, Bin),
+                    %%Agora vou iniciar o ator que vai tratar do cliente
+                    Pid = spawn(frontend_client, start, [Sock, User, Papel, MapState]),
+                    gen_tcp:controlling_process(Sock, Pid),
+                    io:format("O PID do processo criado é: ~p~n", [Pid])
+                  ;
+                    %user(Sock, User, Pid);
+
+
+                invalid -> autenticaCliente(Sock, MapState)
               end
             ;
           %          gen_tcp:send(Sock, "Autenticação inválida\n"),

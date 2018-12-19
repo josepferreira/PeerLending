@@ -16,6 +16,7 @@
 -export([find_enum_def/1, fetch_enum_def/1]).
 -export([enum_symbol_by_value/2, enum_value_by_symbol/2]).
 -export([enum_symbol_by_value_TipoMensagem/1, enum_value_by_symbol_TipoMensagem/1]).
+-export([enum_symbol_by_value_TipoResposta/1, enum_value_by_symbol_TipoResposta/1]).
 -export([get_service_names/0]).
 -export([get_service_def/1]).
 -export([get_rpc_names/1]).
@@ -28,7 +29,8 @@
 
 %% enumerated types
 -type 'TipoMensagem'() :: 'LEILAO' | 'EMISSAO'.
--export_type(['TipoMensagem'/0]).
+-type 'TipoResposta'() :: 'RESULTADO' | 'NOTIFICACAO'.
+-export_type(['TipoMensagem'/0, 'TipoResposta'/0]).
 
 %% message types
 -type 'Autenticacao'() :: #'Autenticacao'{}.
@@ -47,24 +49,26 @@
 
 -type 'SubscricaoTaxaFixa'() :: #'SubscricaoTaxaFixa'{}.
 
+-type 'RespostaExchange'() :: #'RespostaExchange'{}.
+
 -type 'NotificacaoUltrapassado'() :: #'NotificacaoUltrapassado'{}.
 
 -type 'Resultado'() :: #'Resultado'{}.
 
--export_type(['Autenticacao'/0, 'RespostaAutenticacao'/0, 'MensagemEmpresa'/0, 'CriacaoLeilao'/0, 'EmissaoTaxaFixa'/0, 'MensagemInvestidor'/0, 'LicitacaoLeilao'/0, 'SubscricaoTaxaFixa'/0, 'NotificacaoUltrapassado'/0, 'Resultado'/0]).
+-export_type(['Autenticacao'/0, 'RespostaAutenticacao'/0, 'MensagemEmpresa'/0, 'CriacaoLeilao'/0, 'EmissaoTaxaFixa'/0, 'MensagemInvestidor'/0, 'LicitacaoLeilao'/0, 'SubscricaoTaxaFixa'/0, 'RespostaExchange'/0, 'NotificacaoUltrapassado'/0, 'Resultado'/0]).
 
--spec encode_msg(#'Autenticacao'{} | #'RespostaAutenticacao'{} | #'MensagemEmpresa'{} | #'CriacaoLeilao'{} | #'EmissaoTaxaFixa'{} | #'MensagemInvestidor'{} | #'LicitacaoLeilao'{} | #'SubscricaoTaxaFixa'{} | #'NotificacaoUltrapassado'{} | #'Resultado'{}) -> binary().
+-spec encode_msg(#'Autenticacao'{} | #'RespostaAutenticacao'{} | #'MensagemEmpresa'{} | #'CriacaoLeilao'{} | #'EmissaoTaxaFixa'{} | #'MensagemInvestidor'{} | #'LicitacaoLeilao'{} | #'SubscricaoTaxaFixa'{} | #'RespostaExchange'{} | #'NotificacaoUltrapassado'{} | #'Resultado'{}) -> binary().
 encode_msg(Msg) when tuple_size(Msg) >= 1 ->
     encode_msg(Msg, element(1, Msg), []).
 
--spec encode_msg(#'Autenticacao'{} | #'RespostaAutenticacao'{} | #'MensagemEmpresa'{} | #'CriacaoLeilao'{} | #'EmissaoTaxaFixa'{} | #'MensagemInvestidor'{} | #'LicitacaoLeilao'{} | #'SubscricaoTaxaFixa'{} | #'NotificacaoUltrapassado'{} | #'Resultado'{}, atom() | list()) -> binary().
+-spec encode_msg(#'Autenticacao'{} | #'RespostaAutenticacao'{} | #'MensagemEmpresa'{} | #'CriacaoLeilao'{} | #'EmissaoTaxaFixa'{} | #'MensagemInvestidor'{} | #'LicitacaoLeilao'{} | #'SubscricaoTaxaFixa'{} | #'RespostaExchange'{} | #'NotificacaoUltrapassado'{} | #'Resultado'{}, atom() | list()) -> binary().
 encode_msg(Msg, MsgName) when is_atom(MsgName) ->
     encode_msg(Msg, MsgName, []);
 encode_msg(Msg, Opts)
     when tuple_size(Msg) >= 1, is_list(Opts) ->
     encode_msg(Msg, element(1, Msg), Opts).
 
--spec encode_msg(#'Autenticacao'{} | #'RespostaAutenticacao'{} | #'MensagemEmpresa'{} | #'CriacaoLeilao'{} | #'EmissaoTaxaFixa'{} | #'MensagemInvestidor'{} | #'LicitacaoLeilao'{} | #'SubscricaoTaxaFixa'{} | #'NotificacaoUltrapassado'{} | #'Resultado'{}, atom(), list()) -> binary().
+-spec encode_msg(#'Autenticacao'{} | #'RespostaAutenticacao'{} | #'MensagemEmpresa'{} | #'CriacaoLeilao'{} | #'EmissaoTaxaFixa'{} | #'MensagemInvestidor'{} | #'LicitacaoLeilao'{} | #'SubscricaoTaxaFixa'{} | #'RespostaExchange'{} | #'NotificacaoUltrapassado'{} | #'Resultado'{}, atom(), list()) -> binary().
 encode_msg(Msg, MsgName, Opts) ->
     case proplists:get_bool(verify, Opts) of
       true -> verify_msg(Msg, MsgName, Opts);
@@ -96,6 +100,9 @@ encode_msg(Msg, MsgName, Opts) ->
       'SubscricaoTaxaFixa' ->
 	  encode_msg_SubscricaoTaxaFixa(id(Msg, TrUserData),
 					TrUserData);
+      'RespostaExchange' ->
+	  encode_msg_RespostaExchange(id(Msg, TrUserData),
+				      TrUserData);
       'NotificacaoUltrapassado' ->
 	  encode_msg_NotificacaoUltrapassado(id(Msg, TrUserData),
 					     TrUserData);
@@ -276,6 +283,37 @@ encode_msg_SubscricaoTaxaFixa(#'SubscricaoTaxaFixa'{empresa
       e_type_int64(TrF2, <<B1/binary, 16>>, TrUserData)
     end.
 
+encode_msg_RespostaExchange(Msg, TrUserData) ->
+    encode_msg_RespostaExchange(Msg, <<>>, TrUserData).
+
+
+encode_msg_RespostaExchange(#'RespostaExchange'{tipo =
+						    F1,
+						notificacao = F2,
+						resultado = F3},
+			    Bin, TrUserData) ->
+    B1 = begin
+	   TrF1 = id(F1, TrUserData),
+	   e_enum_TipoResposta(TrF1, <<Bin/binary, 8>>, TrUserData)
+	 end,
+    B2 = if F2 == undefined -> B1;
+	    true ->
+		begin
+		  TrF2 = id(F2, TrUserData),
+		  e_mfield_RespostaExchange_notificacao(TrF2,
+							<<B1/binary, 18>>,
+							TrUserData)
+		end
+	 end,
+    if F3 == undefined -> B2;
+       true ->
+	   begin
+	     TrF3 = id(F3, TrUserData),
+	     e_mfield_RespostaExchange_resultado(TrF3,
+						 <<B2/binary, 26>>, TrUserData)
+	   end
+    end.
+
 encode_msg_NotificacaoUltrapassado(Msg, TrUserData) ->
     encode_msg_NotificacaoUltrapassado(Msg, <<>>,
 				       TrUserData).
@@ -283,9 +321,11 @@ encode_msg_NotificacaoUltrapassado(Msg, TrUserData) ->
 
 encode_msg_NotificacaoUltrapassado(#'NotificacaoUltrapassado'{tipo
 								  = F1,
-							      taxa = F2,
-							      valor = F3,
-							      mensagem = F4},
+							      empresa = F2,
+							      utilizador = F3,
+							      taxa = F4,
+							      valor = F5,
+							      texto = F6},
 				   Bin, TrUserData) ->
     B1 = begin
 	   TrF1 = id(F1, TrUserData),
@@ -293,17 +333,28 @@ encode_msg_NotificacaoUltrapassado(#'NotificacaoUltrapassado'{tipo
 	 end,
     B2 = begin
 	   TrF2 = id(F2, TrUserData),
-	   e_type_float(TrF2, <<B1/binary, 21>>, TrUserData)
+	   e_type_string(TrF2, <<B1/binary, 18>>, TrUserData)
 	 end,
     B3 = begin
 	   TrF3 = id(F3, TrUserData),
-	   e_type_int64(TrF3, <<B2/binary, 24>>, TrUserData)
+	   e_type_string(TrF3, <<B2/binary, 26>>, TrUserData)
 	 end,
-    if F4 == undefined -> B3;
+    B4 = if F4 == undefined -> B3;
+	    true ->
+		begin
+		  TrF4 = id(F4, TrUserData),
+		  e_type_float(TrF4, <<B3/binary, 37>>, TrUserData)
+		end
+	 end,
+    B5 = begin
+	   TrF5 = id(F5, TrUserData),
+	   e_type_int64(TrF5, <<B4/binary, 40>>, TrUserData)
+	 end,
+    if F6 == undefined -> B5;
        true ->
 	   begin
-	     TrF4 = id(F4, TrUserData),
-	     e_type_string(TrF4, <<B3/binary, 34>>, TrUserData)
+	     TrF6 = id(F6, TrUserData),
+	     e_type_string(TrF6, <<B5/binary, 50>>, TrUserData)
 	   end
     end.
 
@@ -354,11 +405,31 @@ e_mfield_MensagemInvestidor_emissao(Msg, Bin,
     Bin2 = e_varint(byte_size(SubBin), Bin),
     <<Bin2/binary, SubBin/binary>>.
 
+e_mfield_RespostaExchange_notificacao(Msg, Bin,
+				      TrUserData) ->
+    SubBin = encode_msg_NotificacaoUltrapassado(Msg, <<>>,
+						TrUserData),
+    Bin2 = e_varint(byte_size(SubBin), Bin),
+    <<Bin2/binary, SubBin/binary>>.
+
+e_mfield_RespostaExchange_resultado(Msg, Bin,
+				    TrUserData) ->
+    SubBin = encode_msg_Resultado(Msg, <<>>, TrUserData),
+    Bin2 = e_varint(byte_size(SubBin), Bin),
+    <<Bin2/binary, SubBin/binary>>.
+
 e_enum_TipoMensagem('LEILAO', Bin, _TrUserData) ->
     <<Bin/binary, 1>>;
 e_enum_TipoMensagem('EMISSAO', Bin, _TrUserData) ->
     <<Bin/binary, 2>>;
 e_enum_TipoMensagem(V, Bin, _TrUserData) ->
+    e_varint(V, Bin).
+
+e_enum_TipoResposta('RESULTADO', Bin, _TrUserData) ->
+    <<Bin/binary, 1>>;
+e_enum_TipoResposta('NOTIFICACAO', Bin, _TrUserData) ->
+    <<Bin/binary, 2>>;
+e_enum_TipoResposta(V, Bin, _TrUserData) ->
     e_varint(V, Bin).
 
 -compile({nowarn_unused_function,e_type_sint/3}).
@@ -501,6 +572,10 @@ decode_msg_2_doit('LicitacaoLeilao', Bin, TrUserData) ->
 decode_msg_2_doit('SubscricaoTaxaFixa', Bin,
 		  TrUserData) ->
     id(decode_msg_SubscricaoTaxaFixa(Bin, TrUserData),
+       TrUserData);
+decode_msg_2_doit('RespostaExchange', Bin,
+		  TrUserData) ->
+    id(decode_msg_RespostaExchange(Bin, TrUserData),
        TrUserData);
 decode_msg_2_doit('NotificacaoUltrapassado', Bin,
 		  TrUserData) ->
@@ -1802,8 +1877,194 @@ skip_64_SubscricaoTaxaFixa(<<_:64, Rest/binary>>, Z1,
     dfp_read_field_def_SubscricaoTaxaFixa(Rest, Z1, Z2,
 					  F@_1, F@_2, TrUserData).
 
+decode_msg_RespostaExchange(Bin, TrUserData) ->
+    dfp_read_field_def_RespostaExchange(Bin, 0, 0,
+					id(undefined, TrUserData),
+					id(undefined, TrUserData),
+					id(undefined, TrUserData), TrUserData).
+
+dfp_read_field_def_RespostaExchange(<<8, Rest/binary>>,
+				    Z1, Z2, F@_1, F@_2, F@_3, TrUserData) ->
+    d_field_RespostaExchange_tipo(Rest, Z1, Z2, F@_1, F@_2,
+				  F@_3, TrUserData);
+dfp_read_field_def_RespostaExchange(<<18, Rest/binary>>,
+				    Z1, Z2, F@_1, F@_2, F@_3, TrUserData) ->
+    d_field_RespostaExchange_notificacao(Rest, Z1, Z2, F@_1,
+					 F@_2, F@_3, TrUserData);
+dfp_read_field_def_RespostaExchange(<<26, Rest/binary>>,
+				    Z1, Z2, F@_1, F@_2, F@_3, TrUserData) ->
+    d_field_RespostaExchange_resultado(Rest, Z1, Z2, F@_1,
+				       F@_2, F@_3, TrUserData);
+dfp_read_field_def_RespostaExchange(<<>>, 0, 0, F@_1,
+				    F@_2, F@_3, _) ->
+    #'RespostaExchange'{tipo = F@_1, notificacao = F@_2,
+			resultado = F@_3};
+dfp_read_field_def_RespostaExchange(Other, Z1, Z2, F@_1,
+				    F@_2, F@_3, TrUserData) ->
+    dg_read_field_def_RespostaExchange(Other, Z1, Z2, F@_1,
+				       F@_2, F@_3, TrUserData).
+
+dg_read_field_def_RespostaExchange(<<1:1, X:7,
+				     Rest/binary>>,
+				   N, Acc, F@_1, F@_2, F@_3, TrUserData)
+    when N < 32 - 7 ->
+    dg_read_field_def_RespostaExchange(Rest, N + 7,
+				       X bsl N + Acc, F@_1, F@_2, F@_3,
+				       TrUserData);
+dg_read_field_def_RespostaExchange(<<0:1, X:7,
+				     Rest/binary>>,
+				   N, Acc, F@_1, F@_2, F@_3, TrUserData) ->
+    Key = X bsl N + Acc,
+    case Key of
+      8 ->
+	  d_field_RespostaExchange_tipo(Rest, 0, 0, F@_1, F@_2,
+					F@_3, TrUserData);
+      18 ->
+	  d_field_RespostaExchange_notificacao(Rest, 0, 0, F@_1,
+					       F@_2, F@_3, TrUserData);
+      26 ->
+	  d_field_RespostaExchange_resultado(Rest, 0, 0, F@_1,
+					     F@_2, F@_3, TrUserData);
+      _ ->
+	  case Key band 7 of
+	    0 ->
+		skip_varint_RespostaExchange(Rest, 0, 0, F@_1, F@_2,
+					     F@_3, TrUserData);
+	    1 ->
+		skip_64_RespostaExchange(Rest, 0, 0, F@_1, F@_2, F@_3,
+					 TrUserData);
+	    2 ->
+		skip_length_delimited_RespostaExchange(Rest, 0, 0, F@_1,
+						       F@_2, F@_3, TrUserData);
+	    3 ->
+		skip_group_RespostaExchange(Rest, Key bsr 3, 0, F@_1,
+					    F@_2, F@_3, TrUserData);
+	    5 ->
+		skip_32_RespostaExchange(Rest, 0, 0, F@_1, F@_2, F@_3,
+					 TrUserData)
+	  end
+    end;
+dg_read_field_def_RespostaExchange(<<>>, 0, 0, F@_1,
+				   F@_2, F@_3, _) ->
+    #'RespostaExchange'{tipo = F@_1, notificacao = F@_2,
+			resultado = F@_3}.
+
+d_field_RespostaExchange_tipo(<<1:1, X:7, Rest/binary>>,
+			      N, Acc, F@_1, F@_2, F@_3, TrUserData)
+    when N < 57 ->
+    d_field_RespostaExchange_tipo(Rest, N + 7,
+				  X bsl N + Acc, F@_1, F@_2, F@_3, TrUserData);
+d_field_RespostaExchange_tipo(<<0:1, X:7, Rest/binary>>,
+			      N, Acc, _, F@_2, F@_3, TrUserData) ->
+    {NewFValue, RestF} = {id(d_enum_TipoResposta(begin
+						   <<Res:32/signed-native>> =
+						       <<(X bsl N +
+							    Acc):32/unsigned-native>>,
+						   id(Res, TrUserData)
+						 end),
+			     TrUserData),
+			  Rest},
+    dfp_read_field_def_RespostaExchange(RestF, 0, 0,
+					NewFValue, F@_2, F@_3, TrUserData).
+
+d_field_RespostaExchange_notificacao(<<1:1, X:7,
+				       Rest/binary>>,
+				     N, Acc, F@_1, F@_2, F@_3, TrUserData)
+    when N < 57 ->
+    d_field_RespostaExchange_notificacao(Rest, N + 7,
+					 X bsl N + Acc, F@_1, F@_2, F@_3,
+					 TrUserData);
+d_field_RespostaExchange_notificacao(<<0:1, X:7,
+				       Rest/binary>>,
+				     N, Acc, F@_1, Prev, F@_3, TrUserData) ->
+    {NewFValue, RestF} = begin
+			   Len = X bsl N + Acc,
+			   <<Bs:Len/binary, Rest2/binary>> = Rest,
+			   {id(decode_msg_NotificacaoUltrapassado(Bs,
+								  TrUserData),
+			       TrUserData),
+			    Rest2}
+			 end,
+    dfp_read_field_def_RespostaExchange(RestF, 0, 0, F@_1,
+					if Prev == undefined -> NewFValue;
+					   true ->
+					       merge_msg_NotificacaoUltrapassado(Prev,
+										 NewFValue,
+										 TrUserData)
+					end,
+					F@_3, TrUserData).
+
+d_field_RespostaExchange_resultado(<<1:1, X:7,
+				     Rest/binary>>,
+				   N, Acc, F@_1, F@_2, F@_3, TrUserData)
+    when N < 57 ->
+    d_field_RespostaExchange_resultado(Rest, N + 7,
+				       X bsl N + Acc, F@_1, F@_2, F@_3,
+				       TrUserData);
+d_field_RespostaExchange_resultado(<<0:1, X:7,
+				     Rest/binary>>,
+				   N, Acc, F@_1, F@_2, Prev, TrUserData) ->
+    {NewFValue, RestF} = begin
+			   Len = X bsl N + Acc,
+			   <<Bs:Len/binary, Rest2/binary>> = Rest,
+			   {id(decode_msg_Resultado(Bs, TrUserData),
+			       TrUserData),
+			    Rest2}
+			 end,
+    dfp_read_field_def_RespostaExchange(RestF, 0, 0, F@_1,
+					F@_2,
+					if Prev == undefined -> NewFValue;
+					   true ->
+					       merge_msg_Resultado(Prev,
+								   NewFValue,
+								   TrUserData)
+					end,
+					TrUserData).
+
+skip_varint_RespostaExchange(<<1:1, _:7, Rest/binary>>,
+			     Z1, Z2, F@_1, F@_2, F@_3, TrUserData) ->
+    skip_varint_RespostaExchange(Rest, Z1, Z2, F@_1, F@_2,
+				 F@_3, TrUserData);
+skip_varint_RespostaExchange(<<0:1, _:7, Rest/binary>>,
+			     Z1, Z2, F@_1, F@_2, F@_3, TrUserData) ->
+    dfp_read_field_def_RespostaExchange(Rest, Z1, Z2, F@_1,
+					F@_2, F@_3, TrUserData).
+
+skip_length_delimited_RespostaExchange(<<1:1, X:7,
+					 Rest/binary>>,
+				       N, Acc, F@_1, F@_2, F@_3, TrUserData)
+    when N < 57 ->
+    skip_length_delimited_RespostaExchange(Rest, N + 7,
+					   X bsl N + Acc, F@_1, F@_2, F@_3,
+					   TrUserData);
+skip_length_delimited_RespostaExchange(<<0:1, X:7,
+					 Rest/binary>>,
+				       N, Acc, F@_1, F@_2, F@_3, TrUserData) ->
+    Length = X bsl N + Acc,
+    <<_:Length/binary, Rest2/binary>> = Rest,
+    dfp_read_field_def_RespostaExchange(Rest2, 0, 0, F@_1,
+					F@_2, F@_3, TrUserData).
+
+skip_group_RespostaExchange(Bin, FNum, Z2, F@_1, F@_2,
+			    F@_3, TrUserData) ->
+    {_, Rest} = read_group(Bin, FNum),
+    dfp_read_field_def_RespostaExchange(Rest, 0, Z2, F@_1,
+					F@_2, F@_3, TrUserData).
+
+skip_32_RespostaExchange(<<_:32, Rest/binary>>, Z1, Z2,
+			 F@_1, F@_2, F@_3, TrUserData) ->
+    dfp_read_field_def_RespostaExchange(Rest, Z1, Z2, F@_1,
+					F@_2, F@_3, TrUserData).
+
+skip_64_RespostaExchange(<<_:64, Rest/binary>>, Z1, Z2,
+			 F@_1, F@_2, F@_3, TrUserData) ->
+    dfp_read_field_def_RespostaExchange(Rest, Z1, Z2, F@_1,
+					F@_2, F@_3, TrUserData).
+
 decode_msg_NotificacaoUltrapassado(Bin, TrUserData) ->
     dfp_read_field_def_NotificacaoUltrapassado(Bin, 0, 0,
+					       id(undefined, TrUserData),
+					       id(undefined, TrUserData),
 					       id(undefined, TrUserData),
 					       id(undefined, TrUserData),
 					       id(undefined, TrUserData),
@@ -1812,105 +2073,141 @@ decode_msg_NotificacaoUltrapassado(Bin, TrUserData) ->
 
 dfp_read_field_def_NotificacaoUltrapassado(<<8,
 					     Rest/binary>>,
-					   Z1, Z2, F@_1, F@_2, F@_3, F@_4,
-					   TrUserData) ->
+					   Z1, Z2, F@_1, F@_2, F@_3, F@_4, F@_5,
+					   F@_6, TrUserData) ->
     d_field_NotificacaoUltrapassado_tipo(Rest, Z1, Z2, F@_1,
-					 F@_2, F@_3, F@_4, TrUserData);
-dfp_read_field_def_NotificacaoUltrapassado(<<21,
+					 F@_2, F@_3, F@_4, F@_5, F@_6,
+					 TrUserData);
+dfp_read_field_def_NotificacaoUltrapassado(<<18,
 					     Rest/binary>>,
-					   Z1, Z2, F@_1, F@_2, F@_3, F@_4,
-					   TrUserData) ->
+					   Z1, Z2, F@_1, F@_2, F@_3, F@_4, F@_5,
+					   F@_6, TrUserData) ->
+    d_field_NotificacaoUltrapassado_empresa(Rest, Z1, Z2,
+					    F@_1, F@_2, F@_3, F@_4, F@_5, F@_6,
+					    TrUserData);
+dfp_read_field_def_NotificacaoUltrapassado(<<26,
+					     Rest/binary>>,
+					   Z1, Z2, F@_1, F@_2, F@_3, F@_4, F@_5,
+					   F@_6, TrUserData) ->
+    d_field_NotificacaoUltrapassado_utilizador(Rest, Z1, Z2,
+					       F@_1, F@_2, F@_3, F@_4, F@_5,
+					       F@_6, TrUserData);
+dfp_read_field_def_NotificacaoUltrapassado(<<37,
+					     Rest/binary>>,
+					   Z1, Z2, F@_1, F@_2, F@_3, F@_4, F@_5,
+					   F@_6, TrUserData) ->
     d_field_NotificacaoUltrapassado_taxa(Rest, Z1, Z2, F@_1,
-					 F@_2, F@_3, F@_4, TrUserData);
-dfp_read_field_def_NotificacaoUltrapassado(<<24,
+					 F@_2, F@_3, F@_4, F@_5, F@_6,
+					 TrUserData);
+dfp_read_field_def_NotificacaoUltrapassado(<<40,
 					     Rest/binary>>,
-					   Z1, Z2, F@_1, F@_2, F@_3, F@_4,
-					   TrUserData) ->
+					   Z1, Z2, F@_1, F@_2, F@_3, F@_4, F@_5,
+					   F@_6, TrUserData) ->
     d_field_NotificacaoUltrapassado_valor(Rest, Z1, Z2,
-					  F@_1, F@_2, F@_3, F@_4, TrUserData);
-dfp_read_field_def_NotificacaoUltrapassado(<<34,
+					  F@_1, F@_2, F@_3, F@_4, F@_5, F@_6,
+					  TrUserData);
+dfp_read_field_def_NotificacaoUltrapassado(<<50,
 					     Rest/binary>>,
-					   Z1, Z2, F@_1, F@_2, F@_3, F@_4,
-					   TrUserData) ->
-    d_field_NotificacaoUltrapassado_mensagem(Rest, Z1, Z2,
-					     F@_1, F@_2, F@_3, F@_4,
-					     TrUserData);
+					   Z1, Z2, F@_1, F@_2, F@_3, F@_4, F@_5,
+					   F@_6, TrUserData) ->
+    d_field_NotificacaoUltrapassado_texto(Rest, Z1, Z2,
+					  F@_1, F@_2, F@_3, F@_4, F@_5, F@_6,
+					  TrUserData);
 dfp_read_field_def_NotificacaoUltrapassado(<<>>, 0, 0,
-					   F@_1, F@_2, F@_3, F@_4, _) ->
-    #'NotificacaoUltrapassado'{tipo = F@_1, taxa = F@_2,
-			       valor = F@_3, mensagem = F@_4};
+					   F@_1, F@_2, F@_3, F@_4, F@_5, F@_6,
+					   _) ->
+    #'NotificacaoUltrapassado'{tipo = F@_1, empresa = F@_2,
+			       utilizador = F@_3, taxa = F@_4, valor = F@_5,
+			       texto = F@_6};
 dfp_read_field_def_NotificacaoUltrapassado(Other, Z1,
-					   Z2, F@_1, F@_2, F@_3, F@_4,
-					   TrUserData) ->
+					   Z2, F@_1, F@_2, F@_3, F@_4, F@_5,
+					   F@_6, TrUserData) ->
     dg_read_field_def_NotificacaoUltrapassado(Other, Z1, Z2,
-					      F@_1, F@_2, F@_3, F@_4,
-					      TrUserData).
+					      F@_1, F@_2, F@_3, F@_4, F@_5,
+					      F@_6, TrUserData).
 
 dg_read_field_def_NotificacaoUltrapassado(<<1:1, X:7,
 					    Rest/binary>>,
-					  N, Acc, F@_1, F@_2, F@_3, F@_4,
-					  TrUserData)
+					  N, Acc, F@_1, F@_2, F@_3, F@_4, F@_5,
+					  F@_6, TrUserData)
     when N < 32 - 7 ->
     dg_read_field_def_NotificacaoUltrapassado(Rest, N + 7,
 					      X bsl N + Acc, F@_1, F@_2, F@_3,
-					      F@_4, TrUserData);
+					      F@_4, F@_5, F@_6, TrUserData);
 dg_read_field_def_NotificacaoUltrapassado(<<0:1, X:7,
 					    Rest/binary>>,
-					  N, Acc, F@_1, F@_2, F@_3, F@_4,
-					  TrUserData) ->
+					  N, Acc, F@_1, F@_2, F@_3, F@_4, F@_5,
+					  F@_6, TrUserData) ->
     Key = X bsl N + Acc,
     case Key of
       8 ->
 	  d_field_NotificacaoUltrapassado_tipo(Rest, 0, 0, F@_1,
-					       F@_2, F@_3, F@_4, TrUserData);
-      21 ->
+					       F@_2, F@_3, F@_4, F@_5, F@_6,
+					       TrUserData);
+      18 ->
+	  d_field_NotificacaoUltrapassado_empresa(Rest, 0, 0,
+						  F@_1, F@_2, F@_3, F@_4, F@_5,
+						  F@_6, TrUserData);
+      26 ->
+	  d_field_NotificacaoUltrapassado_utilizador(Rest, 0, 0,
+						     F@_1, F@_2, F@_3, F@_4,
+						     F@_5, F@_6, TrUserData);
+      37 ->
 	  d_field_NotificacaoUltrapassado_taxa(Rest, 0, 0, F@_1,
-					       F@_2, F@_3, F@_4, TrUserData);
-      24 ->
+					       F@_2, F@_3, F@_4, F@_5, F@_6,
+					       TrUserData);
+      40 ->
 	  d_field_NotificacaoUltrapassado_valor(Rest, 0, 0, F@_1,
-						F@_2, F@_3, F@_4, TrUserData);
-      34 ->
-	  d_field_NotificacaoUltrapassado_mensagem(Rest, 0, 0,
-						   F@_1, F@_2, F@_3, F@_4,
-						   TrUserData);
+						F@_2, F@_3, F@_4, F@_5, F@_6,
+						TrUserData);
+      50 ->
+	  d_field_NotificacaoUltrapassado_texto(Rest, 0, 0, F@_1,
+						F@_2, F@_3, F@_4, F@_5, F@_6,
+						TrUserData);
       _ ->
 	  case Key band 7 of
 	    0 ->
 		skip_varint_NotificacaoUltrapassado(Rest, 0, 0, F@_1,
-						    F@_2, F@_3, F@_4,
-						    TrUserData);
+						    F@_2, F@_3, F@_4, F@_5,
+						    F@_6, TrUserData);
 	    1 ->
 		skip_64_NotificacaoUltrapassado(Rest, 0, 0, F@_1, F@_2,
-						F@_3, F@_4, TrUserData);
+						F@_3, F@_4, F@_5, F@_6,
+						TrUserData);
 	    2 ->
 		skip_length_delimited_NotificacaoUltrapassado(Rest, 0,
 							      0, F@_1, F@_2,
-							      F@_3, F@_4,
-							      TrUserData);
+							      F@_3, F@_4, F@_5,
+							      F@_6, TrUserData);
 	    3 ->
 		skip_group_NotificacaoUltrapassado(Rest, Key bsr 3, 0,
-						   F@_1, F@_2, F@_3, F@_4,
-						   TrUserData);
+						   F@_1, F@_2, F@_3, F@_4, F@_5,
+						   F@_6, TrUserData);
 	    5 ->
 		skip_32_NotificacaoUltrapassado(Rest, 0, 0, F@_1, F@_2,
-						F@_3, F@_4, TrUserData)
+						F@_3, F@_4, F@_5, F@_6,
+						TrUserData)
 	  end
     end;
 dg_read_field_def_NotificacaoUltrapassado(<<>>, 0, 0,
-					  F@_1, F@_2, F@_3, F@_4, _) ->
-    #'NotificacaoUltrapassado'{tipo = F@_1, taxa = F@_2,
-			       valor = F@_3, mensagem = F@_4}.
+					  F@_1, F@_2, F@_3, F@_4, F@_5, F@_6,
+					  _) ->
+    #'NotificacaoUltrapassado'{tipo = F@_1, empresa = F@_2,
+			       utilizador = F@_3, taxa = F@_4, valor = F@_5,
+			       texto = F@_6}.
 
 d_field_NotificacaoUltrapassado_tipo(<<1:1, X:7,
 				       Rest/binary>>,
-				     N, Acc, F@_1, F@_2, F@_3, F@_4, TrUserData)
+				     N, Acc, F@_1, F@_2, F@_3, F@_4, F@_5, F@_6,
+				     TrUserData)
     when N < 57 ->
     d_field_NotificacaoUltrapassado_tipo(Rest, N + 7,
 					 X bsl N + Acc, F@_1, F@_2, F@_3, F@_4,
-					 TrUserData);
+					 F@_5, F@_6, TrUserData);
 d_field_NotificacaoUltrapassado_tipo(<<0:1, X:7,
 				       Rest/binary>>,
-				     N, Acc, _, F@_2, F@_3, F@_4, TrUserData) ->
+				     N, Acc, _, F@_2, F@_3, F@_4, F@_5, F@_6,
+				     TrUserData) ->
     {NewFValue, RestF} = {id(d_enum_TipoMensagem(begin
 						   <<Res:32/signed-native>> =
 						       <<(X bsl N +
@@ -1921,68 +2218,20 @@ d_field_NotificacaoUltrapassado_tipo(<<0:1, X:7,
 			  Rest},
     dfp_read_field_def_NotificacaoUltrapassado(RestF, 0, 0,
 					       NewFValue, F@_2, F@_3, F@_4,
-					       TrUserData).
+					       F@_5, F@_6, TrUserData).
 
-d_field_NotificacaoUltrapassado_taxa(<<0:16, 128, 127,
-				       Rest/binary>>,
-				     Z1, Z2, F@_1, _, F@_3, F@_4, TrUserData) ->
-    dfp_read_field_def_NotificacaoUltrapassado(Rest, Z1, Z2,
-					       F@_1, id(infinity, TrUserData),
-					       F@_3, F@_4, TrUserData);
-d_field_NotificacaoUltrapassado_taxa(<<0:16, 128, 255,
-				       Rest/binary>>,
-				     Z1, Z2, F@_1, _, F@_3, F@_4, TrUserData) ->
-    dfp_read_field_def_NotificacaoUltrapassado(Rest, Z1, Z2,
-					       F@_1,
-					       id('-infinity', TrUserData),
-					       F@_3, F@_4, TrUserData);
-d_field_NotificacaoUltrapassado_taxa(<<_:16, 1:1, _:7,
-				       _:1, 127:7, Rest/binary>>,
-				     Z1, Z2, F@_1, _, F@_3, F@_4, TrUserData) ->
-    dfp_read_field_def_NotificacaoUltrapassado(Rest, Z1, Z2,
-					       F@_1, id(nan, TrUserData), F@_3,
-					       F@_4, TrUserData);
-d_field_NotificacaoUltrapassado_taxa(<<Value:32/little-float,
-				       Rest/binary>>,
-				     Z1, Z2, F@_1, _, F@_3, F@_4, TrUserData) ->
-    dfp_read_field_def_NotificacaoUltrapassado(Rest, Z1, Z2,
-					       F@_1, id(Value, TrUserData),
-					       F@_3, F@_4, TrUserData).
-
-d_field_NotificacaoUltrapassado_valor(<<1:1, X:7,
-					Rest/binary>>,
-				      N, Acc, F@_1, F@_2, F@_3, F@_4,
-				      TrUserData)
+d_field_NotificacaoUltrapassado_empresa(<<1:1, X:7,
+					  Rest/binary>>,
+					N, Acc, F@_1, F@_2, F@_3, F@_4, F@_5,
+					F@_6, TrUserData)
     when N < 57 ->
-    d_field_NotificacaoUltrapassado_valor(Rest, N + 7,
-					  X bsl N + Acc, F@_1, F@_2, F@_3, F@_4,
-					  TrUserData);
-d_field_NotificacaoUltrapassado_valor(<<0:1, X:7,
-					Rest/binary>>,
-				      N, Acc, F@_1, F@_2, _, F@_4,
-				      TrUserData) ->
-    {NewFValue, RestF} = {begin
-			    <<Res:64/signed-native>> = <<(X bsl N +
-							    Acc):64/unsigned-native>>,
-			    id(Res, TrUserData)
-			  end,
-			  Rest},
-    dfp_read_field_def_NotificacaoUltrapassado(RestF, 0, 0,
-					       F@_1, F@_2, NewFValue, F@_4,
-					       TrUserData).
-
-d_field_NotificacaoUltrapassado_mensagem(<<1:1, X:7,
-					   Rest/binary>>,
-					 N, Acc, F@_1, F@_2, F@_3, F@_4,
-					 TrUserData)
-    when N < 57 ->
-    d_field_NotificacaoUltrapassado_mensagem(Rest, N + 7,
-					     X bsl N + Acc, F@_1, F@_2, F@_3,
-					     F@_4, TrUserData);
-d_field_NotificacaoUltrapassado_mensagem(<<0:1, X:7,
-					   Rest/binary>>,
-					 N, Acc, F@_1, F@_2, F@_3, _,
-					 TrUserData) ->
+    d_field_NotificacaoUltrapassado_empresa(Rest, N + 7,
+					    X bsl N + Acc, F@_1, F@_2, F@_3,
+					    F@_4, F@_5, F@_6, TrUserData);
+d_field_NotificacaoUltrapassado_empresa(<<0:1, X:7,
+					  Rest/binary>>,
+					N, Acc, F@_1, _, F@_3, F@_4, F@_5, F@_6,
+					TrUserData) ->
     {NewFValue, RestF} = begin
 			   Len = X bsl N + Acc,
 			   <<Utf8:Len/binary, Rest2/binary>> = Rest,
@@ -1991,59 +2240,164 @@ d_field_NotificacaoUltrapassado_mensagem(<<0:1, X:7,
 			    Rest2}
 			 end,
     dfp_read_field_def_NotificacaoUltrapassado(RestF, 0, 0,
-					       F@_1, F@_2, F@_3, NewFValue,
-					       TrUserData).
+					       F@_1, NewFValue, F@_3, F@_4,
+					       F@_5, F@_6, TrUserData).
+
+d_field_NotificacaoUltrapassado_utilizador(<<1:1, X:7,
+					     Rest/binary>>,
+					   N, Acc, F@_1, F@_2, F@_3, F@_4, F@_5,
+					   F@_6, TrUserData)
+    when N < 57 ->
+    d_field_NotificacaoUltrapassado_utilizador(Rest, N + 7,
+					       X bsl N + Acc, F@_1, F@_2, F@_3,
+					       F@_4, F@_5, F@_6, TrUserData);
+d_field_NotificacaoUltrapassado_utilizador(<<0:1, X:7,
+					     Rest/binary>>,
+					   N, Acc, F@_1, F@_2, _, F@_4, F@_5,
+					   F@_6, TrUserData) ->
+    {NewFValue, RestF} = begin
+			   Len = X bsl N + Acc,
+			   <<Utf8:Len/binary, Rest2/binary>> = Rest,
+			   {id(unicode:characters_to_list(Utf8, unicode),
+			       TrUserData),
+			    Rest2}
+			 end,
+    dfp_read_field_def_NotificacaoUltrapassado(RestF, 0, 0,
+					       F@_1, F@_2, NewFValue, F@_4,
+					       F@_5, F@_6, TrUserData).
+
+d_field_NotificacaoUltrapassado_taxa(<<0:16, 128, 127,
+				       Rest/binary>>,
+				     Z1, Z2, F@_1, F@_2, F@_3, _, F@_5, F@_6,
+				     TrUserData) ->
+    dfp_read_field_def_NotificacaoUltrapassado(Rest, Z1, Z2,
+					       F@_1, F@_2, F@_3,
+					       id(infinity, TrUserData), F@_5,
+					       F@_6, TrUserData);
+d_field_NotificacaoUltrapassado_taxa(<<0:16, 128, 255,
+				       Rest/binary>>,
+				     Z1, Z2, F@_1, F@_2, F@_3, _, F@_5, F@_6,
+				     TrUserData) ->
+    dfp_read_field_def_NotificacaoUltrapassado(Rest, Z1, Z2,
+					       F@_1, F@_2, F@_3,
+					       id('-infinity', TrUserData),
+					       F@_5, F@_6, TrUserData);
+d_field_NotificacaoUltrapassado_taxa(<<_:16, 1:1, _:7,
+				       _:1, 127:7, Rest/binary>>,
+				     Z1, Z2, F@_1, F@_2, F@_3, _, F@_5, F@_6,
+				     TrUserData) ->
+    dfp_read_field_def_NotificacaoUltrapassado(Rest, Z1, Z2,
+					       F@_1, F@_2, F@_3,
+					       id(nan, TrUserData), F@_5, F@_6,
+					       TrUserData);
+d_field_NotificacaoUltrapassado_taxa(<<Value:32/little-float,
+				       Rest/binary>>,
+				     Z1, Z2, F@_1, F@_2, F@_3, _, F@_5, F@_6,
+				     TrUserData) ->
+    dfp_read_field_def_NotificacaoUltrapassado(Rest, Z1, Z2,
+					       F@_1, F@_2, F@_3,
+					       id(Value, TrUserData), F@_5,
+					       F@_6, TrUserData).
+
+d_field_NotificacaoUltrapassado_valor(<<1:1, X:7,
+					Rest/binary>>,
+				      N, Acc, F@_1, F@_2, F@_3, F@_4, F@_5,
+				      F@_6, TrUserData)
+    when N < 57 ->
+    d_field_NotificacaoUltrapassado_valor(Rest, N + 7,
+					  X bsl N + Acc, F@_1, F@_2, F@_3, F@_4,
+					  F@_5, F@_6, TrUserData);
+d_field_NotificacaoUltrapassado_valor(<<0:1, X:7,
+					Rest/binary>>,
+				      N, Acc, F@_1, F@_2, F@_3, F@_4, _, F@_6,
+				      TrUserData) ->
+    {NewFValue, RestF} = {begin
+			    <<Res:64/signed-native>> = <<(X bsl N +
+							    Acc):64/unsigned-native>>,
+			    id(Res, TrUserData)
+			  end,
+			  Rest},
+    dfp_read_field_def_NotificacaoUltrapassado(RestF, 0, 0,
+					       F@_1, F@_2, F@_3, F@_4,
+					       NewFValue, F@_6, TrUserData).
+
+d_field_NotificacaoUltrapassado_texto(<<1:1, X:7,
+					Rest/binary>>,
+				      N, Acc, F@_1, F@_2, F@_3, F@_4, F@_5,
+				      F@_6, TrUserData)
+    when N < 57 ->
+    d_field_NotificacaoUltrapassado_texto(Rest, N + 7,
+					  X bsl N + Acc, F@_1, F@_2, F@_3, F@_4,
+					  F@_5, F@_6, TrUserData);
+d_field_NotificacaoUltrapassado_texto(<<0:1, X:7,
+					Rest/binary>>,
+				      N, Acc, F@_1, F@_2, F@_3, F@_4, F@_5, _,
+				      TrUserData) ->
+    {NewFValue, RestF} = begin
+			   Len = X bsl N + Acc,
+			   <<Utf8:Len/binary, Rest2/binary>> = Rest,
+			   {id(unicode:characters_to_list(Utf8, unicode),
+			       TrUserData),
+			    Rest2}
+			 end,
+    dfp_read_field_def_NotificacaoUltrapassado(RestF, 0, 0,
+					       F@_1, F@_2, F@_3, F@_4, F@_5,
+					       NewFValue, TrUserData).
 
 skip_varint_NotificacaoUltrapassado(<<1:1, _:7,
 				      Rest/binary>>,
-				    Z1, Z2, F@_1, F@_2, F@_3, F@_4,
+				    Z1, Z2, F@_1, F@_2, F@_3, F@_4, F@_5, F@_6,
 				    TrUserData) ->
     skip_varint_NotificacaoUltrapassado(Rest, Z1, Z2, F@_1,
-					F@_2, F@_3, F@_4, TrUserData);
+					F@_2, F@_3, F@_4, F@_5, F@_6,
+					TrUserData);
 skip_varint_NotificacaoUltrapassado(<<0:1, _:7,
 				      Rest/binary>>,
-				    Z1, Z2, F@_1, F@_2, F@_3, F@_4,
+				    Z1, Z2, F@_1, F@_2, F@_3, F@_4, F@_5, F@_6,
 				    TrUserData) ->
     dfp_read_field_def_NotificacaoUltrapassado(Rest, Z1, Z2,
-					       F@_1, F@_2, F@_3, F@_4,
-					       TrUserData).
+					       F@_1, F@_2, F@_3, F@_4, F@_5,
+					       F@_6, TrUserData).
 
 skip_length_delimited_NotificacaoUltrapassado(<<1:1,
 						X:7, Rest/binary>>,
 					      N, Acc, F@_1, F@_2, F@_3, F@_4,
-					      TrUserData)
+					      F@_5, F@_6, TrUserData)
     when N < 57 ->
     skip_length_delimited_NotificacaoUltrapassado(Rest,
 						  N + 7, X bsl N + Acc, F@_1,
-						  F@_2, F@_3, F@_4, TrUserData);
+						  F@_2, F@_3, F@_4, F@_5, F@_6,
+						  TrUserData);
 skip_length_delimited_NotificacaoUltrapassado(<<0:1,
 						X:7, Rest/binary>>,
 					      N, Acc, F@_1, F@_2, F@_3, F@_4,
-					      TrUserData) ->
+					      F@_5, F@_6, TrUserData) ->
     Length = X bsl N + Acc,
     <<_:Length/binary, Rest2/binary>> = Rest,
     dfp_read_field_def_NotificacaoUltrapassado(Rest2, 0, 0,
-					       F@_1, F@_2, F@_3, F@_4,
-					       TrUserData).
+					       F@_1, F@_2, F@_3, F@_4, F@_5,
+					       F@_6, TrUserData).
 
 skip_group_NotificacaoUltrapassado(Bin, FNum, Z2, F@_1,
-				   F@_2, F@_3, F@_4, TrUserData) ->
+				   F@_2, F@_3, F@_4, F@_5, F@_6, TrUserData) ->
     {_, Rest} = read_group(Bin, FNum),
     dfp_read_field_def_NotificacaoUltrapassado(Rest, 0, Z2,
-					       F@_1, F@_2, F@_3, F@_4,
-					       TrUserData).
+					       F@_1, F@_2, F@_3, F@_4, F@_5,
+					       F@_6, TrUserData).
 
 skip_32_NotificacaoUltrapassado(<<_:32, Rest/binary>>,
-				Z1, Z2, F@_1, F@_2, F@_3, F@_4, TrUserData) ->
+				Z1, Z2, F@_1, F@_2, F@_3, F@_4, F@_5, F@_6,
+				TrUserData) ->
     dfp_read_field_def_NotificacaoUltrapassado(Rest, Z1, Z2,
-					       F@_1, F@_2, F@_3, F@_4,
-					       TrUserData).
+					       F@_1, F@_2, F@_3, F@_4, F@_5,
+					       F@_6, TrUserData).
 
 skip_64_NotificacaoUltrapassado(<<_:64, Rest/binary>>,
-				Z1, Z2, F@_1, F@_2, F@_3, F@_4, TrUserData) ->
+				Z1, Z2, F@_1, F@_2, F@_3, F@_4, F@_5, F@_6,
+				TrUserData) ->
     dfp_read_field_def_NotificacaoUltrapassado(Rest, Z1, Z2,
-					       F@_1, F@_2, F@_3, F@_4,
-					       TrUserData).
+					       F@_1, F@_2, F@_3, F@_4, F@_5,
+					       F@_6, TrUserData).
 
 decode_msg_Resultado(Bin, TrUserData) ->
     dfp_read_field_def_Resultado(Bin, 0, 0,
@@ -2208,6 +2562,10 @@ d_enum_TipoMensagem(1) -> 'LEILAO';
 d_enum_TipoMensagem(2) -> 'EMISSAO';
 d_enum_TipoMensagem(V) -> V.
 
+d_enum_TipoResposta(1) -> 'RESULTADO';
+d_enum_TipoResposta(2) -> 'NOTIFICACAO';
+d_enum_TipoResposta(V) -> V.
+
 read_group(Bin, FieldNum) ->
     {NumBytes, EndTagLen} = read_gr_b(Bin, 0, 0, 0, 0, FieldNum),
     <<Group:NumBytes/binary, _:EndTagLen/binary, Rest/binary>> = Bin,
@@ -2296,6 +2654,8 @@ merge_msgs(Prev, New, MsgName, Opts) ->
 	  merge_msg_LicitacaoLeilao(Prev, New, TrUserData);
       'SubscricaoTaxaFixa' ->
 	  merge_msg_SubscricaoTaxaFixa(Prev, New, TrUserData);
+      'RespostaExchange' ->
+	  merge_msg_RespostaExchange(Prev, New, TrUserData);
       'NotificacaoUltrapassado' ->
 	  merge_msg_NotificacaoUltrapassado(Prev, New,
 					    TrUserData);
@@ -2406,20 +2766,56 @@ merge_msg_SubscricaoTaxaFixa(#'SubscricaoTaxaFixa'{},
     #'SubscricaoTaxaFixa'{empresa = NFempresa,
 			  montante = NFmontante}.
 
+-compile({nowarn_unused_function,merge_msg_RespostaExchange/3}).
+merge_msg_RespostaExchange(#'RespostaExchange'{notificacao
+						   = PFnotificacao,
+					       resultado = PFresultado},
+			   #'RespostaExchange'{tipo = NFtipo,
+					       notificacao = NFnotificacao,
+					       resultado = NFresultado},
+			   TrUserData) ->
+    #'RespostaExchange'{tipo = NFtipo,
+			notificacao =
+			    if PFnotificacao /= undefined,
+			       NFnotificacao /= undefined ->
+				   merge_msg_NotificacaoUltrapassado(PFnotificacao,
+								     NFnotificacao,
+								     TrUserData);
+			       PFnotificacao == undefined -> NFnotificacao;
+			       NFnotificacao == undefined -> PFnotificacao
+			    end,
+			resultado =
+			    if PFresultado /= undefined,
+			       NFresultado /= undefined ->
+				   merge_msg_Resultado(PFresultado, NFresultado,
+						       TrUserData);
+			       PFresultado == undefined -> NFresultado;
+			       NFresultado == undefined -> PFresultado
+			    end}.
+
 -compile({nowarn_unused_function,merge_msg_NotificacaoUltrapassado/3}).
-merge_msg_NotificacaoUltrapassado(#'NotificacaoUltrapassado'{mensagem
-								 = PFmensagem},
+merge_msg_NotificacaoUltrapassado(#'NotificacaoUltrapassado'{taxa
+								 = PFtaxa,
+							     texto = PFtexto},
 				  #'NotificacaoUltrapassado'{tipo = NFtipo,
+							     empresa =
+								 NFempresa,
+							     utilizador =
+								 NFutilizador,
 							     taxa = NFtaxa,
 							     valor = NFvalor,
-							     mensagem =
-								 NFmensagem},
+							     texto = NFtexto},
 				  _) ->
-    #'NotificacaoUltrapassado'{tipo = NFtipo, taxa = NFtaxa,
+    #'NotificacaoUltrapassado'{tipo = NFtipo,
+			       empresa = NFempresa, utilizador = NFutilizador,
+			       taxa =
+				   if NFtaxa =:= undefined -> PFtaxa;
+				      true -> NFtaxa
+				   end,
 			       valor = NFvalor,
-			       mensagem =
-				   if NFmensagem =:= undefined -> PFmensagem;
-				      true -> NFmensagem
+			       texto =
+				   if NFtexto =:= undefined -> PFtexto;
+				      true -> NFtexto
 				   end}.
 
 -compile({nowarn_unused_function,merge_msg_Resultado/3}).
@@ -2462,6 +2858,8 @@ verify_msg(Msg, MsgName, Opts) ->
 	  v_msg_LicitacaoLeilao(Msg, [MsgName], TrUserData);
       'SubscricaoTaxaFixa' ->
 	  v_msg_SubscricaoTaxaFixa(Msg, [MsgName], TrUserData);
+      'RespostaExchange' ->
+	  v_msg_RespostaExchange(Msg, [MsgName], TrUserData);
       'NotificacaoUltrapassado' ->
 	  v_msg_NotificacaoUltrapassado(Msg, [MsgName],
 					TrUserData);
@@ -2587,18 +2985,44 @@ v_msg_SubscricaoTaxaFixa(X, Path, _TrUserData) ->
     mk_type_error({expected_msg, 'SubscricaoTaxaFixa'}, X,
 		  Path).
 
+-compile({nowarn_unused_function,v_msg_RespostaExchange/3}).
+-dialyzer({nowarn_function,v_msg_RespostaExchange/3}).
+v_msg_RespostaExchange(#'RespostaExchange'{tipo = F1,
+					   notificacao = F2, resultado = F3},
+		       Path, TrUserData) ->
+    v_enum_TipoResposta(F1, [tipo | Path], TrUserData),
+    if F2 == undefined -> ok;
+       true ->
+	   v_msg_NotificacaoUltrapassado(F2, [notificacao | Path],
+					 TrUserData)
+    end,
+    if F3 == undefined -> ok;
+       true ->
+	   v_msg_Resultado(F3, [resultado | Path], TrUserData)
+    end,
+    ok;
+v_msg_RespostaExchange(X, Path, _TrUserData) ->
+    mk_type_error({expected_msg, 'RespostaExchange'}, X,
+		  Path).
+
 -compile({nowarn_unused_function,v_msg_NotificacaoUltrapassado/3}).
 -dialyzer({nowarn_function,v_msg_NotificacaoUltrapassado/3}).
 v_msg_NotificacaoUltrapassado(#'NotificacaoUltrapassado'{tipo
 							     = F1,
-							 taxa = F2, valor = F3,
-							 mensagem = F4},
+							 empresa = F2,
+							 utilizador = F3,
+							 taxa = F4, valor = F5,
+							 texto = F6},
 			      Path, TrUserData) ->
     v_enum_TipoMensagem(F1, [tipo | Path], TrUserData),
-    v_type_float(F2, [taxa | Path], TrUserData),
-    v_type_int64(F3, [valor | Path], TrUserData),
+    v_type_string(F2, [empresa | Path], TrUserData),
+    v_type_string(F3, [utilizador | Path], TrUserData),
     if F4 == undefined -> ok;
-       true -> v_type_string(F4, [mensagem | Path], TrUserData)
+       true -> v_type_float(F4, [taxa | Path], TrUserData)
+    end,
+    v_type_int64(F5, [valor | Path], TrUserData),
+    if F6 == undefined -> ok;
+       true -> v_type_string(F6, [texto | Path], TrUserData)
     end,
     ok;
 v_msg_NotificacaoUltrapassado(X, Path, _TrUserData) ->
@@ -2627,6 +3051,19 @@ v_enum_TipoMensagem(V, Path, TrUserData)
     v_type_sint32(V, Path, TrUserData);
 v_enum_TipoMensagem(X, Path, _TrUserData) ->
     mk_type_error({invalid_enum, 'TipoMensagem'}, X, Path).
+
+-compile({nowarn_unused_function,v_enum_TipoResposta/3}).
+-dialyzer({nowarn_function,v_enum_TipoResposta/3}).
+v_enum_TipoResposta('RESULTADO', _Path, _TrUserData) ->
+    ok;
+v_enum_TipoResposta('NOTIFICACAO', _Path,
+		    _TrUserData) ->
+    ok;
+v_enum_TipoResposta(V, Path, TrUserData)
+    when is_integer(V) ->
+    v_type_sint32(V, Path, TrUserData);
+v_enum_TipoResposta(X, Path, _TrUserData) ->
+    mk_type_error({invalid_enum, 'TipoResposta'}, X, Path).
 
 -compile({nowarn_unused_function,v_type_sint32/3}).
 -dialyzer({nowarn_function,v_type_sint32/3}).
@@ -2734,6 +3171,8 @@ cons(Elem, Acc, _TrUserData) -> [Elem | Acc].
 get_msg_defs() ->
     [{{enum, 'TipoMensagem'},
       [{'LEILAO', 1}, {'EMISSAO', 2}]},
+     {{enum, 'TipoResposta'},
+      [{'RESULTADO', 1}, {'NOTIFICACAO', 2}]},
      {{msg, 'Autenticacao'},
       [#field{name = username, fnum = 1, rnum = 2,
 	      type = string, occurrence = required, opts = []},
@@ -2788,16 +3227,30 @@ get_msg_defs() ->
 	      type = string, occurrence = required, opts = []},
        #field{name = montante, fnum = 2, rnum = 3,
 	      type = int64, occurrence = required, opts = []}]},
+     {{msg, 'RespostaExchange'},
+      [#field{name = tipo, fnum = 1, rnum = 2,
+	      type = {enum, 'TipoResposta'}, occurrence = required,
+	      opts = [{default, 'RESULTADO'}]},
+       #field{name = notificacao, fnum = 2, rnum = 3,
+	      type = {msg, 'NotificacaoUltrapassado'},
+	      occurrence = optional, opts = []},
+       #field{name = resultado, fnum = 3, rnum = 4,
+	      type = {msg, 'Resultado'}, occurrence = optional,
+	      opts = []}]},
      {{msg, 'NotificacaoUltrapassado'},
       [#field{name = tipo, fnum = 1, rnum = 2,
 	      type = {enum, 'TipoMensagem'}, occurrence = required,
 	      opts = [{default, 'LEILAO'}]},
-       #field{name = taxa, fnum = 2, rnum = 3, type = float,
+       #field{name = empresa, fnum = 2, rnum = 3,
+	      type = string, occurrence = required, opts = []},
+       #field{name = utilizador, fnum = 3, rnum = 4,
+	      type = string, occurrence = required, opts = []},
+       #field{name = taxa, fnum = 4, rnum = 5, type = float,
+	      occurrence = optional, opts = []},
+       #field{name = valor, fnum = 5, rnum = 6, type = int64,
 	      occurrence = required, opts = []},
-       #field{name = valor, fnum = 3, rnum = 4, type = int64,
-	      occurrence = required, opts = []},
-       #field{name = mensagem, fnum = 4, rnum = 5,
-	      type = string, occurrence = optional, opts = []}]},
+       #field{name = texto, fnum = 6, rnum = 7, type = string,
+	      occurrence = optional, opts = []}]},
      {{msg, 'Resultado'},
       [#field{name = tipo, fnum = 1, rnum = 2,
 	      type = {enum, 'TipoMensagem'}, occurrence = required,
@@ -2812,8 +3265,8 @@ get_msg_names() ->
     ['Autenticacao', 'RespostaAutenticacao',
      'MensagemEmpresa', 'CriacaoLeilao', 'EmissaoTaxaFixa',
      'MensagemInvestidor', 'LicitacaoLeilao',
-     'SubscricaoTaxaFixa', 'NotificacaoUltrapassado',
-     'Resultado'].
+     'SubscricaoTaxaFixa', 'RespostaExchange',
+     'NotificacaoUltrapassado', 'Resultado'].
 
 
 get_group_names() -> [].
@@ -2823,11 +3276,11 @@ get_msg_or_group_names() ->
     ['Autenticacao', 'RespostaAutenticacao',
      'MensagemEmpresa', 'CriacaoLeilao', 'EmissaoTaxaFixa',
      'MensagemInvestidor', 'LicitacaoLeilao',
-     'SubscricaoTaxaFixa', 'NotificacaoUltrapassado',
-     'Resultado'].
+     'SubscricaoTaxaFixa', 'RespostaExchange',
+     'NotificacaoUltrapassado', 'Resultado'].
 
 
-get_enum_names() -> ['TipoMensagem'].
+get_enum_names() -> ['TipoMensagem', 'TipoResposta'].
 
 
 fetch_msg_def(MsgName) ->
@@ -2898,16 +3351,30 @@ find_msg_def('SubscricaoTaxaFixa') ->
 	    type = string, occurrence = required, opts = []},
      #field{name = montante, fnum = 2, rnum = 3,
 	    type = int64, occurrence = required, opts = []}];
+find_msg_def('RespostaExchange') ->
+    [#field{name = tipo, fnum = 1, rnum = 2,
+	    type = {enum, 'TipoResposta'}, occurrence = required,
+	    opts = [{default, 'RESULTADO'}]},
+     #field{name = notificacao, fnum = 2, rnum = 3,
+	    type = {msg, 'NotificacaoUltrapassado'},
+	    occurrence = optional, opts = []},
+     #field{name = resultado, fnum = 3, rnum = 4,
+	    type = {msg, 'Resultado'}, occurrence = optional,
+	    opts = []}];
 find_msg_def('NotificacaoUltrapassado') ->
     [#field{name = tipo, fnum = 1, rnum = 2,
 	    type = {enum, 'TipoMensagem'}, occurrence = required,
 	    opts = [{default, 'LEILAO'}]},
-     #field{name = taxa, fnum = 2, rnum = 3, type = float,
+     #field{name = empresa, fnum = 2, rnum = 3,
+	    type = string, occurrence = required, opts = []},
+     #field{name = utilizador, fnum = 3, rnum = 4,
+	    type = string, occurrence = required, opts = []},
+     #field{name = taxa, fnum = 4, rnum = 5, type = float,
+	    occurrence = optional, opts = []},
+     #field{name = valor, fnum = 5, rnum = 6, type = int64,
 	    occurrence = required, opts = []},
-     #field{name = valor, fnum = 3, rnum = 4, type = int64,
-	    occurrence = required, opts = []},
-     #field{name = mensagem, fnum = 4, rnum = 5,
-	    type = string, occurrence = optional, opts = []}];
+     #field{name = texto, fnum = 6, rnum = 7, type = string,
+	    occurrence = optional, opts = []}];
 find_msg_def('Resultado') ->
     [#field{name = tipo, fnum = 1, rnum = 2,
 	    type = {enum, 'TipoMensagem'}, occurrence = required,
@@ -2921,15 +3388,21 @@ find_msg_def(_) -> error.
 
 find_enum_def('TipoMensagem') ->
     [{'LEILAO', 1}, {'EMISSAO', 2}];
+find_enum_def('TipoResposta') ->
+    [{'RESULTADO', 1}, {'NOTIFICACAO', 2}];
 find_enum_def(_) -> error.
 
 
 enum_symbol_by_value('TipoMensagem', Value) ->
-    enum_symbol_by_value_TipoMensagem(Value).
+    enum_symbol_by_value_TipoMensagem(Value);
+enum_symbol_by_value('TipoResposta', Value) ->
+    enum_symbol_by_value_TipoResposta(Value).
 
 
 enum_value_by_symbol('TipoMensagem', Sym) ->
-    enum_value_by_symbol_TipoMensagem(Sym).
+    enum_value_by_symbol_TipoMensagem(Sym);
+enum_value_by_symbol('TipoResposta', Sym) ->
+    enum_value_by_symbol_TipoResposta(Sym).
 
 
 enum_symbol_by_value_TipoMensagem(1) -> 'LEILAO';
@@ -2938,6 +3411,13 @@ enum_symbol_by_value_TipoMensagem(2) -> 'EMISSAO'.
 
 enum_value_by_symbol_TipoMensagem('LEILAO') -> 1;
 enum_value_by_symbol_TipoMensagem('EMISSAO') -> 2.
+
+enum_symbol_by_value_TipoResposta(1) -> 'RESULTADO';
+enum_symbol_by_value_TipoResposta(2) -> 'NOTIFICACAO'.
+
+
+enum_value_by_symbol_TipoResposta('RESULTADO') -> 1;
+enum_value_by_symbol_TipoResposta('NOTIFICACAO') -> 2.
 
 
 get_service_names() -> [].
