@@ -76,26 +76,26 @@ autenticaCliente(Sock, MapState) ->
     end.
 
 
-%Este ator vai receber a mensaggem e reenchaminhar para o respetivo ator ... Eu nao consegui com que fosse o outro a esperar pela mensagem ...
-user(Sock, User, Pid) ->
+% %Este ator vai receber a mensaggem e reenchaminhar para o respetivo ator ... Eu nao consegui com que fosse o outro a esperar pela mensagem ...
+% user(Sock, User, Pid) ->
     
-    receive
-      {tcp,_,Msg} -> io:format("User: " ++ User ++ " autenticado com sucesso!\n"),
-                   Pid ! {self(), Msg},
-                   receive
-                     {Pid, ok} -> io:format("Recebi um okay~n")
-                   end,
-                   user(Sock, User, Pid);
-      {tcp_closed, _} ->
-        Res = login_manager:logout(User),
-        case Res of
-          ok -> io:format("utilizador desautenticado~n",[]);
-          _ -> io:format("algum erro de desautenticacao~n",[])
-        end;
-      {tcp_error, _, _} ->
-        Res = login_manager:logout(User),
-        case Res of 
-          ok -> io:format("utilizador desautenticado~n",[]);
-          _ -> io:format("algum erro de desautenticacao~n",[])
-        end
-    end.
+%     receive
+%       {tcp,_,Msg} -> io:format("User: " ++ User ++ " autenticado com sucesso!\n"),
+%                    Pid ! {self(), Msg},
+%                    receive
+%                      {Pid, ok} -> io:format("Recebi um okay~n")
+%                    end,
+%                    user(Sock, User, Pid);
+%       {tcp_closed, _} ->
+%         Res = login_manager:logout(User),
+%         case Res of
+%           ok -> io:format("utilizador desautenticado~n",[]);
+%           _ -> io:format("algum erro de desautenticacao~n",[])
+%         end;
+%       {tcp_error, _, _} ->
+%         Res = login_manager:logout(User),
+%         case Res of 
+%           ok -> io:format("utilizador desautenticado~n",[]);
+%           _ -> io:format("algum erro de desautenticacao~n",[])
+%         end
+%     end.
