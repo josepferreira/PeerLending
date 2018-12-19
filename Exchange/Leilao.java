@@ -15,27 +15,29 @@ public class Leilao extends Emprestimo{
         int montanteAmealhado = 0;
         ArrayList<Proposta> clientes = new ArrayList<>();
         for(Proposta p: propostas.descendingSet()){
-            montanteAmealhado += p.montante;
-
             if(montanteAmealhado > montante){
                 clientes.add(p);
             }
+            else{
+                montanteAmealhado += p.montante;
+            }
         }
-
-        propostas.removeAll(clientes);
         
-
         if(clientes.size() != 0){
-            ArrayList<String> cl = (ArrayList<String>)clientes.stream()
-                                    .map(a -> a.cliente)
-                                    .collect(Collectors.toList());
-            throw new ExcecaoUltrapassado(propostas.first(),cl,"A sua proposta foi ultrapassada!");
+            propostas.removeAll(clientes);
+            throw new ExcecaoUltrapassado(propostas.first(),clientes,"A sua proposta foi ultrapassada!");
         }
 
-        return false;
+        return true;
     }
 
-    private boolean adicionaProposta(Proposta p, String cliente)
+    private int montanteAmealhado(){
+        return propostas.stream()
+                .mapToInt(a -> a.montante)
+                .sum();
+    }   
+
+    private boolean adicionaProposta(Proposta p)
         throws ExcecaoUltrapassado{
         //metodo que verifica se a proposta vai ficar colocada, em caso afirmativo adiciona a mesma
         //retorna a proposta que foi removida, ou null no caso de nenhuma ter sido
@@ -45,25 +47,22 @@ public class Leilao extends Emprestimo{
             return verificaUltrapassados();
         }
         else{
-            for(Proposta aux : propostas){
-                if(p.compareTo(aux) > 0){
-                    propostas.add(p);
-                    return verificaUltrapassados();
-                }
-                else{
-                    ArrayList<String> cl = new ArrayList<String>();
-                    cl.add(cliente);
-                    throw new ExcecaoUltrapassado(aux,cl,"A sua proposta não foi considerada!");   
-                }
+            if(p.compareTo(propostas.first()) < 0){
+                return false;
             }
+            propostas.add(p);
+            return verificaUltrapassados();
         }
-        return false;
     }
 
     public boolean licita(String cliente, int montante, float taxa)
         throws ExcecaoUltrapassado{
         //faz uma licitacao ao leilao
         //caso seja adicionado ao leilao e outro seja removida tem de avisar o que foi removido
+        if(taxa > this.taxa){
+            return false;
+        }
+
         Proposta p = new Proposta(ultimaProposta++,cliente, montante, taxa);
         return adicionaProposta(p);
     }
@@ -75,8 +74,10 @@ public class Leilao extends Emprestimo{
                                     .mapToInt(p -> p.montante)    
                                     .sum();
         sucesso = (montanteAmealhado >= montante ? true : false);
-        int diferenca = montanteAmealhado - montante;
-        propostas.get(propostas.size()-1).montante -= (diferenca > 0 ? diferenca : 0);
+        if(sucesso){
+            int diferenca = montanteAmealhado - montante;
+            propostas.first().montante -= diferenca;
+        }
         return sucesso;
     }
 }
