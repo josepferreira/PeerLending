@@ -14,11 +14,12 @@ public class Emissao extends Emprestimo{
         return (montanteAmealhado >= montante);
     }
 
+    //retorna true se for aceite, false se for aceita e terminar a emissao
     public boolean licita(String cliente, int montante){
         //faz uma licitacao ao Emissao
-        Proposta p = new Proposta(ultimaProposta++, cliente, montante);
+        Proposta p = new Proposta(ultimaProposta++, cliente, montante, taxa);
+        propostas.add(p);
         if(possoTerminar()){
-            termina();
             return false;
         }
         return true;
@@ -30,7 +31,7 @@ public class Emissao extends Emprestimo{
                                     .mapToInt(p -> p.montante)    
                                     .sum();
         int diferenca = montanteAmealhado - montante;
-        propostas.get(propostas.size()-1).montante -= (diferenca > 0 ? diferenca : 0);
+        propostas.first().montante -= (diferenca > 0 ? diferenca : 0);
         return true;
         //termina o respetivo Emissao
     }
