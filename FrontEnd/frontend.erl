@@ -50,6 +50,7 @@ autenticaCliente(Sock, MapState) ->
                     gen_tcp:send(Sock, Bin),
                     %%Agora vou iniciar o ator que vai tratar do cliente
                     Pid = spawn(frontend_client, start, [Sock, User, Papel, MapState]),
+                    gen_tcp:controlling_process(Sock, Pid),
                     io:format("O PID do processo criado é: ~p~n", [Pid]);
 
                 "empresa" -> 

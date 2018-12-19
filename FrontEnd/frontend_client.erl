@@ -39,6 +39,7 @@ loopEmpresa(Sock, User, PidState) ->
                     %Depois tenho de esperar a resposta dele
                     %No final reenviar para o cliente
                     %{iniciaLeilao, Empresa, From, ProtoBufBin}
+
                     PidState ! {iniciaLeilao, Utilizador, self(), MensagemEmpresa},
                     receive
                         {PidState, RespostaBinaria} ->
@@ -180,3 +181,8 @@ loopLicitador(Sock, User, MapState) ->
 %                    gen_tcp:send(Sock, Binario),
 %                    PidFront ! {self(), ok},
 %                    loopEmpresa(Sock);
+
+% Enviar mensagens com duas estruturas 
+
+% Binario = ccs:encode_msg(#'RespostaExchange'{tipo='RESULTADO',resultado=#'Resultado'{tipo='LEILAO',empresa="emp1",texto="Nao foste tu"}}),
+%                     gen_tcp:send(Sock, Binario);

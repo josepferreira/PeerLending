@@ -9,6 +9,48 @@ import com.google.protobuf.CodedOutputStream;
 
 import cliente.Ccs.*;
 
+class RecebeMensagens implements Runnable{
+
+    CodedInputStream cis;
+
+    public static int little2big(int i) {
+        return (i&0xff)<<24 | (i&0xff00)<<8 | (i&0xff0000)>>8 | (i>>24)&0xff;
+    }
+
+    public RecebeMensagens(CodedInputStream cis){
+        this.cis = cis;
+    }
+
+    public void run(){
+        try{
+            int len = cis.readRawLittleEndian32();
+            len = little2big(len);
+            byte[] bResposta = cis.readRawBytes(len);
+            System.out.println("\nRECEBI A MENSAGEM NO ESCUTA");
+            System.out.println(bResposta.getClass().getName());
+            RespostaExchange resposta = RespostaExchange.parseFrom(bResposta);
+
+            if(resposta.getTipo() == TipoResposta.RESULTADO){
+                //Vou imprimir o resultado de um leilao
+                Resultado resultado = resposta.getResultado();
+                System.out.println("\n -----");
+                System.out.println("O resultado do leilão da empresa " + resultado.getEmpresa() + " é: " + resultado.getTexto());
+                System.out.println(" -----");
+            }else{
+                //Vou imprimir a dizer que foi ultrapassado
+                NotificacaoUltrapassado notificacao = resposta.getNotificacao();
+                System.out.println("\n -----");
+                System.out.println("INFO: Foste ultrapassado no leilao da empresa: " + notificacao.getEmpresa());
+                System.out.println(" -----");
+            }
+        }
+        catch(Exception e){
+            System.out.println(e);
+        }
+    }
+
+}
+
 class Licitador{
 
 
@@ -24,6 +66,7 @@ class Licitador{
         inP = new BufferedReader(new InputStreamReader(System.in));
         cis = CodedInputStream.newInstance(s.getInputStream());
         cos = CodedOutputStream.newInstance(s.getOutputStream());
+        (new Thread(new RecebeMensagens(cis))).start();
     }
 
      public static int little2big(int i) {
@@ -111,20 +154,20 @@ class Licitador{
         System.out.println("Wrote " + ba.length + " bytes");
         cos.flush();
 
-        System.out.println("-----");
-        System.out.println("A esperar resposta por parte do servidor ...");
-        System.out.println("-----");
+        // System.out.println("-----");
+        // System.out.println("A esperar resposta por parte do servidor ...");
+        // System.out.println("-----");
 
-        int len = cis.readRawLittleEndian32();
-        len = little2big(len);
-        System.out.println("Len: " + len);
-        byte[] bResposta = cis.readRawBytes(len);
-        System.out.println("Read " + len + " bytes");
-        /**
-         * A partir daqui tenho de fazer decode da resposta que chegou e apresentar o texto com a mensagem de sucesso ou de erro ...
-         */
-        Resultado resposta = Resultado.parseFrom(bResposta);
-        System.out.println("O resultado da licitacao do leilao foi " + resposta.getTexto());
+        // // int len = cis.readRawLittleEndian32();
+        // len = little2big(len);
+        // System.out.println("Len: " + len);
+        // byte[] bResposta = cis.readRawBytes(len);
+        // System.out.println("Read " + len + " bytes");
+        // /**
+        //  * A partir daqui tenho de fazer decode da resposta que chegou e apresentar o texto com a mensagem de sucesso ou de erro ...
+        //  */
+        // Resultado resposta = Resultado.parseFrom(bResposta);
+        // System.out.println("O resultado da licitacao do leilao foi " + resposta.getTexto());
 
 
     }
@@ -172,19 +215,19 @@ class Licitador{
         System.out.println("Wrote " + ba.length + " bytes");
         cos.flush();
 
-        System.out.println("-----");
-        System.out.println("A esperar resposta por parte do servidor ...");
-        System.out.println("-----");
+        // System.out.println("-----");
+        // System.out.println("A esperar resposta por parte do servidor ...");
+        // System.out.println("-----");
 
-        int len = cis.readRawLittleEndian32();
-        len = little2big(len);
-        System.out.println("Len: " + len);
-        byte[] bResposta = cis.readRawBytes(len);
-        System.out.println("Read " + len + " bytes");
-        /**
-         * A partir daqui tenho de fazer decode da resposta que chegou e apresentar o texto com a mensagem de sucesso ou de erro ...
-         */
-        //RespostaAutenticacao resposta = RespostaAutenticacao.parseFrom(ba);
+        // int len = cis.readRawLittleEndian32();
+        // len = little2big(len);
+        // System.out.println("Len: " + len);
+        // byte[] bResposta = cis.readRawBytes(len);
+        // System.out.println("Read " + len + " bytes");
+        // /**
+        //  * A partir daqui tenho de fazer decode da resposta que chegou e apresentar o texto com a mensagem de sucesso ou de erro ...
+        //  */
+        // //RespostaAutenticacao resposta = RespostaAutenticacao.parseFrom(ba);
 
     }
 
@@ -237,6 +280,7 @@ class Licitador{
         inP = new BufferedReader(new InputStreamReader(System.in));
         cis = CodedInputStream.newInstance(s.getInputStream());
         cos = CodedOutputStream.newInstance(s.getOutputStream());
+        (new Thread(new RecebeMensagens(cis))).start();
     }
 
      public static int little2big(int i) {
@@ -316,20 +360,20 @@ class Licitador{
         System.out.println("Wrote " + ba.length + " bytes");
         cos.flush();
 
-        System.out.println("-----");
-        System.out.println("A esperar resposta por parte do servidor ...");
-        System.out.println("-----");
+        // System.out.println("-----");
+        // System.out.println("A esperar resposta por parte do servidor ...");
+        // System.out.println("-----");
 
-        int len = cis.readRawLittleEndian32();
-        len = little2big(len);
-        System.out.println("Len: " + len);
-        byte[] bResposta = cis.readRawBytes(len);
-        System.out.println("Read " + len + " bytes");
-        /**
-         * A partir daqui tenho de fazer decode da resposta que chegou e apresentar o texto com a mensagem de sucesso ou de erro ...
-         */
-        Resultado resposta = Resultado.parseFrom(bResposta);
-        System.out.println("O resultado da criacao do leilao foi " + resposta.getTexto());
+        // // int len = cis.readRawLittleEndian32();
+        // // len = little2big(len);
+        // // System.out.println("Len: " + len);
+        // // byte[] bResposta = cis.readRawBytes(len);
+        // // System.out.println("Read " + len + " bytes");
+        // // /**
+        // //  * A partir daqui tenho de fazer decode da resposta que chegou e apresentar o texto com a mensagem de sucesso ou de erro ...
+        // //  */
+        // // Resultado resposta = Resultado.parseFrom(bResposta);
+        // // System.out.println("O resultado da criacao do leilao foi " + resposta.getTexto());
 
 
     }
@@ -370,19 +414,19 @@ class Licitador{
         System.out.println("Wrote " + ba.length + " bytes");
         cos.flush();
 
-        System.out.println("-----");
-        System.out.println("A esperar resposta por parte do servidor ...");
-        System.out.println("-----");
+        // System.out.println("-----");
+        // System.out.println("A esperar resposta por parte do servidor ...");
+        // System.out.println("-----");
 
-        int len = cis.readRawLittleEndian32();
-        len = little2big(len);
-        System.out.println("Len: " + len);
-        byte[] bResposta = cis.readRawBytes(len);
-        System.out.println("Read " + len + " bytes");
-        /**
-         * A partir daqui tenho de fazer decode da resposta que chegou e apresentar o texto com a mensagem de sucesso ou de erro ...
-         */
-        //RespostaAutenticacao resposta = RespostaAutenticacao.parseFrom(ba);
+        // int len = cis.readRawLittleEndian32();
+        // len = little2big(len);
+        // System.out.println("Len: " + len);
+        // byte[] bResposta = cis.readRawBytes(len);
+        // System.out.println("Read " + len + " bytes");
+        // /**
+        //  * A partir daqui tenho de fazer decode da resposta que chegou e apresentar o texto com a mensagem de sucesso ou de erro ...
+        //  */
+        // //RespostaAutenticacao resposta = RespostaAutenticacao.parseFrom(ba);
 
     }
 
