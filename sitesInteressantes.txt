@@ -4,3 +4,8 @@ https://github.com/tomas-abrahamsson/gpb
 
 ---ZeroMQ e protocolbuffers---
 https://www.dotkam.com/2011/09/09/zeromq-and-google-protocol-buffers/
+
+
+
+---ERLANG E ZEROMQ---
+https://github.com/zeromq/chumak
