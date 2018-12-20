@@ -58,7 +58,7 @@ message SubscricaoTaxaFixa{
 message NotificacaoUltrapassado{
     required TipoMensagem tipo = 1 [default = LEILAO];
     required float taxa = 2;
-    required int64 valor = 3;
+    required int64 montante = 3;
     optional string mensagem = 4;
 }
 

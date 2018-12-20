@@ -22,7 +22,7 @@ class EstruturaExchange{
     
     public long tempoDormir(){
         if(paraTerminar.size() == 0){
-            return 1000000;
+            return LONG.MAX_VALUE;
         }
 
         return LocalDateTime.now().until(paraTerminar.first(),TemporalUnit.MILLIS);
@@ -74,7 +74,7 @@ public class Exchange{
     Thread acaba = null;
     ZMQ.Context context = ZMQ.context(1);
     ZMQ.Socket socketExchangePull = context.socket(ZMQ.PULL);
-    ZMQ.Socket socketExchangePull = context.socket(ZMQ.PUSH);
+    ZMQ.Socket socketExchangePush = context.socket(ZMQ.PUSH);
     ZMQ.Socket socketNotificacoes = context.socket(ZMQ.PUB);
     //falta o socket de comunicacao com o diretorio
 
@@ -108,17 +108,17 @@ public class Exchange{
                 
                 //licita leilao ou empresa
                 if(/*licitacao com sucesso*/){
-                    //responde ao cliente do sucesso pelo exchange
+                    //responde ao cliente do sucesso pelo front-end
                     //envia licitacao para o sistema de notificacoes
                     if(/*existem ultrapassados*/){
-                        //avisa os ultrapassados pelo exchange
+                        //avisa os ultrapassados pelo front-end
                     }
                 }
                 else{
-                    //responde ao cliente do insucesso pelo exchange
+                    //responde ao cliente do insucesso pelo front-end
                 }
                 if(/*emissao terminou*/){
-                    //responde pelo exchange q terminou
+                    //responde pelo front-end q terminou
                     //manda ao diretorio
                     //manda para as notificacoes
                 }

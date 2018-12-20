@@ -9,8 +9,8 @@ enum TipoNotificacao {
 }
 
 message Notificacao{
-    required TipoNotificacao tipo = 1 [default = LEILAO];
+    required TipoNotificacao tipo = 1 [default = CRIACAOLEILAO];
     required string empresa = 2;
     required int64 montante = 3;
-    required float taxa = 4;
+    optional float taxa = 4;
 }

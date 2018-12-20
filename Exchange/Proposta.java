@@ -22,11 +22,11 @@ public class Proposta{
         }
 
         if(montante < p.montante){
-            return 1;
+            return -1;
         }
 
         if(montante > p.montante){
-            return -1;
+            return 1;
         }
         
         return 0;

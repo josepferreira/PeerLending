@@ -26,8 +26,6 @@ class RecebeMensagens implements Runnable{
             int len = cis.readRawLittleEndian32();
             len = little2big(len);
             byte[] bResposta = cis.readRawBytes(len);
-            System.out.println("\nRECEBI A MENSAGEM NO ESCUTA");
-            System.out.println(bResposta.getClass().getName());
             RespostaExchange resposta = RespostaExchange.parseFrom(bResposta);
 
             if(resposta.getTipo() == TipoResposta.RESULTADO){

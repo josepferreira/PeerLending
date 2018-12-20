@@ -41,27 +41,13 @@ loopEmpresa(Sock, User, PidState) ->
                     %{iniciaLeilao, Empresa, From, ProtoBufBin}
 
                     PidState ! {iniciaLeilao, Utilizador, self(), MensagemEmpresa},
-                    receive
-                        {PidState, RespostaBinaria} ->
-                            gen_tcp:send(Sock, RespostaBinaria),
-                            %PidFront ! {self(), ok},
-                            loopEmpresa(Sock, User, PidState);
-                        {PidState, invalid} ->
-                            io:format("A resposta foi invalida ... Necessário tratar da resposta ao cliente!"),
-                            loopEmpresa(Sock, User, PidState)
-                    end;
+                    loopEmpresa(Sock, User, PidState)
+                ;
                 'EMISSAO' ->
                     %{iniciaEmissao, Empresa, From, ProtoBufBin}
                     PidState ! {iniciaEmissao, Utilizador, self(), MensagemEmpresa},
-                    receive
-                        {PidState, RespostaBinaria} ->
-                            gen_tcp:send(Sock, RespostaBinaria),
-                            %PidFront ! {self(), ok},
-                            loopEmpresa(Sock, User, PidState);
-                        {PidState, invalid} ->
-                            io:format("A resposta foi invalida ... Necessário tratar da resposta ao cliente!"),
-                            loopEmpresa(Sock, User, PidState)
-                    end;
+                    loopEmpresa(Sock, User, PidState)
+                ;    
                 _ -> 
                     io:format("Não recebemos uma Emissao nem Leilao, algo aqui correu mesmo muito mal"),
                     Binario = ccs:encode_msg(#'Resultado'{tipo='EMISSAO',empresa=Utilizador,texto="INSUCESSO"}),
@@ -85,6 +71,11 @@ loopEmpresa(Sock, User, PidState) ->
             end
         ;
         %A receber a resposta do frontend_state
+        {PidState, invalid, Erro} ->
+            io:format(Erro),
+            loopEmpresa(Sock, User, PidState)
+        ;
+
         {PidState, Resposta} ->
             gen_tcp:send(Sock, Resposta),
             loopEmpresa(Sock, User, PidState)
