@@ -6,8 +6,8 @@ import java.util.stream.Collectors;
 public class Leilao extends Emprestimo{
     private boolean sucesso;
     
-    public Leilao(int id, int montante, float taxa, LocalDateTime fim){
-        super(id, montante, taxa, fim);
+    public Leilao(int id, String empresa, int montante, float taxa, LocalDateTime fim){
+        super(id, empresa, montante, taxa, fim);
     }
 
     private boolean verificaUltrapassados()
@@ -67,7 +67,7 @@ public class Leilao extends Emprestimo{
         return adicionaProposta(p);
     }
 
-    public boolean termina(){
+    public boolean termina(int? aux){
         //termina o respetivo leilao
         terminado = true;
         int montanteAmealhado = propostas.stream()
@@ -79,5 +79,15 @@ public class Leilao extends Emprestimo{
             propostas.first().montante -= diferenca;
         }
         return sucesso;
+    }
+
+    public boolean equals(Object o){
+        if(o==null) return false;
+
+        if(!(o instanceof Leilao)) return false;
+
+        Leilao e = (Leilao)o;
+
+        return ((e.id == this.id) && (e.empresa.equals(this.empresa)));
     }
 }

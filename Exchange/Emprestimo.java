@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 public abstract class Emprestimo{
 
     public int id;
+    public String empresa;
     int ultimaProposta = 0;
     int montante;
     float taxa;
@@ -11,7 +12,7 @@ public abstract class Emprestimo{
     boolean terminado = false;
     LocalDateTime fim;
 
-    public Emprestimo(int id, int montante, float taxa, LocalDateTime fim){
+    public Emprestimo(int id, String empresa, int montante, float taxa, LocalDateTime fim){
         this.id = id;
         this.montante = montante;
         this.taxa = taxa;
@@ -19,4 +20,6 @@ public abstract class Emprestimo{
     }
 
     public abstract boolean termina();
+
+    public abstract boolean equals();
 }

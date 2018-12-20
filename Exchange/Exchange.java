@@ -1,7 +1,11 @@
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalUnit;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.TreeSet;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.zeromq.ZMQ;
 
@@ -15,24 +19,88 @@ class EmprestimoProntoTerminar{
     public int compareTo(EmprestimoProntoTerminar ept){
         return this.emprestimo.fim.compareTo(ept.emprestimo.fim);
     }
+
+    public boolean equals(Object o){
+        if(o==null){
+            return false;
+        }
+
+        if(!(o instanceof EmprestimoProntoTerminar)){
+            return false;
+        }
+
+        EmprestimoProntoTerminar ept = (EmprestimoProntoTerminar)o;
+
+        return ept.emprestimo.equals(this.emprestimo);
+    }
 }
 class EstruturaExchange{
     public TreeSet<EmprestimoProntoTerminar> paraTerminar = new TreeSet<>();
     public HashMap<String,Empresa> empresas = new HashMap<>();
+    public Thread acaba;
+
+    private void possoInterromper(){
+        acaba.interrupt();
+    }
     
-    public long tempoDormir(){
+    //tempo em dias para minutos (1 dia corresponde a 1 minuto), devolve em nanos
+    private long converteTempo(long tempo){
+        return (long)((tempo*(10^9))/(24*60));
+    }
+
+    public synchronized boolean adicionaEmissao(String empresa, int montante, long tempo){
+        LocalDateTime fim = LocalDateTime.now().plusNanos(converteTempo(tempo));
+        Emprestimo aux = empresas.get(empresa).criarEmissao(montante,fim);
+        if(aux != null){
+            EmprestimoProntoTerminar ept = new EmprestimoProntoTerminar(aux);
+            if(ept.equals(paraTerminar.first())){
+                possoInterromper();
+            }
+            return true;
+        }
+        return false;
+    }
+
+    public synchronized boolean adicionaLeilao(String empresa, int montante, float taxa, long tempo){
+        LocalDateTime fim = LocalDateTime.now().plusNanos(converteTempo(tempo));
+        Emprestimo aux = empresas.get(empresa).criarLeilao(montante, taxa, fim);
+        if(aux != null){
+            EmprestimoProntoTerminar ept = new EmprestimoProntoTerminar(aux);
+            if(ept.equals(paraTerminar.first())){
+                possoInterromper();
+            }
+            return true;
+        }
+        return false;
+    }
+
+    public synchronized long tempoDormir(){
         if(paraTerminar.size() == 0){
-            return LONG.MAX_VALUE;
+            return Long.MAX_VALUE;
         }
 
-        return LocalDateTime.now().until(paraTerminar.first(),TemporalUnit.MILLIS);
+        return LocalDateTime.now().until(paraTerminar.first(),ChronoUnit.MILLIS);
     }
 
-    public boolean possoTerminar(EmprestimoProntoTerminar ept){
-        return (ept.emprestimo.fim.compareTo(LocalDateTime.now()) < 1);
-    }
-    public void termina(){
-            //verifica todos os leiloes e termina os que já tiverem sido passados o tempo
+    public synchronized void termina(ZMQ.Socket sP, ZMQ.Socket sN /*, o para comunicacao com o diretorio*/){
+        //verifica todos os leiloes e termina os que já tiverem sido passados o tempo
+        ArrayList<EmprestimoProntoTerminar> eliminar = new ArrayList<>();
+        for(EmprestimoProntoTerminar ept: paraTerminar){
+            if(ept.emprestimo.fim.compareTo(LocalDateTime.now()) > 0){
+                break;
+            }
+            else{
+                eliminar.add(ept);
+                Emprestimo emp = empresas.get(ept.emprestimo.empresa).terminaEmprestimo(ept.emprestimo.id);
+                
+                if(emp != null){
+                    //mandar mensagens
+                }
+            }
+        }
+
+        paraTerminar.removeAll(eliminar);
+        
     }
     
 }
@@ -57,14 +125,16 @@ class TerminaEmprestimo implements Runnable{
         //verifica se existem terminadas e caso existam verifica se ja terminaram
         //senao dorme até uma terminar
         while(true){
-            long tempoDormir = estrutura.tempoDormir();
+            
             try{
+                long tempoDormir = estrutura.tempoDormir();
                 Thread.sleep(tempoDormir);
+                estrutura.termina(socketExchangePush,socketNotificacoes);
             }
             catch(InterruptedException ie){
                 System.out.println("Fui interrompido!");
             }
-            estrutura.termina();
+            
         }
     }
 }
@@ -87,6 +157,7 @@ public class Exchange{
         socketNotificacoes.bind("tcp://*:" + myPub);
         acaba = new Thread(new TerminaEmprestimo(context, socketExchangePush, socketNotificacoes, estrutura));
         acaba.start();
+        estrutura.acaba = acaba;
 
         while(true){
             socketExchangePull.recv();

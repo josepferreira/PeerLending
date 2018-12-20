@@ -12,27 +12,27 @@ public class Empresa{
         this.nome = nome;
     }
 
-    public boolean criarLeilao(int montante, float taxa, LocalDateTime fim){
+    public Emprestimo criarLeilao(int montante, float taxa, LocalDateTime fim){
         //para criar um novo leilao
         if(emprestimoCurso == null){
             emprestimoCurso = new Leilao(idEmprestimo++,montante,taxa,fim);
-            return true;
+            return emprestimoCurso;
         }
-        return false;
+        return null;
     }
 
-    public boolean criarEmissao(int montante, LocalDateTime fim){
+    public Emprestimo criarEmissao(int montante, LocalDateTime fim){
         //para criar uma nova emissao
         if(emprestimoCurso == null){
             //como definir a taxa? ver nas duvidas ----------------------------FALTA
             int taxa = 0;
             emprestimoCurso = new Emissao(idEmprestimo++, montante, taxa, fim);
-            return true;
+            return emprestimoCurso;
         }
-        return false;
+        return null;
     }
 
-    public boolean licitaLeilao(int id, String cliente, int montante, float taxa) 
+    public boolean licitaLeilao(String cliente, int montante, float taxa) 
     throws ExcecaoUltrapassado, ExcecaoFinalizado{
         //para licitar um leilao (o id será necessário?)
         if(emprestimoCurso == null){
@@ -51,7 +51,7 @@ public class Empresa{
     }
 
     //retorna a Emissao caso tenha terminado, null caso contrario
-    public Emissao licitaEmissao(int id, String cliente, int montante)
+    public Emissao licitaEmissao(String cliente, int montante)
         throws ExcecaoFinalizado{
         //para licitar uma emissao (o id será necessário?)
 
@@ -78,7 +78,20 @@ public class Empresa{
         }
     }
 
-    public Emprestimo terminaEmprestimo(){
+    public Emprestimo terminaEmprestimo(int id){
+        if(emprestimoCurso == null){
+            return null;
+        }
+
+        if(id != emprestimoCurso.id){
+            return null;
+        }
+
+        return terminaEmprestimo();
+
+    }
+
+    private Emprestimo terminaEmprestimo(){
         emprestimoCurso.termina();
         Emprestimo e = emprestimoCurso;
         if(e instanceof Leilao){
@@ -90,4 +103,5 @@ public class Empresa{
         emprestimoCurso = null;
         return e;
     }
+
 }
