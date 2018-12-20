@@ -2,3 +2,4 @@ cliente/*.class
 FrontEnd/*.beam
 FrontEnd/*.dump
 cliente/cliente/*.class
+FrontEnd/_build
