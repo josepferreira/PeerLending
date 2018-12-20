@@ -3,3 +3,4 @@ FrontEnd/*.beam
 FrontEnd/*.dump
 cliente/cliente/*.class
 FrontEnd/_build
+FrontEnd/rebar.lock
