@@ -1,0 +1,4 @@
+http://api.zeromq.org/4-2:zmq-recv
+http://api.zeromq.org/4-2:zmq-send
+https://github.com/zeromq/jeromq/blob/master/src/test/java/guide/rtmama.java <- um exemplo
+https://github.com/zeromq/jeromq/blob/master/src/test/java/zmq/Helper.java <- exemplo para o rcv more, acho eu
