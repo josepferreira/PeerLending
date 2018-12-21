@@ -7,6 +7,8 @@ import java.net.*;
 import com.google.protobuf.CodedInputStream;
 import com.google.protobuf.CodedOutputStream;
 
+import org.zeromq.ZMQ;
+
 import cliente.Ccs.*;
 
 class RecebeMensagens implements Runnable{
@@ -57,6 +59,7 @@ class Licitador{
     BufferedReader inP;
     CodedInputStream cis;
     CodedOutputStream cos;
+    ZMQ.Context context;
 
     public Licitador(String username, Socket s) throws Exception{
         this.username = username;
@@ -65,9 +68,12 @@ class Licitador{
         cis = CodedInputStream.newInstance(s.getInputStream());
         cos = CodedOutputStream.newInstance(s.getOutputStream());
         (new Thread(new RecebeMensagens(cis))).start();
+        GerirSubscricoes gb = new GerirSubscricoes(context);
+        Notificacoes n = new Notificacoes(context, gb);
+        (new Thread(n)).start();
     }
 
-     public static int little2big(int i) {
+    public static int little2big(int i) {
         return (i&0xff)<<24 | (i&0xff00)<<8 | (i&0xff0000)>>8 | (i>>24)&0xff;
     }
 
@@ -271,6 +277,8 @@ class Licitador{
     BufferedReader inP;
     CodedInputStream cis;
     CodedOutputStream cos;
+    GerirSubscricoes subscricoes;
+    ZMQ.Context context = ZMQ.context(1);
 
     public Empresa(String username, Socket s) throws Exception{
         this.username = username;
@@ -279,6 +287,10 @@ class Licitador{
         cis = CodedInputStream.newInstance(s.getInputStream());
         cos = CodedOutputStream.newInstance(s.getOutputStream());
         (new Thread(new RecebeMensagens(cis))).start();
+        GerirSubscricoes gb = new GerirSubscricoes(context);
+        Notificacoes n = new Notificacoes(context, gb);
+        (new Thread(n)).start();
+
     }
 
      public static int little2big(int i) {

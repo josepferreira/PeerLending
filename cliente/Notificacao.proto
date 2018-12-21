@@ -1,0 +1,17 @@
+syntax = "proto2";
+
+package cliente;
+
+enum TipoNotificacao {
+    CRIACAOLEILAO = 1;
+    LICITACAOLEILAO = 2;
+    CRIACOEMISSAO = 3;
+    LICITACAOEMISSAO = 4;
+}
+
+message Notificacao{
+    required TipoNotificacao tipo = 1 [default = CRIACAOLEILAO];
+    required string empresa = 2;
+    required int64 montante = 3;
+    optional float taxa = 4;
+}

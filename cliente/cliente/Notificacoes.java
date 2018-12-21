@@ -1,6 +1,16 @@
 package cliente;
+
+import java.io.*;
+import java.util.*;
+import java.net.*;
+
+import com.google.protobuf.CodedInputStream;
+import com.google.protobuf.CodedOutputStream;
+
 import org.zeromq.ZMQ;
-import java.util.HashSet;
+
+import cliente.Ccs.*;
+import cliente.NotificacaoOuterClass.*;
 
 /**
  * Vou ter de ter duas threads:
@@ -9,29 +19,13 @@ import java.util.HashSet;
  * 2) Para comunicar com o Exchange
  */
 
-class Subscricao{
-
-    boolean leiloesSubscritos = false;
-    boolean emissoesSubscritas = false;
-    HashSet<String> empresasSubscritas = new HashSet<>();
-
-    public void adicionaEmpresa(String empresa){
-        empresasSubscritas.add(empresa);
-    }
-
-    public void removeEmpresa(String empresa){
-        empresasSubscritas.remove(empresa);
-    }
-
-}
-
 class ComunicaCliente implements Runnable{
 
     private ZMQ.Context context;
-    private ZMQ.Sokcet sub;
-    private Subscricao subscricao;
+    private ZMQ.Socket sub;
+    private GerirSubscricoes subscricao;
 
-    public ComunicaCliente(ZMQ.Context context, ZMQ.Socket sub, Subscricao subscricao){
+    public ComunicaCliente(ZMQ.Context context, ZMQ.Socket sub, GerirSubscricoes subscricao){
         this.context = context;
         this.sub = sub;
         this.subscricao = subscricao;
@@ -85,13 +79,16 @@ class ComunicaCliente implements Runnable{
 
 public class Notificacoes implements Runnable{
 
-    Subscricaco sub = new Subscricao();
+    GerirSubscricoes sub;
+    ZMQ.Context context;
 
-    public Notificacoes(){}
+    public Notificacoes(ZMQ.Context context, GerirSubscricoes gb){
+        this.context = context;
+        this.sub = gb;
+    }
 
     public void run(){
         //Vou ter de me associar às exchanges
-        ZMQ.Context context = ZMQ.context(1);
         ZMQ.Socket socket = context.socket(ZMQ.SUB);
         /**
          * Agora é necessário ter os IPs e portas ... Vou buscar ao diretorio?
@@ -99,7 +96,7 @@ public class Notificacoes implements Runnable{
          * ip -> endereço da exchange
          * porta -> porta da exchange
          */
-        
+
         ComunicaCliente cc = new ComunicaCliente(context, socket, sub);
         (new Thread(cc)).start();
         
@@ -111,17 +108,38 @@ public class Notificacoes implements Runnable{
              */
 
             byte[] mensagem = null;
-            Notificacao notificacao = mensagem.parseFrom(mensagem);
-            String head = null;
-            switch(notificacao.getTipo()){
-                case TipoNotificacao.CRIACAOLEILAO: head = "Foi criado um leilão pela empresa "; break;
-                case TipoNotificacao.LICITACAOLEILAO: head = "Foi acrescentada uma licitação ao leilão da empresa "; break;
-                case TipoNotificacao.CRIACOEMISSAO: head = "Foi criada uma emissão pela empresa "; break;
-                case TipoNotificacao.LICITACAOEMISSAO: head = "Foi acrescentada uma subscrição à emissão da empresa "; break;
-            }
+            try{
+                Notificacao notificacao = Notificacao.parseFrom(mensagem);
+                String head = null;
 
-            String msg = head + notificacao.getEmpresa() + " com o montante " + notificacao.getMontante() + " e uma taxa de " + notificacao.getTaxa();
-            System.out.println(msg);
+                if(notificacao.getTipo() == TipoNotificacao.CRIACAOLEILAO){
+                    head = "Foi criado um leilão pela empresa ";
+                }else{
+                    if(notificacao.getTipo() == TipoNotificacao.LICITACAOLEILAO){
+                        head = "Foi acrescentada uma licitação ao leilão da empresa ";
+                    }else{
+                        if(notificacao.getTipo() == TipoNotificacao.CRIACOEMISSAO){
+                            head = "Foi criada uma emissão pela empresa ";
+                        }else{
+                            if(notificacao.getTipo() == TipoNotificacao.LICITACAOEMISSAO){
+                                head = "Foi acrescentada uma subscrição à emissão da empresa ";
+                            }
+                        }
+                    }
+                }
+
+                /*switch(notificacao.getTipo()){
+                    case TipoNotificacao.CRIACAOLEILAO: head = "Foi criado um leilão pela empresa "; break;
+                    case TipoNotificacao.LICITACAOLEILAO: head = "Foi acrescentada uma licitação ao leilão da empresa "; break;
+                    case TipoNotificacao.CRIACOEMISSAO: head = "Foi criada uma emissão pela empresa "; break;
+                    case TipoNotificacao.LICITACAOEMISSAO: head = "Foi acrescentada uma subscrição à emissão da empresa "; break;
+                }*/
+
+                String msg = head + notificacao.getEmpresa() + " com o montante " + notificacao.getMontante() + " e uma taxa de " + notificacao.getTaxa();
+                System.out.println(msg);
+            }catch(Exception e){
+                System.out.println("ERRO: Deu um erro a fazer parse da NOtificacao");
+            }
         }
 
 
