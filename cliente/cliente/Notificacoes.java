@@ -59,7 +59,7 @@ class ComunicaCliente implements Runnable{
                     case "emissao::": subscricao.emissoesSubscritas = true; break;
                     default: String empresa = sub.split("::")[1]; subscricao.adicionaEmpresa(empresa); break;
                 }
-                socket.subscribe(sub.getBytes());
+                sub.subscribe(sub.getBytes());
             }else{
                 if(decisao.equals("unsub")){
                     switch(sub){
@@ -67,7 +67,7 @@ class ComunicaCliente implements Runnable{
                         case "emissao::": subscricao.emissoesSubscritas = false; break;
                         default: String empresa = sub.split("::")[1]; subscricao.removeEmpresa(empresa); break;
                     }
-                    socket.unsubscribe(sub.getBytes());
+                    sub.unsubscribe(sub.getBytes());
                 }else{
                     System.out.println("ERRO: Não vai fazer sub nem unsub!");
                 }
