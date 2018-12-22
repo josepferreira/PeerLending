@@ -41,6 +41,7 @@ class EstruturaExchange{
     public ZMQ.Context context;
     public ZMQ.Socket socketExchangePush;
     public ZMQ.Socket socketNotificacoes;
+    //so falta o diretorio
 
     public EstruturaExchange(ZMQ.context c){
         context = c;
@@ -68,14 +69,17 @@ class EstruturaExchange{
                 possoInterromper();
             }
             //manda para o diretorio
-            //manda para o sistema de notificacoes
             Resposta respostaEmissao = Resposta.newBuilder()
-                                            .setTipoMensagem(TipoMensagem.EMISSAO)
+                                            .setTipo(TipoMensagem.EMISSAO)
                                             .setUtilizador(empresa)
                                             .setSucesso(true)
                                             .setMensagem("Emissao criada com sucesso!")
                                             .build();
-            socketExchangePush.send(respostaEmissao.toByteArray());
+            RespostaExchange respostaFinal = RespostaExchange.newBuilder()
+                                            .setTipo(TipoResposta.RESPOTA)
+                                            .setResposta(respostaEmissao)
+                                            .build();
+            socketExchangePush.send(respostaFinal.toByteArray());
 
             Notificacao notificacao = Notificacao.newBuilder()
                                             .setTipoNotificacao(TipoNotificacao.CRIACAOEMISSAO)
@@ -85,21 +89,83 @@ class EstruturaExchange{
                                             .setTempo(tempo)
                                             .build();
 
-            String topic = "emissao@" + empresa + "@";
+            String topic = "emissao::" + empresa + "::";
             socketNotificacoes.send(topic.getBytes,ZMQ_SNDMORE);
             socketNotificacoes.send(notificacao.toByteArray());
 
             return true;
         }
         Resposta respostaEmissao = Resposta.newBuilder()
-                            .setTipoMensagem(TipoMensagem.EMISSAO)
+                            .setTipo(TipoMensagem.EMISSAO)
                             .setUtilizador(empresa)
                             .setSucesso(false)
                             .setMensagem("Emissao não foi criada com sucesso!")
                             .build();
-        socketExchangePush.send(respostaEmissao.toByteArray());
+        RespostaExchange respostaFinal = RespostaExchange.newBuilder()
+                            .setTipo(TipoResposta.RESPOTA)
+                            .setResposta(respostaEmissao)
+                            .build();
+        socketExchangePush.send(respostaFinal.toByteArray());
 
         return false;
+    }
+
+    public synchronized boolean licitaEmissao(String empresa, int montante, String investidor){
+        try{
+            Empresa aux = empresas.get(empresa);
+            if(aux == null){
+                return false;
+            }
+            Emissao em = aux.licitaEmissao(investidor, montante);
+
+            if(em != null){
+                //indica que emissao terminou
+                Resultado resultado = Resultado.newBuilder()
+                                                .setTipo(TipoMensagem.EMISSAO)
+                                                .setEmpresa(em.empresa)
+                                                .setTexto(em.propostas.toString())
+                                                .build();
+                RespostaExchange resultadoFinal = RespostaExchange.newBuilder()
+                                                .setTipo(TipoResposta.RESULTADO)
+                                                .setResultado(resultado)
+                                                .build();
+                socketExchangePush(resultadoFinal.toByteArray());
+                //tem de enviar notificacao
+                //tem de enviar para o diretorio
+
+            }
+            
+            else{
+                //responde apenas ao cliente
+                Resposta respostaEmissao = Resposta.newBuilder()
+                                            .setTipo(TipoMensagem.EMISSAO)
+                                            .setUtilizador(investidor)
+                                            .setSucesso(true)
+                                            .setMensagem("A sua licitação para uma emissão, de " + montante + ", para a empresa " + empresa + ", foi adicionada com sucesso")
+                                            .build();
+                RespostaExchange respostaFinal = RespostaExchange.newBuilder()
+                                                .setTipo(TipoResposta.RESPOTA)
+                                                .setResposta(respostaEmissao)
+                                                .build();
+                socketExchangePush.send(respostaFinal.toByteArray());
+                
+                //tem de enviar notificacao
+            }
+        }
+        catch(ExcecaoFinalizado ef){
+            //indica que já se encontra terminado
+            Resposta respostaEmissao = Resposta.newBuilder()
+                                            .setTipo(TipoMensagem.EMISSAO)
+                                            .setUtilizador(investidor)
+                                            .setSucesso(true)
+                                            .setMensagem("Para a empresa: " + ef.empresa + ": " + ef.mensagem)
+                                            .build();
+            RespostaExchange respostaFinal = RespostaExchange.newBuilder()
+                                            .setTipo(TipoResposta.RESPOTA)
+                                            .setResposta(respostaEmissao)
+                                            .build();
+            socketExchangePush.send(respostaFinal.toByteArray());
+        }
     }
 
     public synchronized boolean adicionaLeilao(String empresa, int montante, float taxa, long tempo){
@@ -111,24 +177,27 @@ class EstruturaExchange{
                 possoInterromper();
             }
             //manda para o diretorio
-            //manda para o sistema de notificacoes
             Resposta respostaLeilao = Resposta.newBuilder()
-                                            .setTipoMensagem(TipoMensagem.LEILAO)
+                                            .setTipo(TipoMensagem.LEILAO)
                                             .setUtilizador(empresa)
                                             .setSucesso(true)
-                                            .setMensagem("Leilao criado com sucesso!")
+                                            .setMensagem("Emissao criada com sucesso!")
                                             .build();
-            socketExchangePush.send(respostaLeilao.toByteArray());
+            RespostaExchange respostaFinal = RespostaExchange.newBuilder()
+                                            .setTipo(TipoResposta.RESPOTA)
+                                            .setResposta(respostaLeilao)
+                                            .build();
+            socketExchangePush.send(respostaFinal.toByteArray());
 
             Notificacao notificacao = Notificacao.newBuilder()
-                                                .setTipoNotificacao(TipoNotificacao.CRIACAOLEILAO)
-                                                .setEmpresa(empresa)
-                                                .setMontante(montante)
-                                                .setTaxa(taxa)
-                                                .setTempo(tempo)
-                                                .build();
-            
-            String topic = "leilao@" + empresa + "@";
+                                            .setTipoNotificacao(TipoNotificacao.CRIACAOLEILAO)
+                                            .setEmpresa(empresa)
+                                            .setMontante(montante)
+                                            .setTaxa(taxa)
+                                            .setTempo(tempo)
+                                            .build();
+
+            String topic = "emissao::" + empresa + "::";
             socketNotificacoes.send(topic.getBytes,ZMQ_SNDMORE);
             socketNotificacoes.send(notificacao.toByteArray());
 
@@ -136,15 +205,102 @@ class EstruturaExchange{
         }
         else{
             Resposta respostaLeilao = Resposta.newBuilder()
-                                .setTipoMensagem(TipoMensagem.LEILAO)
-                                .setUtilizador(empresa)
-                                .setSucesso(false)
-                                .setMensagem("Leilao não foi criado com sucesso!")
-                                .build();
-            socketExchangePush.send(respostaLeilao.toByteArray());
+                            .setTipo(TipoMensagem.LEILAO)
+                            .setUtilizador(empresa)
+                            .setSucesso(false)
+                            .setMensagem("Emissao não foi criada com sucesso!")
+                            .build();
+        RespostaExchange respostaFinal = RespostaExchange.newBuilder()
+                            .setTipo(TipoResposta.RESPOTA)
+                            .setResposta(respostaLeilao)
+                            .build();
+        socketExchangePush.send(respostaFinal.toByteArray());
             //manda mensagem a dizer q n foi criado
         }
         return false;
+    }
+    public synchronized boolean licitaLeilao(String empresa, int montante, float taxa, String investidor){
+        try{
+            Empresa aux = empresas.get(empresa);
+            if(aux == null){
+                return false;
+            }
+            boolean esta = aux.licitaLeilao(investidor, montante, taxa);
+            String mensagem = "Licitacao para o leilao da empresa " + empresa;
+            mensagem += ", com o montante " + montante + ", e a taxa " + taxa;
+            
+            if(esta){
+                mensagem += " adicionada com sucesso!";
+            }
+            else{
+                mensagem += " não foi considerada!";
+            }
+            //responde apenas ao cliente
+            Resposta respostaLeilao = Resposta.newBuilder()
+                                        .setTipo(TipoMensagem.LEILAO)
+                                        .setUtilizador(investidor)
+                                        .setSucesso(esta)
+                                        .setMensagem(mensagem)
+                                        .build();
+            RespostaExchange respostaFinal = RespostaExchange.newBuilder()
+                                            .setTipo(TipoResposta.RESPOTA)
+                                            .setResposta(respostaLeilao)
+                                            .build();
+            socketExchangePush.send(respostaFinal.toByteArray());
+            
+            //tem de enviar notificacao
+        
+        }
+        catch(ExcecaoFinalizado ef){
+            //indica que já se encontra terminado
+            Resposta respostaEmissao = Resposta.newBuilder()
+                                            .setTipo(TipoMensagem.LEILAO)
+                                            .setUtilizador(investidor)
+                                            .setSucesso(true)
+                                            .setMensagem("Para a empresa: " + ef.empresa + ": " + ef.mensagem)
+                                            .build();
+            RespostaExchange respostaFinal = RespostaExchange.newBuilder()
+                                            .setTipo(TipoResposta.RESPOTA)
+                                            .setResposta(respostaEmissao)
+                                            .build();
+            socketExchangePush.send(respostaFinal.toByteArray());
+        }
+        catch(ExcecaoUltrapassado eu){
+            //responde ao cliente
+            String mensagem = "Licitacao para o leilao da empresa " + empresa;
+            mensagem += ", com o montante " + montante + ", e a taxa " + taxa;
+            mensagem += " adicionada com sucesso!";
+            //responde apenas ao cliente
+            Resposta respostaLeilao = Resposta.newBuilder()
+                                        .setTipo(TipoMensagem.LEILAO)
+                                        .setUtilizador(investidor)
+                                        .setSucesso(esta)
+                                        .setMensagem(mensagem)
+                                        .build();
+            RespostaExchange respostaFinal = RespostaExchange.newBuilder()
+                                            .setTipo(TipoResposta.RESPOTA)
+                                            .setResposta(respostaLeilao)
+                                            .build();
+            socketExchangePush.send(respostaFinal.toByteArray());
+
+            //manda para as notificacoes
+
+            //manda aos que foram ultrapassados
+            for(Proposta p : eu.propostas){
+                NotificacaoUltrapassado nu = NotificacaoUltrapassado.newBuilder()
+                                    .setEmpresa(eu.empresa)
+                                    .setUtilizador(p.cliente)
+                                    .setTaxa(p.taxa)
+                                    .setValor(p.montante)
+                                    .setTexto("A última proposta encontra-se como: " + nu.proposta.toString())
+                                    .build();
+                RespostaExchange notificacaoFinal = RespostaExchange.newBuilder()
+                                    .setTipo(TipoResposta.Notificacao)
+                                    .setNotificacao(nu)
+                                    .build();
+                socketExchangePush.send(notificacaoFinal.toByteArray());
+            }
+        }
     }
 
     public synchronized long tempoDormir(){
@@ -167,7 +323,7 @@ class EstruturaExchange{
                 Emprestimo emp = empresas.get(ept.emprestimo.empresa).terminaEmprestimo(ept.emprestimo.id);
                 
                 if(emp != null){
-                    //mandar mensagens
+                    //mandar mensagens com o resultado
                 }
             }
         }
@@ -213,9 +369,9 @@ class TerminaEmprestimo implements Runnable{
 }
 
 public class Exchange{
-    EstruturaExchange estrutura = new EstruturaExchange();
     Thread acaba = null;
     ZMQ.Context context = ZMQ.context(1);
+    EstruturaExchange estrutura = new EstruturaExchange(context);
     ZMQ.Socket socketExchangePull = context.socket(ZMQ.PULL);
     //ZMQ.Socket socketExchangePush = context.socket(ZMQ.PUSH);
     //ZMQ.Socket socketNotificacoes = context.socket(ZMQ.PUB);
@@ -249,8 +405,8 @@ public class Exchange{
                 else{
                     if(resposta.getTipoMensagem() == TipoMensagem.EMISSAO){
                         estrutura.adicionaEmissao(resposta.getUtilizador(),
-                        resposta.getEmpresa().getEmissaoTaxaFixa().getMontante(),
-                        resposta.getEmpresa().getEmissaoTaxaFixa().getTempo());
+                            resposta.getEmpresa().getEmissaoTaxaFixa().getMontante(),
+                            resposta.getEmpresa().getEmissaoTaxaFixa().getTempo());
                     }
                     else{
                         //erro
@@ -260,35 +416,21 @@ public class Exchange{
             else{
                 if(resposta.hasInvestidor()){
                     if(resposta.getTipoMensagem() == TipoMensagem.LEILAO){
-    
+                        estrutura.licitaLeilao(resposta.getUtilizador(),
+                            resposta.getInvestidor().getLeilao().getMontante(),
+                            resposta.getInvestidor().getLeilao().getTaxa(),
+                            resposta.getUtilizador());
                     }
                     else{
                         if(resposta.getTipoMensagem() == TipoMensagem.EMISSAO){
-    
+                            estrutura.licitaLeilao(resposta.getUtilizador(),
+                                resposta.getInvestidor().getLeilao().getMontante(),
+                                resposta.getUtilizador());
                         }
                         else{
                             //erro
                         }
                     }
-                }
-
-                //é do investidor
-                
-                //licita leilao ou empresa
-                if(/*licitacao com sucesso*/){
-                    //responde ao cliente do sucesso pelo front-end
-                    //envia licitacao para o sistema de notificacoes
-                    if(/*existem ultrapassados*/){
-                        //avisa os ultrapassados pelo front-end
-                    }
-                }
-                else{
-                    //responde ao cliente do insucesso pelo front-end
-                }
-                if(/*emissao terminou*/){
-                    //responde pelo front-end q terminou
-                    //manda ao diretorio
-                    //manda para as notificacoes
                 }
             }
         }

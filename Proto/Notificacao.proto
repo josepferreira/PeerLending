@@ -15,3 +15,5 @@ message Notificacao{
     required int64 tempo = 4;
     optional float taxa = 5;
 }
+
+/* vai ter de ser dividido pois pode ter criacao ou tbm fim */

@@ -42,12 +42,8 @@ public class Empresa{
             return false;
             //pode dar excecao a dizer q leilao n existe
         }
-        if(id == emprestimoCurso.id){
-            return ((Leilao)emprestimoCurso).licita(cliente, montante, taxa);
-        }
-        else{
-            throw new  ExcecaoFinalizado(nome, "O leilão pretendido já não se encontra ativo!");
-        }
+        return ((Leilao)emprestimoCurso).licita(cliente, montante, taxa);
+        
     }
 
     //retorna a Emissao caso tenha terminado, null caso contrario
@@ -64,18 +60,13 @@ public class Empresa{
             //pode dar excecao a dizer q emissao nao existe
         }
 
-        if(id == emprestimoCurso.id){
-            if(!((Emissao)emprestimoCurso).licita(cliente, montante)){
-                return (Emissao)terminaEmprestimo();
-            }
+        
+        if(!((Emissao)emprestimoCurso).licita(cliente, montante)){
+            return (Emissao)terminaEmprestimo();
+        }
 
-            return null;
-        }
-        else{
-            //aqui tem de ser uma excecao 
-            //para dizer que a emissao ja acabou
-            throw new ExcecaoFinalizado(nome, "A emissão pretendida já não se encontra ativa!");
-        }
+        return null;
+        
     }
 
     public Emprestimo terminaEmprestimo(int id){

@@ -7,19 +7,22 @@ public class Emissao extends Emprestimo{
         super(id, empresa, montante, taxa, fim);
     }
 
-    private boolean possoTerminar(){
-        int montanteAmealhado = propostas.stream()
-                                    .mapToInt(p -> p.montante)    
-                                    .sum();
-        return (montanteAmealhado >= montante);
-    }
-
     //retorna true se for aceite, false se for aceita e terminar a emissao
     public boolean licita(String cliente, int montante){
         //faz uma licitacao ao Emissao
+        int montanteAmealhado = propostas.stream()
+                                    .mapToInt(p -> p.montante)    
+                                    .sum();
+        int diferenca = montante - montanteAmealhado;
+        
+        if(diferenca < montante){
+            montante = diferenca;
+        }
+
         Proposta p = new Proposta(ultimaProposta++, cliente, montante, taxa);
+
         propostas.add(p);
-        if(possoTerminar()){
+        if(diferenca <= montante){
             return false;
         }
         return true;
