@@ -59,7 +59,8 @@ class Licitador{
     BufferedReader inP;
     CodedInputStream cis;
     CodedOutputStream cos;
-    ZMQ.Context context;
+    GerirSubscricoes subscricoes;
+    ZMQ.Context context = ZMQ.context(1);
 
     public Licitador(String username, Socket s) throws Exception{
         this.username = username;
@@ -68,8 +69,8 @@ class Licitador{
         cis = CodedInputStream.newInstance(s.getInputStream());
         cos = CodedOutputStream.newInstance(s.getOutputStream());
         (new Thread(new RecebeMensagens(cis))).start();
-        GerirSubscricoes gb = new GerirSubscricoes(context);
-        Notificacoes n = new Notificacoes(context, gb);
+        subscricoes = new GerirSubscricoes(context);
+        Notificacoes n = new Notificacoes(context, subscricoes);
         (new Thread(n)).start();
     }
 
@@ -245,6 +246,7 @@ class Licitador{
 
             System.out.println("1 - Criar Leilao");
             System.out.println("2 - Emissão Taxa Fixa");
+            System.out.println("3 - Gerir Subscrições");
             System.out.print("Opção: ");
             boolean lido = false;
             int opcao = 0;
@@ -261,6 +263,7 @@ class Licitador{
             switch(opcao){
                 case 1: apresentaLicitacaoLeilao(); break;
                 case 2: apresentaSubscricaoTaxaFixa(); break;
+                case 3: subscricoes.menuInicial(); break;
                 default: continua = false;
             }
         }
@@ -287,8 +290,8 @@ class Licitador{
         cis = CodedInputStream.newInstance(s.getInputStream());
         cos = CodedOutputStream.newInstance(s.getOutputStream());
         (new Thread(new RecebeMensagens(cis))).start();
-        GerirSubscricoes gb = new GerirSubscricoes(context);
-        Notificacoes n = new Notificacoes(context, gb);
+        subscricoes = new GerirSubscricoes(context);
+        Notificacoes n = new Notificacoes(context, subscricoes);
         (new Thread(n)).start();
 
     }
@@ -450,6 +453,7 @@ class Licitador{
 
             System.out.println("1 - Criar Leilao");
             System.out.println("2 - Emissão Taxa Fixa");
+            System.out.println("3 - Gerir Subscrições");
             System.out.print("Opção: ");
             boolean lido = false;
             int opcao = 0;
@@ -466,6 +470,7 @@ class Licitador{
             switch(opcao){
                 case 1: apresentaCriacaoLeilao(); break;
                 case 2: apresentaEmissaoTaxaFixa(); break;
+                case 3: subscricoes.menuInicial(); break;
                 default: continua = false;
             }
         }
