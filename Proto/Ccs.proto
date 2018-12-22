@@ -19,26 +19,34 @@ enum TipoMensagem {
     EMISSAO = 2;
 }
 
-message MensagemEmpresa{
+message MensagemUtilizador{
     required TipoMensagem tipo = 1 [default = LEILAO];
-    optional CriacaoLeilao leilao = 2;
-    optional EmissaoTaxaFixa emissao = 3;
-    required string utilizador = 4;
+    required string utilizador = 2;
+    oneof mensagem {
+        MensagemEmpresa empresa = 3;
+        MensagemInvestidor investidor = 4;
+    }
+}
+
+message MensagemEmpresa{
+    optional CriacaoLeilao leilao = 1;
+    optional EmissaoTaxaFixa emissao = 2;
 }
 
 message CriacaoLeilao{
     required int64 montante = 1;
     required float taxa = 2;
+    required int64 tempo = 3;
 }
 
 message EmissaoTaxaFixa{
     required int64 montante = 1;
+    required int64 tempo = 2;
 }
 
 message MensagemInvestidor{
-    required TipoMensagem tipo = 1 [default = LEILAO];
-    optional LicitacaoLeilao leilao = 2;
-    optional SubscricaoTaxaFixa emissao = 3;
+    optional LicitacaoLeilao leilao = 1;
+    optional SubscricaoTaxaFixa emissao = 2;
 }
 
 message LicitacaoLeilao{
@@ -55,11 +63,19 @@ message SubscricaoTaxaFixa{
 /* possivelmente vai ser necessario uma resposta tanto para a empresa
 # como para o investidor a informar o resultado da sua operacao
 */
+message Resposta{
+    required TipoMensagem tipo = 1 [default = LEILAO];
+    required string utilizador = 2;
+    required bool sucesso = 3;
+    optional string mensagem = 4;
+}
+
 message NotificacaoUltrapassado{
     required TipoMensagem tipo = 1 [default = LEILAO];
     required float taxa = 2;
     required int64 montante = 3;
-    optional string mensagem = 4;
+    required string investidor = 4;
+    optional string mensagem = 5;
 }
 
 /*
@@ -69,7 +85,7 @@ message NotificacaoUltrapassado{
 */
 message Resultado{
     required TipoMensagem tipo = 1 [default = LEILAO];
-    required string empresa = 2;
+    required string utilizador = 2;
     required string texto = 3;
 }
 
