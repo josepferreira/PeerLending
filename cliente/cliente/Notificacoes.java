@@ -48,24 +48,24 @@ class ComunicaCliente implements Runnable{
 
             String decisao = msgResposta.split("@")[0];
             String sub = msgResposta.split("@")[1];
-
+            System.out.println("A decisao é " + decisao + ". A subscrição: " + sub);
             /**
              * Vou adicionar a subscricao à classe subscricao e ao socket
              * ATENÇAO!!! NAO SEI SE POSSO FAZER ISTO ..
              */
             if(decisao.equals("sub")){
                 switch(sub){
-                    case "leilao": subscricao.leiloesSubscritos = true;  break;
-                    case "emissao": subscricao.emissoesSubscritas = true; break;
-                    default: subscricao.adicionaEmpresa(sub); break;
+                    case "leilao::": subscricao.leiloesSubscritos = true;  break;
+                    case "emissao::": subscricao.emissoesSubscritas = true; break;
+                    default: String empresa = sub.split("::")[1]; subscricao.adicionaEmpresa(empresa); break;
                 }
                 socket.subscribe(sub.getBytes());
             }else{
                 if(decisao.equals("unsub")){
                     switch(sub){
-                        case "leilao": subscricao.leiloesSubscritos = false;  break;
-                        case "emissao": subscricao.emissoesSubscritas = false; break;
-                        default: subscricao.removeEmpresa(sub); break;
+                        case "leilao::": subscricao.leiloesSubscritos = false;  break;
+                        case "emissao::": subscricao.emissoesSubscritas = false; break;
+                        default: String empresa = sub.split("::")[1]; subscricao.removeEmpresa(empresa); break;
                     }
                     socket.unsubscribe(sub.getBytes());
                 }else{
