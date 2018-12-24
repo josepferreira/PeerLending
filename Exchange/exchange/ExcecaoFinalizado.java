@@ -1,3 +1,5 @@
+package exchange;
+
 public class ExcecaoFinalizado extends Exception{
     public String empresa;
     public String mensagem;

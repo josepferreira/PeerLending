@@ -1,3 +1,5 @@
+package exchange;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.TreeSet;
@@ -6,13 +8,13 @@ import java.util.stream.Collectors;
 public class Leilao extends Emprestimo{
     private boolean sucesso;
     
-    public Leilao(int id, String empresa, int montante, float taxa, LocalDateTime fim){
+    public Leilao(int id, String empresa, long montante, float taxa, LocalDateTime fim){
         super(id, empresa, montante, taxa, fim);
     }
 
     private boolean verificaUltrapassados()
         throws ExcecaoUltrapassado{
-        int montanteAmealhado = 0;
+        long montanteAmealhado = 0;
         ArrayList<Proposta> clientes = new ArrayList<>();
         for(Proposta p: propostas.descendingSet()){
             if(montanteAmealhado > montante){
@@ -31,9 +33,9 @@ public class Leilao extends Emprestimo{
         return true;
     }
 
-    private int montanteAmealhado(){
+    private long montanteAmealhado(){
         return propostas.stream()
-                .mapToInt(a -> a.montante)
+                .mapToLong(a -> a.montante)
                 .sum();
     }   
 
@@ -55,7 +57,7 @@ public class Leilao extends Emprestimo{
         }
     }
 
-    public boolean licita(String cliente, int montante, float taxa)
+    public boolean licita(String cliente, long montante, float taxa)
         throws ExcecaoUltrapassado{
         //faz uma licitacao ao leilao
         //caso seja adicionado ao leilao e outro seja removida tem de avisar o que foi removido
@@ -67,15 +69,15 @@ public class Leilao extends Emprestimo{
         return adicionaProposta(p);
     }
 
-    public boolean termina(int? aux){
+    public boolean termina(){
         //termina o respetivo leilao
         terminado = true;
-        int montanteAmealhado = propostas.stream()
-                                    .mapToInt(p -> p.montante)    
+        long montanteAmealhado = propostas.stream()
+                                    .mapToLong(p -> p.montante)    
                                     .sum();
         sucesso = (montanteAmealhado >= montante ? true : false);
         if(sucesso){
-            int diferenca = montanteAmealhado - montante;
+            long diferenca = montanteAmealhado - montante;
             propostas.first().montante -= diferenca;
         }
         return sucesso;

@@ -1,11 +1,13 @@
+package exchange;
+
 public class Proposta{
 
     public int id;
     public String cliente;
-    public int montante;
+    public long montante;
     public float taxa;
 
-    public Proposta(int id, String cliente, int montante, float taxa){
+    public Proposta(int id, String cliente, long montante, float taxa){
         this.id = id;
         this.cliente = cliente;
         this.montante = montante;

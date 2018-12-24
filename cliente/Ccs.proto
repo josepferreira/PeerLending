@@ -19,14 +19,19 @@ enum TipoMensagem {
     EMISSAO = 2;
 }
 
+enum TipoUtilizador {
+    EMPRESA = 1;
+    INVESTIDOR = 2;
+}
+
 
 message MensagemUtilizador{
     required TipoMensagem tipo = 1 [default = LEILAO];
-    required string utilizador = 2;
-    oneof mensagem {
-        MensagemEmpresa empresa = 3;
-        MensagemInvestidor investidor = 4;
-    }
+    required TipoUtilizador tipoUtilizador = 2 [default = EMPRESA];
+    required string utilizador = 3;
+    optional MensagemEmpresa empresa = 4;
+    optional MensagemInvestidor investidor = 5;
+    
 }
 
 message MensagemEmpresa{

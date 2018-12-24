@@ -1,3 +1,5 @@
+package exchange;
+
 import java.util.TreeSet; 
 import java.time.LocalDateTime;
 
@@ -6,13 +8,13 @@ public abstract class Emprestimo{
     public int id;
     public String empresa;
     int ultimaProposta = 0;
-    int montante;
+    long montante;
     float taxa;
     TreeSet<Proposta> propostas = new TreeSet<>(); //pode estar ordenado ao contrário, ou seja a melhor proposta está no fim
     boolean terminado = false;
     LocalDateTime fim;
 
-    public Emprestimo(int id, String empresa, int montante, float taxa, LocalDateTime fim){
+    public Emprestimo(int id, String empresa, long montante, float taxa, LocalDateTime fim){
         this.id = id;
         this.montante = montante;
         this.taxa = taxa;
@@ -21,5 +23,5 @@ public abstract class Emprestimo{
 
     public abstract boolean termina();
 
-    public abstract boolean equals();
+    public abstract boolean equals(Object o);
 }

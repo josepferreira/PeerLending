@@ -1,3 +1,5 @@
+package exchange;
+
 import java.time.LocalDateTime;
 import java.util.TreeSet;
 
@@ -12,27 +14,27 @@ public class Empresa{
         this.nome = nome;
     }
 
-    public Emprestimo criarLeilao(int montante, float taxa, LocalDateTime fim){
+    public Emprestimo criarLeilao(long montante, float taxa, LocalDateTime fim){
         //para criar um novo leilao
         if(emprestimoCurso == null){
-            emprestimoCurso = new Leilao(idEmprestimo++,montante,taxa,fim);
+            emprestimoCurso = new Leilao(idEmprestimo++,this.nome,montante,taxa,fim);
             return emprestimoCurso;
         }
         return null;
     }
 
-    public Emprestimo criarEmissao(int montante, LocalDateTime fim){
+    public Emprestimo criarEmissao(long montante, LocalDateTime fim){
         //para criar uma nova emissao
         if(emprestimoCurso == null){
             //como definir a taxa? ver nas duvidas ----------------------------FALTA
             int taxa = 0;
-            emprestimoCurso = new Emissao(idEmprestimo++, montante, taxa, fim);
+            emprestimoCurso = new Emissao(idEmprestimo++, this.nome,montante, taxa, fim);
             return emprestimoCurso;
         }
         return null;
     }
 
-    public boolean licitaLeilao(String cliente, int montante, float taxa) 
+    public boolean licitaLeilao(String cliente, long montante, float taxa) 
     throws ExcecaoUltrapassado, ExcecaoFinalizado{
         //para licitar um leilao (o id será necessário?)
         if(emprestimoCurso == null){
@@ -47,7 +49,7 @@ public class Empresa{
     }
 
     //retorna a Emissao caso tenha terminado, null caso contrario
-    public Emissao licitaEmissao(String cliente, int montante)
+    public Emissao licitaEmissao(String cliente, long montante)
         throws ExcecaoFinalizado{
         //para licitar uma emissao (o id será necessário?)
 
@@ -83,6 +85,10 @@ public class Empresa{
     }
 
     private Emprestimo terminaEmprestimo(){
+        if(emprestimoCurso == null){
+            return null;
+        }
+
         emprestimoCurso.termina();
         Emprestimo e = emprestimoCurso;
         if(e instanceof Leilao){

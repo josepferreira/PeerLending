@@ -1,3 +1,5 @@
+package exchange;
+
 import java.util.ArrayList; 
 
 public class ExcecaoUltrapassado extends Exception{
