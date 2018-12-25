@@ -4,3 +4,4 @@ FrontEnd/*.dump
 cliente/cliente/*.class
 FrontEnd/_build
 FrontEnd/rebar.lock
+/Exchange/exchange/*.class
