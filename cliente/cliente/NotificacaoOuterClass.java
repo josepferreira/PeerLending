@@ -20,39 +20,31 @@ public final class NotificacaoOuterClass {
   public enum TipoNotificacao
       implements com.google.protobuf.ProtocolMessageEnum {
     /**
-     * <code>CRIACAOLEILAO = 1;</code>
+     * <code>CRIACAO = 1;</code>
      */
-    CRIACAOLEILAO(1),
+    CRIACAO(1),
     /**
-     * <code>LICITACAOLEILAO = 2;</code>
+     * <code>LICITACAO = 2;</code>
      */
-    LICITACAOLEILAO(2),
+    LICITACAO(2),
     /**
-     * <code>CRIACOEMISSAO = 3;</code>
+     * <code>FIM = 3;</code>
      */
-    CRIACOEMISSAO(3),
-    /**
-     * <code>LICITACAOEMISSAO = 4;</code>
-     */
-    LICITACAOEMISSAO(4),
+    FIM(3),
     ;
 
     /**
-     * <code>CRIACAOLEILAO = 1;</code>
+     * <code>CRIACAO = 1;</code>
      */
-    public static final int CRIACAOLEILAO_VALUE = 1;
+    public static final int CRIACAO_VALUE = 1;
     /**
-     * <code>LICITACAOLEILAO = 2;</code>
+     * <code>LICITACAO = 2;</code>
      */
-    public static final int LICITACAOLEILAO_VALUE = 2;
+    public static final int LICITACAO_VALUE = 2;
     /**
-     * <code>CRIACOEMISSAO = 3;</code>
+     * <code>FIM = 3;</code>
      */
-    public static final int CRIACOEMISSAO_VALUE = 3;
-    /**
-     * <code>LICITACAOEMISSAO = 4;</code>
-     */
-    public static final int LICITACAOEMISSAO_VALUE = 4;
+    public static final int FIM_VALUE = 3;
 
 
     public final int getNumber() {
@@ -69,10 +61,9 @@ public final class NotificacaoOuterClass {
 
     public static TipoNotificacao forNumber(int value) {
       switch (value) {
-        case 1: return CRIACAOLEILAO;
-        case 2: return LICITACAOLEILAO;
-        case 3: return CRIACOEMISSAO;
-        case 4: return LICITACAOEMISSAO;
+        case 1: return CRIACAO;
+        case 2: return LICITACAO;
+        case 3: return FIM;
         default: return null;
       }
     }
@@ -122,50 +113,171 @@ public final class NotificacaoOuterClass {
     // @@protoc_insertion_point(enum_scope:cliente.TipoNotificacao)
   }
 
+  /**
+   * Protobuf enum {@code cliente.TipoAcao}
+   */
+  public enum TipoAcao
+      implements com.google.protobuf.ProtocolMessageEnum {
+    /**
+     * <code>LEILAO = 1;</code>
+     */
+    LEILAO(1),
+    /**
+     * <code>EMISSAO = 2;</code>
+     */
+    EMISSAO(2),
+    ;
+
+    /**
+     * <code>LEILAO = 1;</code>
+     */
+    public static final int LEILAO_VALUE = 1;
+    /**
+     * <code>EMISSAO = 2;</code>
+     */
+    public static final int EMISSAO_VALUE = 2;
+
+
+    public final int getNumber() {
+      return value;
+    }
+
+    /**
+     * @deprecated Use {@link #forNumber(int)} instead.
+     */
+    @java.lang.Deprecated
+    public static TipoAcao valueOf(int value) {
+      return forNumber(value);
+    }
+
+    public static TipoAcao forNumber(int value) {
+      switch (value) {
+        case 1: return LEILAO;
+        case 2: return EMISSAO;
+        default: return null;
+      }
+    }
+
+    public static com.google.protobuf.Internal.EnumLiteMap<TipoAcao>
+        internalGetValueMap() {
+      return internalValueMap;
+    }
+    private static final com.google.protobuf.Internal.EnumLiteMap<
+        TipoAcao> internalValueMap =
+          new com.google.protobuf.Internal.EnumLiteMap<TipoAcao>() {
+            public TipoAcao findValueByNumber(int number) {
+              return TipoAcao.forNumber(number);
+            }
+          };
+
+    public final com.google.protobuf.Descriptors.EnumValueDescriptor
+        getValueDescriptor() {
+      return getDescriptor().getValues().get(ordinal());
+    }
+    public final com.google.protobuf.Descriptors.EnumDescriptor
+        getDescriptorForType() {
+      return getDescriptor();
+    }
+    public static final com.google.protobuf.Descriptors.EnumDescriptor
+        getDescriptor() {
+      return cliente.NotificacaoOuterClass.getDescriptor().getEnumTypes().get(1);
+    }
+
+    private static final TipoAcao[] VALUES = values();
+
+    public static TipoAcao valueOf(
+        com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
+      if (desc.getType() != getDescriptor()) {
+        throw new java.lang.IllegalArgumentException(
+          "EnumValueDescriptor is not for this type.");
+      }
+      return VALUES[desc.getIndex()];
+    }
+
+    private final int value;
+
+    private TipoAcao(int value) {
+      this.value = value;
+    }
+
+    // @@protoc_insertion_point(enum_scope:cliente.TipoAcao)
+  }
+
   public interface NotificacaoOrBuilder extends
       // @@protoc_insertion_point(interface_extends:cliente.Notificacao)
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>required .cliente.TipoNotificacao tipo = 1 [default = CRIACAOLEILAO];</code>
+     * <code>required .cliente.TipoNotificacao tipo = 1 [default = CRIACAO];</code>
      */
     boolean hasTipo();
     /**
-     * <code>required .cliente.TipoNotificacao tipo = 1 [default = CRIACAOLEILAO];</code>
+     * <code>required .cliente.TipoNotificacao tipo = 1 [default = CRIACAO];</code>
      */
     cliente.NotificacaoOuterClass.TipoNotificacao getTipo();
 
     /**
-     * <code>required string empresa = 2;</code>
+     * <code>required .cliente.TipoAcao tipoMensagem = 2 [default = LEILAO];</code>
+     */
+    boolean hasTipoMensagem();
+    /**
+     * <code>required .cliente.TipoAcao tipoMensagem = 2 [default = LEILAO];</code>
+     */
+    cliente.NotificacaoOuterClass.TipoAcao getTipoMensagem();
+
+    /**
+     * <code>required string empresa = 3;</code>
      */
     boolean hasEmpresa();
     /**
-     * <code>required string empresa = 2;</code>
+     * <code>required string empresa = 3;</code>
      */
     java.lang.String getEmpresa();
     /**
-     * <code>required string empresa = 2;</code>
+     * <code>required string empresa = 3;</code>
      */
     com.google.protobuf.ByteString
         getEmpresaBytes();
 
     /**
-     * <code>required int64 montante = 3;</code>
+     * <code>required int64 montante = 4;</code>
      */
     boolean hasMontante();
     /**
-     * <code>required int64 montante = 3;</code>
+     * <code>required int64 montante = 4;</code>
      */
     long getMontante();
 
     /**
-     * <code>optional float taxa = 4;</code>
+     * <code>optional float taxa = 5;</code>
      */
     boolean hasTaxa();
     /**
-     * <code>optional float taxa = 4;</code>
+     * <code>optional float taxa = 5;</code>
      */
     float getTaxa();
+
+    /**
+     * <code>optional int64 tempo = 6;</code>
+     */
+    boolean hasTempo();
+    /**
+     * <code>optional int64 tempo = 6;</code>
+     */
+    long getTempo();
+
+    /**
+     * <code>optional .cliente.ResultadoAcao resultado = 7;</code>
+     */
+    boolean hasResultado();
+    /**
+     * <code>optional .cliente.ResultadoAcao resultado = 7;</code>
+     */
+    cliente.NotificacaoOuterClass.ResultadoAcao getResultado();
+    /**
+     * <code>optional .cliente.ResultadoAcao resultado = 7;</code>
+     */
+    cliente.NotificacaoOuterClass.ResultadoAcaoOrBuilder getResultadoOrBuilder();
   }
   /**
    * Protobuf type {@code cliente.Notificacao}
@@ -181,9 +293,11 @@ public final class NotificacaoOuterClass {
     }
     private Notificacao() {
       tipo_ = 1;
+      tipoMensagem_ = 1;
       empresa_ = "";
       montante_ = 0L;
       taxa_ = 0F;
+      tempo_ = 0L;
     }
 
     @java.lang.Override
@@ -222,20 +336,50 @@ public final class NotificacaoOuterClass {
               }
               break;
             }
-            case 18: {
+            case 16: {
+              int rawValue = input.readEnum();
+                @SuppressWarnings("deprecation")
+              cliente.NotificacaoOuterClass.TipoAcao value = cliente.NotificacaoOuterClass.TipoAcao.valueOf(rawValue);
+              if (value == null) {
+                unknownFields.mergeVarintField(2, rawValue);
+              } else {
+                bitField0_ |= 0x00000002;
+                tipoMensagem_ = rawValue;
+              }
+              break;
+            }
+            case 26: {
               com.google.protobuf.ByteString bs = input.readBytes();
-              bitField0_ |= 0x00000002;
+              bitField0_ |= 0x00000004;
               empresa_ = bs;
               break;
             }
-            case 24: {
-              bitField0_ |= 0x00000004;
+            case 32: {
+              bitField0_ |= 0x00000008;
               montante_ = input.readInt64();
               break;
             }
-            case 37: {
-              bitField0_ |= 0x00000008;
+            case 45: {
+              bitField0_ |= 0x00000010;
               taxa_ = input.readFloat();
+              break;
+            }
+            case 48: {
+              bitField0_ |= 0x00000020;
+              tempo_ = input.readInt64();
+              break;
+            }
+            case 58: {
+              cliente.NotificacaoOuterClass.ResultadoAcao.Builder subBuilder = null;
+              if (((bitField0_ & 0x00000040) == 0x00000040)) {
+                subBuilder = resultado_.toBuilder();
+              }
+              resultado_ = input.readMessage(cliente.NotificacaoOuterClass.ResultadoAcao.PARSER, extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(resultado_);
+                resultado_ = subBuilder.buildPartial();
+              }
+              bitField0_ |= 0x00000040;
               break;
             }
             default: {
@@ -274,30 +418,47 @@ public final class NotificacaoOuterClass {
     public static final int TIPO_FIELD_NUMBER = 1;
     private int tipo_;
     /**
-     * <code>required .cliente.TipoNotificacao tipo = 1 [default = CRIACAOLEILAO];</code>
+     * <code>required .cliente.TipoNotificacao tipo = 1 [default = CRIACAO];</code>
      */
     public boolean hasTipo() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
     /**
-     * <code>required .cliente.TipoNotificacao tipo = 1 [default = CRIACAOLEILAO];</code>
+     * <code>required .cliente.TipoNotificacao tipo = 1 [default = CRIACAO];</code>
      */
     public cliente.NotificacaoOuterClass.TipoNotificacao getTipo() {
       @SuppressWarnings("deprecation")
       cliente.NotificacaoOuterClass.TipoNotificacao result = cliente.NotificacaoOuterClass.TipoNotificacao.valueOf(tipo_);
-      return result == null ? cliente.NotificacaoOuterClass.TipoNotificacao.CRIACAOLEILAO : result;
+      return result == null ? cliente.NotificacaoOuterClass.TipoNotificacao.CRIACAO : result;
     }
 
-    public static final int EMPRESA_FIELD_NUMBER = 2;
-    private volatile java.lang.Object empresa_;
+    public static final int TIPOMENSAGEM_FIELD_NUMBER = 2;
+    private int tipoMensagem_;
     /**
-     * <code>required string empresa = 2;</code>
+     * <code>required .cliente.TipoAcao tipoMensagem = 2 [default = LEILAO];</code>
      */
-    public boolean hasEmpresa() {
+    public boolean hasTipoMensagem() {
       return ((bitField0_ & 0x00000002) == 0x00000002);
     }
     /**
-     * <code>required string empresa = 2;</code>
+     * <code>required .cliente.TipoAcao tipoMensagem = 2 [default = LEILAO];</code>
+     */
+    public cliente.NotificacaoOuterClass.TipoAcao getTipoMensagem() {
+      @SuppressWarnings("deprecation")
+      cliente.NotificacaoOuterClass.TipoAcao result = cliente.NotificacaoOuterClass.TipoAcao.valueOf(tipoMensagem_);
+      return result == null ? cliente.NotificacaoOuterClass.TipoAcao.LEILAO : result;
+    }
+
+    public static final int EMPRESA_FIELD_NUMBER = 3;
+    private volatile java.lang.Object empresa_;
+    /**
+     * <code>required string empresa = 3;</code>
+     */
+    public boolean hasEmpresa() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    /**
+     * <code>required string empresa = 3;</code>
      */
     public java.lang.String getEmpresa() {
       java.lang.Object ref = empresa_;
@@ -314,7 +475,7 @@ public final class NotificacaoOuterClass {
       }
     }
     /**
-     * <code>required string empresa = 2;</code>
+     * <code>required string empresa = 3;</code>
      */
     public com.google.protobuf.ByteString
         getEmpresaBytes() {
@@ -330,34 +491,70 @@ public final class NotificacaoOuterClass {
       }
     }
 
-    public static final int MONTANTE_FIELD_NUMBER = 3;
+    public static final int MONTANTE_FIELD_NUMBER = 4;
     private long montante_;
     /**
-     * <code>required int64 montante = 3;</code>
+     * <code>required int64 montante = 4;</code>
      */
     public boolean hasMontante() {
-      return ((bitField0_ & 0x00000004) == 0x00000004);
+      return ((bitField0_ & 0x00000008) == 0x00000008);
     }
     /**
-     * <code>required int64 montante = 3;</code>
+     * <code>required int64 montante = 4;</code>
      */
     public long getMontante() {
       return montante_;
     }
 
-    public static final int TAXA_FIELD_NUMBER = 4;
+    public static final int TAXA_FIELD_NUMBER = 5;
     private float taxa_;
     /**
-     * <code>optional float taxa = 4;</code>
+     * <code>optional float taxa = 5;</code>
      */
     public boolean hasTaxa() {
-      return ((bitField0_ & 0x00000008) == 0x00000008);
+      return ((bitField0_ & 0x00000010) == 0x00000010);
     }
     /**
-     * <code>optional float taxa = 4;</code>
+     * <code>optional float taxa = 5;</code>
      */
     public float getTaxa() {
       return taxa_;
+    }
+
+    public static final int TEMPO_FIELD_NUMBER = 6;
+    private long tempo_;
+    /**
+     * <code>optional int64 tempo = 6;</code>
+     */
+    public boolean hasTempo() {
+      return ((bitField0_ & 0x00000020) == 0x00000020);
+    }
+    /**
+     * <code>optional int64 tempo = 6;</code>
+     */
+    public long getTempo() {
+      return tempo_;
+    }
+
+    public static final int RESULTADO_FIELD_NUMBER = 7;
+    private cliente.NotificacaoOuterClass.ResultadoAcao resultado_;
+    /**
+     * <code>optional .cliente.ResultadoAcao resultado = 7;</code>
+     */
+    public boolean hasResultado() {
+      return ((bitField0_ & 0x00000040) == 0x00000040);
+    }
+    /**
+     * <code>optional .cliente.ResultadoAcao resultado = 7;</code>
+     */
+    public cliente.NotificacaoOuterClass.ResultadoAcao getResultado() {
+      return resultado_ == null ? cliente.NotificacaoOuterClass.ResultadoAcao.getDefaultInstance() : resultado_;
+    }
+    /**
+     * <code>optional .cliente.ResultadoAcao resultado = 7;</code>
+     */
+    public cliente.NotificacaoOuterClass.ResultadoAcaoOrBuilder getResultadoOrBuilder() {
+      return resultado_ == null ? cliente.NotificacaoOuterClass.ResultadoAcao.getDefaultInstance() : resultado_;
     }
 
     private byte memoizedIsInitialized = -1;
@@ -371,6 +568,10 @@ public final class NotificacaoOuterClass {
         memoizedIsInitialized = 0;
         return false;
       }
+      if (!hasTipoMensagem()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
       if (!hasEmpresa()) {
         memoizedIsInitialized = 0;
         return false;
@@ -378,6 +579,12 @@ public final class NotificacaoOuterClass {
       if (!hasMontante()) {
         memoizedIsInitialized = 0;
         return false;
+      }
+      if (hasResultado()) {
+        if (!getResultado().isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
       }
       memoizedIsInitialized = 1;
       return true;
@@ -390,13 +597,22 @@ public final class NotificacaoOuterClass {
         output.writeEnum(1, tipo_);
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 2, empresa_);
+        output.writeEnum(2, tipoMensagem_);
       }
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
-        output.writeInt64(3, montante_);
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 3, empresa_);
       }
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
-        output.writeFloat(4, taxa_);
+        output.writeInt64(4, montante_);
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        output.writeFloat(5, taxa_);
+      }
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+        output.writeInt64(6, tempo_);
+      }
+      if (((bitField0_ & 0x00000040) == 0x00000040)) {
+        output.writeMessage(7, getResultado());
       }
       unknownFields.writeTo(output);
     }
@@ -412,15 +628,27 @@ public final class NotificacaoOuterClass {
           .computeEnumSize(1, tipo_);
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, empresa_);
+        size += com.google.protobuf.CodedOutputStream
+          .computeEnumSize(2, tipoMensagem_);
       }
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeInt64Size(3, montante_);
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, empresa_);
       }
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeFloatSize(4, taxa_);
+          .computeInt64Size(4, montante_);
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeFloatSize(5, taxa_);
+      }
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt64Size(6, tempo_);
+      }
+      if (((bitField0_ & 0x00000040) == 0x00000040)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(7, getResultado());
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -442,6 +670,10 @@ public final class NotificacaoOuterClass {
       if (hasTipo()) {
         result = result && tipo_ == other.tipo_;
       }
+      result = result && (hasTipoMensagem() == other.hasTipoMensagem());
+      if (hasTipoMensagem()) {
+        result = result && tipoMensagem_ == other.tipoMensagem_;
+      }
       result = result && (hasEmpresa() == other.hasEmpresa());
       if (hasEmpresa()) {
         result = result && getEmpresa()
@@ -459,6 +691,16 @@ public final class NotificacaoOuterClass {
             == java.lang.Float.floatToIntBits(
                 other.getTaxa()));
       }
+      result = result && (hasTempo() == other.hasTempo());
+      if (hasTempo()) {
+        result = result && (getTempo()
+            == other.getTempo());
+      }
+      result = result && (hasResultado() == other.hasResultado());
+      if (hasResultado()) {
+        result = result && getResultado()
+            .equals(other.getResultado());
+      }
       result = result && unknownFields.equals(other.unknownFields);
       return result;
     }
@@ -474,6 +716,10 @@ public final class NotificacaoOuterClass {
         hash = (37 * hash) + TIPO_FIELD_NUMBER;
         hash = (53 * hash) + tipo_;
       }
+      if (hasTipoMensagem()) {
+        hash = (37 * hash) + TIPOMENSAGEM_FIELD_NUMBER;
+        hash = (53 * hash) + tipoMensagem_;
+      }
       if (hasEmpresa()) {
         hash = (37 * hash) + EMPRESA_FIELD_NUMBER;
         hash = (53 * hash) + getEmpresa().hashCode();
@@ -487,6 +733,15 @@ public final class NotificacaoOuterClass {
         hash = (37 * hash) + TAXA_FIELD_NUMBER;
         hash = (53 * hash) + java.lang.Float.floatToIntBits(
             getTaxa());
+      }
+      if (hasTempo()) {
+        hash = (37 * hash) + TEMPO_FIELD_NUMBER;
+        hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+            getTempo());
+      }
+      if (hasResultado()) {
+        hash = (37 * hash) + RESULTADO_FIELD_NUMBER;
+        hash = (53 * hash) + getResultado().hashCode();
       }
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
@@ -616,6 +871,7 @@ public final class NotificacaoOuterClass {
       private void maybeForceBuilderInitialization() {
         if (com.google.protobuf.GeneratedMessageV3
                 .alwaysUseFieldBuilders) {
+          getResultadoFieldBuilder();
         }
       }
       @java.lang.Override
@@ -623,12 +879,22 @@ public final class NotificacaoOuterClass {
         super.clear();
         tipo_ = 1;
         bitField0_ = (bitField0_ & ~0x00000001);
-        empresa_ = "";
+        tipoMensagem_ = 1;
         bitField0_ = (bitField0_ & ~0x00000002);
-        montante_ = 0L;
+        empresa_ = "";
         bitField0_ = (bitField0_ & ~0x00000004);
-        taxa_ = 0F;
+        montante_ = 0L;
         bitField0_ = (bitField0_ & ~0x00000008);
+        taxa_ = 0F;
+        bitField0_ = (bitField0_ & ~0x00000010);
+        tempo_ = 0L;
+        bitField0_ = (bitField0_ & ~0x00000020);
+        if (resultadoBuilder_ == null) {
+          resultado_ = null;
+        } else {
+          resultadoBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000040);
         return this;
       }
 
@@ -664,15 +930,31 @@ public final class NotificacaoOuterClass {
         if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
           to_bitField0_ |= 0x00000002;
         }
-        result.empresa_ = empresa_;
+        result.tipoMensagem_ = tipoMensagem_;
         if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
           to_bitField0_ |= 0x00000004;
         }
-        result.montante_ = montante_;
+        result.empresa_ = empresa_;
         if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
           to_bitField0_ |= 0x00000008;
         }
+        result.montante_ = montante_;
+        if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
+          to_bitField0_ |= 0x00000010;
+        }
         result.taxa_ = taxa_;
+        if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
+          to_bitField0_ |= 0x00000020;
+        }
+        result.tempo_ = tempo_;
+        if (((from_bitField0_ & 0x00000040) == 0x00000040)) {
+          to_bitField0_ |= 0x00000040;
+        }
+        if (resultadoBuilder_ == null) {
+          result.resultado_ = resultado_;
+        } else {
+          result.resultado_ = resultadoBuilder_.build();
+        }
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -725,8 +1007,11 @@ public final class NotificacaoOuterClass {
         if (other.hasTipo()) {
           setTipo(other.getTipo());
         }
+        if (other.hasTipoMensagem()) {
+          setTipoMensagem(other.getTipoMensagem());
+        }
         if (other.hasEmpresa()) {
-          bitField0_ |= 0x00000002;
+          bitField0_ |= 0x00000004;
           empresa_ = other.empresa_;
           onChanged();
         }
@@ -735,6 +1020,12 @@ public final class NotificacaoOuterClass {
         }
         if (other.hasTaxa()) {
           setTaxa(other.getTaxa());
+        }
+        if (other.hasTempo()) {
+          setTempo(other.getTempo());
+        }
+        if (other.hasResultado()) {
+          mergeResultado(other.getResultado());
         }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
@@ -746,11 +1037,19 @@ public final class NotificacaoOuterClass {
         if (!hasTipo()) {
           return false;
         }
+        if (!hasTipoMensagem()) {
+          return false;
+        }
         if (!hasEmpresa()) {
           return false;
         }
         if (!hasMontante()) {
           return false;
+        }
+        if (hasResultado()) {
+          if (!getResultado().isInitialized()) {
+            return false;
+          }
         }
         return true;
       }
@@ -777,21 +1076,21 @@ public final class NotificacaoOuterClass {
 
       private int tipo_ = 1;
       /**
-       * <code>required .cliente.TipoNotificacao tipo = 1 [default = CRIACAOLEILAO];</code>
+       * <code>required .cliente.TipoNotificacao tipo = 1 [default = CRIACAO];</code>
        */
       public boolean hasTipo() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
       }
       /**
-       * <code>required .cliente.TipoNotificacao tipo = 1 [default = CRIACAOLEILAO];</code>
+       * <code>required .cliente.TipoNotificacao tipo = 1 [default = CRIACAO];</code>
        */
       public cliente.NotificacaoOuterClass.TipoNotificacao getTipo() {
         @SuppressWarnings("deprecation")
         cliente.NotificacaoOuterClass.TipoNotificacao result = cliente.NotificacaoOuterClass.TipoNotificacao.valueOf(tipo_);
-        return result == null ? cliente.NotificacaoOuterClass.TipoNotificacao.CRIACAOLEILAO : result;
+        return result == null ? cliente.NotificacaoOuterClass.TipoNotificacao.CRIACAO : result;
       }
       /**
-       * <code>required .cliente.TipoNotificacao tipo = 1 [default = CRIACAOLEILAO];</code>
+       * <code>required .cliente.TipoNotificacao tipo = 1 [default = CRIACAO];</code>
        */
       public Builder setTipo(cliente.NotificacaoOuterClass.TipoNotificacao value) {
         if (value == null) {
@@ -803,7 +1102,7 @@ public final class NotificacaoOuterClass {
         return this;
       }
       /**
-       * <code>required .cliente.TipoNotificacao tipo = 1 [default = CRIACAOLEILAO];</code>
+       * <code>required .cliente.TipoNotificacao tipo = 1 [default = CRIACAO];</code>
        */
       public Builder clearTipo() {
         bitField0_ = (bitField0_ & ~0x00000001);
@@ -812,15 +1111,52 @@ public final class NotificacaoOuterClass {
         return this;
       }
 
-      private java.lang.Object empresa_ = "";
+      private int tipoMensagem_ = 1;
       /**
-       * <code>required string empresa = 2;</code>
+       * <code>required .cliente.TipoAcao tipoMensagem = 2 [default = LEILAO];</code>
        */
-      public boolean hasEmpresa() {
+      public boolean hasTipoMensagem() {
         return ((bitField0_ & 0x00000002) == 0x00000002);
       }
       /**
-       * <code>required string empresa = 2;</code>
+       * <code>required .cliente.TipoAcao tipoMensagem = 2 [default = LEILAO];</code>
+       */
+      public cliente.NotificacaoOuterClass.TipoAcao getTipoMensagem() {
+        @SuppressWarnings("deprecation")
+        cliente.NotificacaoOuterClass.TipoAcao result = cliente.NotificacaoOuterClass.TipoAcao.valueOf(tipoMensagem_);
+        return result == null ? cliente.NotificacaoOuterClass.TipoAcao.LEILAO : result;
+      }
+      /**
+       * <code>required .cliente.TipoAcao tipoMensagem = 2 [default = LEILAO];</code>
+       */
+      public Builder setTipoMensagem(cliente.NotificacaoOuterClass.TipoAcao value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        bitField0_ |= 0x00000002;
+        tipoMensagem_ = value.getNumber();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required .cliente.TipoAcao tipoMensagem = 2 [default = LEILAO];</code>
+       */
+      public Builder clearTipoMensagem() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        tipoMensagem_ = 1;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object empresa_ = "";
+      /**
+       * <code>required string empresa = 3;</code>
+       */
+      public boolean hasEmpresa() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      /**
+       * <code>required string empresa = 3;</code>
        */
       public java.lang.String getEmpresa() {
         java.lang.Object ref = empresa_;
@@ -837,7 +1173,7 @@ public final class NotificacaoOuterClass {
         }
       }
       /**
-       * <code>required string empresa = 2;</code>
+       * <code>required string empresa = 3;</code>
        */
       public com.google.protobuf.ByteString
           getEmpresaBytes() {
@@ -853,36 +1189,36 @@ public final class NotificacaoOuterClass {
         }
       }
       /**
-       * <code>required string empresa = 2;</code>
+       * <code>required string empresa = 3;</code>
        */
       public Builder setEmpresa(
           java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000002;
+  bitField0_ |= 0x00000004;
         empresa_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>required string empresa = 2;</code>
+       * <code>required string empresa = 3;</code>
        */
       public Builder clearEmpresa() {
-        bitField0_ = (bitField0_ & ~0x00000002);
+        bitField0_ = (bitField0_ & ~0x00000004);
         empresa_ = getDefaultInstance().getEmpresa();
         onChanged();
         return this;
       }
       /**
-       * <code>required string empresa = 2;</code>
+       * <code>required string empresa = 3;</code>
        */
       public Builder setEmpresaBytes(
           com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000002;
+  bitField0_ |= 0x00000004;
         empresa_ = value;
         onChanged();
         return this;
@@ -890,31 +1226,31 @@ public final class NotificacaoOuterClass {
 
       private long montante_ ;
       /**
-       * <code>required int64 montante = 3;</code>
+       * <code>required int64 montante = 4;</code>
        */
       public boolean hasMontante() {
-        return ((bitField0_ & 0x00000004) == 0x00000004);
+        return ((bitField0_ & 0x00000008) == 0x00000008);
       }
       /**
-       * <code>required int64 montante = 3;</code>
+       * <code>required int64 montante = 4;</code>
        */
       public long getMontante() {
         return montante_;
       }
       /**
-       * <code>required int64 montante = 3;</code>
+       * <code>required int64 montante = 4;</code>
        */
       public Builder setMontante(long value) {
-        bitField0_ |= 0x00000004;
+        bitField0_ |= 0x00000008;
         montante_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>required int64 montante = 3;</code>
+       * <code>required int64 montante = 4;</code>
        */
       public Builder clearMontante() {
-        bitField0_ = (bitField0_ & ~0x00000004);
+        bitField0_ = (bitField0_ & ~0x00000008);
         montante_ = 0L;
         onChanged();
         return this;
@@ -922,34 +1258,184 @@ public final class NotificacaoOuterClass {
 
       private float taxa_ ;
       /**
-       * <code>optional float taxa = 4;</code>
+       * <code>optional float taxa = 5;</code>
        */
       public boolean hasTaxa() {
-        return ((bitField0_ & 0x00000008) == 0x00000008);
+        return ((bitField0_ & 0x00000010) == 0x00000010);
       }
       /**
-       * <code>optional float taxa = 4;</code>
+       * <code>optional float taxa = 5;</code>
        */
       public float getTaxa() {
         return taxa_;
       }
       /**
-       * <code>optional float taxa = 4;</code>
+       * <code>optional float taxa = 5;</code>
        */
       public Builder setTaxa(float value) {
-        bitField0_ |= 0x00000008;
+        bitField0_ |= 0x00000010;
         taxa_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>optional float taxa = 4;</code>
+       * <code>optional float taxa = 5;</code>
        */
       public Builder clearTaxa() {
-        bitField0_ = (bitField0_ & ~0x00000008);
+        bitField0_ = (bitField0_ & ~0x00000010);
         taxa_ = 0F;
         onChanged();
         return this;
+      }
+
+      private long tempo_ ;
+      /**
+       * <code>optional int64 tempo = 6;</code>
+       */
+      public boolean hasTempo() {
+        return ((bitField0_ & 0x00000020) == 0x00000020);
+      }
+      /**
+       * <code>optional int64 tempo = 6;</code>
+       */
+      public long getTempo() {
+        return tempo_;
+      }
+      /**
+       * <code>optional int64 tempo = 6;</code>
+       */
+      public Builder setTempo(long value) {
+        bitField0_ |= 0x00000020;
+        tempo_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional int64 tempo = 6;</code>
+       */
+      public Builder clearTempo() {
+        bitField0_ = (bitField0_ & ~0x00000020);
+        tempo_ = 0L;
+        onChanged();
+        return this;
+      }
+
+      private cliente.NotificacaoOuterClass.ResultadoAcao resultado_ = null;
+      private com.google.protobuf.SingleFieldBuilderV3<
+          cliente.NotificacaoOuterClass.ResultadoAcao, cliente.NotificacaoOuterClass.ResultadoAcao.Builder, cliente.NotificacaoOuterClass.ResultadoAcaoOrBuilder> resultadoBuilder_;
+      /**
+       * <code>optional .cliente.ResultadoAcao resultado = 7;</code>
+       */
+      public boolean hasResultado() {
+        return ((bitField0_ & 0x00000040) == 0x00000040);
+      }
+      /**
+       * <code>optional .cliente.ResultadoAcao resultado = 7;</code>
+       */
+      public cliente.NotificacaoOuterClass.ResultadoAcao getResultado() {
+        if (resultadoBuilder_ == null) {
+          return resultado_ == null ? cliente.NotificacaoOuterClass.ResultadoAcao.getDefaultInstance() : resultado_;
+        } else {
+          return resultadoBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>optional .cliente.ResultadoAcao resultado = 7;</code>
+       */
+      public Builder setResultado(cliente.NotificacaoOuterClass.ResultadoAcao value) {
+        if (resultadoBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          resultado_ = value;
+          onChanged();
+        } else {
+          resultadoBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00000040;
+        return this;
+      }
+      /**
+       * <code>optional .cliente.ResultadoAcao resultado = 7;</code>
+       */
+      public Builder setResultado(
+          cliente.NotificacaoOuterClass.ResultadoAcao.Builder builderForValue) {
+        if (resultadoBuilder_ == null) {
+          resultado_ = builderForValue.build();
+          onChanged();
+        } else {
+          resultadoBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000040;
+        return this;
+      }
+      /**
+       * <code>optional .cliente.ResultadoAcao resultado = 7;</code>
+       */
+      public Builder mergeResultado(cliente.NotificacaoOuterClass.ResultadoAcao value) {
+        if (resultadoBuilder_ == null) {
+          if (((bitField0_ & 0x00000040) == 0x00000040) &&
+              resultado_ != null &&
+              resultado_ != cliente.NotificacaoOuterClass.ResultadoAcao.getDefaultInstance()) {
+            resultado_ =
+              cliente.NotificacaoOuterClass.ResultadoAcao.newBuilder(resultado_).mergeFrom(value).buildPartial();
+          } else {
+            resultado_ = value;
+          }
+          onChanged();
+        } else {
+          resultadoBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00000040;
+        return this;
+      }
+      /**
+       * <code>optional .cliente.ResultadoAcao resultado = 7;</code>
+       */
+      public Builder clearResultado() {
+        if (resultadoBuilder_ == null) {
+          resultado_ = null;
+          onChanged();
+        } else {
+          resultadoBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000040);
+        return this;
+      }
+      /**
+       * <code>optional .cliente.ResultadoAcao resultado = 7;</code>
+       */
+      public cliente.NotificacaoOuterClass.ResultadoAcao.Builder getResultadoBuilder() {
+        bitField0_ |= 0x00000040;
+        onChanged();
+        return getResultadoFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>optional .cliente.ResultadoAcao resultado = 7;</code>
+       */
+      public cliente.NotificacaoOuterClass.ResultadoAcaoOrBuilder getResultadoOrBuilder() {
+        if (resultadoBuilder_ != null) {
+          return resultadoBuilder_.getMessageOrBuilder();
+        } else {
+          return resultado_ == null ?
+              cliente.NotificacaoOuterClass.ResultadoAcao.getDefaultInstance() : resultado_;
+        }
+      }
+      /**
+       * <code>optional .cliente.ResultadoAcao resultado = 7;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          cliente.NotificacaoOuterClass.ResultadoAcao, cliente.NotificacaoOuterClass.ResultadoAcao.Builder, cliente.NotificacaoOuterClass.ResultadoAcaoOrBuilder> 
+          getResultadoFieldBuilder() {
+        if (resultadoBuilder_ == null) {
+          resultadoBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              cliente.NotificacaoOuterClass.ResultadoAcao, cliente.NotificacaoOuterClass.ResultadoAcao.Builder, cliente.NotificacaoOuterClass.ResultadoAcaoOrBuilder>(
+                  getResultado(),
+                  getParentForChildren(),
+                  isClean());
+          resultado_ = null;
+        }
+        return resultadoBuilder_;
       }
       @java.lang.Override
       public final Builder setUnknownFields(
@@ -1004,11 +1490,713 @@ public final class NotificacaoOuterClass {
 
   }
 
+  public interface ResultadoAcaoOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:cliente.ResultadoAcao)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>required .cliente.TipoAcao tipo = 1 [default = LEILAO];</code>
+     */
+    boolean hasTipo();
+    /**
+     * <code>required .cliente.TipoAcao tipo = 1 [default = LEILAO];</code>
+     */
+    cliente.NotificacaoOuterClass.TipoAcao getTipo();
+
+    /**
+     * <code>required string texto = 3;</code>
+     */
+    boolean hasTexto();
+    /**
+     * <code>required string texto = 3;</code>
+     */
+    java.lang.String getTexto();
+    /**
+     * <code>required string texto = 3;</code>
+     */
+    com.google.protobuf.ByteString
+        getTextoBytes();
+  }
+  /**
+   * Protobuf type {@code cliente.ResultadoAcao}
+   */
+  public  static final class ResultadoAcao extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:cliente.ResultadoAcao)
+      ResultadoAcaoOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use ResultadoAcao.newBuilder() to construct.
+    private ResultadoAcao(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private ResultadoAcao() {
+      tipo_ = 1;
+      texto_ = "";
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private ResultadoAcao(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            case 8: {
+              int rawValue = input.readEnum();
+                @SuppressWarnings("deprecation")
+              cliente.NotificacaoOuterClass.TipoAcao value = cliente.NotificacaoOuterClass.TipoAcao.valueOf(rawValue);
+              if (value == null) {
+                unknownFields.mergeVarintField(1, rawValue);
+              } else {
+                bitField0_ |= 0x00000001;
+                tipo_ = rawValue;
+              }
+              break;
+            }
+            case 26: {
+              com.google.protobuf.ByteString bs = input.readBytes();
+              bitField0_ |= 0x00000002;
+              texto_ = bs;
+              break;
+            }
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return cliente.NotificacaoOuterClass.internal_static_cliente_ResultadoAcao_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return cliente.NotificacaoOuterClass.internal_static_cliente_ResultadoAcao_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              cliente.NotificacaoOuterClass.ResultadoAcao.class, cliente.NotificacaoOuterClass.ResultadoAcao.Builder.class);
+    }
+
+    private int bitField0_;
+    public static final int TIPO_FIELD_NUMBER = 1;
+    private int tipo_;
+    /**
+     * <code>required .cliente.TipoAcao tipo = 1 [default = LEILAO];</code>
+     */
+    public boolean hasTipo() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    /**
+     * <code>required .cliente.TipoAcao tipo = 1 [default = LEILAO];</code>
+     */
+    public cliente.NotificacaoOuterClass.TipoAcao getTipo() {
+      @SuppressWarnings("deprecation")
+      cliente.NotificacaoOuterClass.TipoAcao result = cliente.NotificacaoOuterClass.TipoAcao.valueOf(tipo_);
+      return result == null ? cliente.NotificacaoOuterClass.TipoAcao.LEILAO : result;
+    }
+
+    public static final int TEXTO_FIELD_NUMBER = 3;
+    private volatile java.lang.Object texto_;
+    /**
+     * <code>required string texto = 3;</code>
+     */
+    public boolean hasTexto() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>required string texto = 3;</code>
+     */
+    public java.lang.String getTexto() {
+      java.lang.Object ref = texto_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          texto_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>required string texto = 3;</code>
+     */
+    public com.google.protobuf.ByteString
+        getTextoBytes() {
+      java.lang.Object ref = texto_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        texto_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      if (!hasTipo()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasTexto()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeEnum(1, tipo_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 3, texto_);
+      }
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeEnumSize(1, tipo_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, texto_);
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof cliente.NotificacaoOuterClass.ResultadoAcao)) {
+        return super.equals(obj);
+      }
+      cliente.NotificacaoOuterClass.ResultadoAcao other = (cliente.NotificacaoOuterClass.ResultadoAcao) obj;
+
+      boolean result = true;
+      result = result && (hasTipo() == other.hasTipo());
+      if (hasTipo()) {
+        result = result && tipo_ == other.tipo_;
+      }
+      result = result && (hasTexto() == other.hasTexto());
+      if (hasTexto()) {
+        result = result && getTexto()
+            .equals(other.getTexto());
+      }
+      result = result && unknownFields.equals(other.unknownFields);
+      return result;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      if (hasTipo()) {
+        hash = (37 * hash) + TIPO_FIELD_NUMBER;
+        hash = (53 * hash) + tipo_;
+      }
+      if (hasTexto()) {
+        hash = (37 * hash) + TEXTO_FIELD_NUMBER;
+        hash = (53 * hash) + getTexto().hashCode();
+      }
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static cliente.NotificacaoOuterClass.ResultadoAcao parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static cliente.NotificacaoOuterClass.ResultadoAcao parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static cliente.NotificacaoOuterClass.ResultadoAcao parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static cliente.NotificacaoOuterClass.ResultadoAcao parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static cliente.NotificacaoOuterClass.ResultadoAcao parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static cliente.NotificacaoOuterClass.ResultadoAcao parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static cliente.NotificacaoOuterClass.ResultadoAcao parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static cliente.NotificacaoOuterClass.ResultadoAcao parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static cliente.NotificacaoOuterClass.ResultadoAcao parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static cliente.NotificacaoOuterClass.ResultadoAcao parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static cliente.NotificacaoOuterClass.ResultadoAcao parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static cliente.NotificacaoOuterClass.ResultadoAcao parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(cliente.NotificacaoOuterClass.ResultadoAcao prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code cliente.ResultadoAcao}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:cliente.ResultadoAcao)
+        cliente.NotificacaoOuterClass.ResultadoAcaoOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return cliente.NotificacaoOuterClass.internal_static_cliente_ResultadoAcao_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return cliente.NotificacaoOuterClass.internal_static_cliente_ResultadoAcao_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                cliente.NotificacaoOuterClass.ResultadoAcao.class, cliente.NotificacaoOuterClass.ResultadoAcao.Builder.class);
+      }
+
+      // Construct using cliente.NotificacaoOuterClass.ResultadoAcao.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        tipo_ = 1;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        texto_ = "";
+        bitField0_ = (bitField0_ & ~0x00000002);
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return cliente.NotificacaoOuterClass.internal_static_cliente_ResultadoAcao_descriptor;
+      }
+
+      @java.lang.Override
+      public cliente.NotificacaoOuterClass.ResultadoAcao getDefaultInstanceForType() {
+        return cliente.NotificacaoOuterClass.ResultadoAcao.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public cliente.NotificacaoOuterClass.ResultadoAcao build() {
+        cliente.NotificacaoOuterClass.ResultadoAcao result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public cliente.NotificacaoOuterClass.ResultadoAcao buildPartial() {
+        cliente.NotificacaoOuterClass.ResultadoAcao result = new cliente.NotificacaoOuterClass.ResultadoAcao(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.tipo_ = tipo_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.texto_ = texto_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return (Builder) super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return (Builder) super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return (Builder) super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return (Builder) super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof cliente.NotificacaoOuterClass.ResultadoAcao) {
+          return mergeFrom((cliente.NotificacaoOuterClass.ResultadoAcao)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(cliente.NotificacaoOuterClass.ResultadoAcao other) {
+        if (other == cliente.NotificacaoOuterClass.ResultadoAcao.getDefaultInstance()) return this;
+        if (other.hasTipo()) {
+          setTipo(other.getTipo());
+        }
+        if (other.hasTexto()) {
+          bitField0_ |= 0x00000002;
+          texto_ = other.texto_;
+          onChanged();
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        if (!hasTipo()) {
+          return false;
+        }
+        if (!hasTexto()) {
+          return false;
+        }
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        cliente.NotificacaoOuterClass.ResultadoAcao parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (cliente.NotificacaoOuterClass.ResultadoAcao) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      private int tipo_ = 1;
+      /**
+       * <code>required .cliente.TipoAcao tipo = 1 [default = LEILAO];</code>
+       */
+      public boolean hasTipo() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      /**
+       * <code>required .cliente.TipoAcao tipo = 1 [default = LEILAO];</code>
+       */
+      public cliente.NotificacaoOuterClass.TipoAcao getTipo() {
+        @SuppressWarnings("deprecation")
+        cliente.NotificacaoOuterClass.TipoAcao result = cliente.NotificacaoOuterClass.TipoAcao.valueOf(tipo_);
+        return result == null ? cliente.NotificacaoOuterClass.TipoAcao.LEILAO : result;
+      }
+      /**
+       * <code>required .cliente.TipoAcao tipo = 1 [default = LEILAO];</code>
+       */
+      public Builder setTipo(cliente.NotificacaoOuterClass.TipoAcao value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        bitField0_ |= 0x00000001;
+        tipo_ = value.getNumber();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required .cliente.TipoAcao tipo = 1 [default = LEILAO];</code>
+       */
+      public Builder clearTipo() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        tipo_ = 1;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object texto_ = "";
+      /**
+       * <code>required string texto = 3;</code>
+       */
+      public boolean hasTexto() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <code>required string texto = 3;</code>
+       */
+      public java.lang.String getTexto() {
+        java.lang.Object ref = texto_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            texto_ = s;
+          }
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>required string texto = 3;</code>
+       */
+      public com.google.protobuf.ByteString
+          getTextoBytes() {
+        java.lang.Object ref = texto_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          texto_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>required string texto = 3;</code>
+       */
+      public Builder setTexto(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+        texto_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required string texto = 3;</code>
+       */
+      public Builder clearTexto() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        texto_ = getDefaultInstance().getTexto();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required string texto = 3;</code>
+       */
+      public Builder setTextoBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+        texto_ = value;
+        onChanged();
+        return this;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:cliente.ResultadoAcao)
+    }
+
+    // @@protoc_insertion_point(class_scope:cliente.ResultadoAcao)
+    private static final cliente.NotificacaoOuterClass.ResultadoAcao DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new cliente.NotificacaoOuterClass.ResultadoAcao();
+    }
+
+    public static cliente.NotificacaoOuterClass.ResultadoAcao getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    @java.lang.Deprecated public static final com.google.protobuf.Parser<ResultadoAcao>
+        PARSER = new com.google.protobuf.AbstractParser<ResultadoAcao>() {
+      @java.lang.Override
+      public ResultadoAcao parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new ResultadoAcao(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<ResultadoAcao> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<ResultadoAcao> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public cliente.NotificacaoOuterClass.ResultadoAcao getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
   private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_cliente_Notificacao_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_cliente_Notificacao_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_cliente_ResultadoAcao_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_cliente_ResultadoAcao_fieldAccessorTable;
 
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -1018,13 +2206,17 @@ public final class NotificacaoOuterClass {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n\021Notificacao.proto\022\007cliente\"u\n\013Notifica" +
-      "cao\0225\n\004tipo\030\001 \002(\0162\030.cliente.TipoNotifica" +
-      "cao:\rCRIACAOLEILAO\022\017\n\007empresa\030\002 \002(\t\022\020\n\010m" +
-      "ontante\030\003 \002(\003\022\014\n\004taxa\030\004 \001(\002*b\n\017TipoNotif" +
-      "icacao\022\021\n\rCRIACAOLEILAO\020\001\022\023\n\017LICITACAOLE" +
-      "ILAO\020\002\022\021\n\rCRIACOEMISSAO\020\003\022\024\n\020LICITACAOEM" +
-      "ISSAO\020\004"
+      "\n\021Notificacao.proto\022\007cliente\"\332\001\n\013Notific" +
+      "acao\022/\n\004tipo\030\001 \002(\0162\030.cliente.TipoNotific" +
+      "acao:\007CRIACAO\022/\n\014tipoMensagem\030\002 \002(\0162\021.cl" +
+      "iente.TipoAcao:\006LEILAO\022\017\n\007empresa\030\003 \002(\t\022" +
+      "\020\n\010montante\030\004 \002(\003\022\014\n\004taxa\030\005 \001(\002\022\r\n\005tempo" +
+      "\030\006 \001(\003\022)\n\tresultado\030\007 \001(\0132\026.cliente.Resu" +
+      "ltadoAcao\"G\n\rResultadoAcao\022\'\n\004tipo\030\001 \002(\016" +
+      "2\021.cliente.TipoAcao:\006LEILAO\022\r\n\005texto\030\003 \002" +
+      "(\t*6\n\017TipoNotificacao\022\013\n\007CRIACAO\020\001\022\r\n\tLI" +
+      "CITACAO\020\002\022\007\n\003FIM\020\003*#\n\010TipoAcao\022\n\n\006LEILAO" +
+      "\020\001\022\013\n\007EMISSAO\020\002"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -1043,7 +2235,13 @@ public final class NotificacaoOuterClass {
     internal_static_cliente_Notificacao_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_cliente_Notificacao_descriptor,
-        new java.lang.String[] { "Tipo", "Empresa", "Montante", "Taxa", });
+        new java.lang.String[] { "Tipo", "TipoMensagem", "Empresa", "Montante", "Taxa", "Tempo", "Resultado", });
+    internal_static_cliente_ResultadoAcao_descriptor =
+      getDescriptor().getMessageTypes().get(1);
+    internal_static_cliente_ResultadoAcao_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_cliente_ResultadoAcao_descriptor,
+        new java.lang.String[] { "Tipo", "Texto", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)

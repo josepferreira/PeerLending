@@ -13,24 +13,24 @@ mapaStateEmpresa(Map, Push, Pull) ->
 
 start() ->
   login_manager:start(),
-  {ok, Socket} = chumak:socket(push),
+  application:start(chumak),
 
-  case chumak:connect(Socket, tcp, "localhost", 12351) of
+  {ok, Push} = chumak:socket(push),
+
+  case chumak:connect(Push, tcp, "localhost", 12351) of
       {ok, _} ->
-          io:format("Binding OK with Pid: ~p\n", [Socket]);
+          io:format("Binding OK with Pid: ~p\n", [Push]);
       {error, Reason} ->
           io:format("Connection Failed for this reason: ~p\n", [Reason]);
       X ->
           io:format("Unhandled reply for bind ~p \n", [X])
   end,
   
-  SocketExchPush = application:start(chumak),
+  {ok, Pull} = chumak:socket(pull),
 
-  {ok, Socket1} = chumak:socket(pull),
-
-  case chumak:connect(Socket1, tcp, "localhost", 12350) of
+  case chumak:connect(Pull, tcp, "localhost", 12350) of
       {ok, _BindPid} ->
-          io:format("Binding OK with Pid: ~p\n", [Socket1]);
+          io:format("Binding OK with Pid: ~p\n", [Pull]);
       {error, Reason1} ->
           io:format("Connection Failed for this reason: ~p\n", [Reason1]);
       X1 ->
@@ -39,7 +39,7 @@ start() ->
   SocketExchPull = application:start(chumak),
 
     
-  MapState = mapaStateEmpresa(#{}, SocketExchPush, SocketExchPull),
+  MapState = mapaStateEmpresa(#{}, Push, Pull),
 
   io:format("Servidor principal ja esta a correr!"),
   {ok, LSock} = gen_tcp:listen(12345, [binary, {packet, 4}, {active, true}, {reuseaddr, true}]),

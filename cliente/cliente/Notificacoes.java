@@ -76,7 +76,7 @@ class ComunicaCliente implements Runnable{
         }
     }
 
-}scoket.connect("tcp://*:12352");
+}
 
 public class Notificacoes implements Runnable{
 
@@ -104,15 +104,26 @@ public class Notificacoes implements Runnable{
         
         while(!Thread.interrupted()){
             byte[] b = socket.recv();
+            System.out.println("Recebi uma notificacao!!");
             /**
              * Aqui vou ter de fazer parse da mensagem 
              * Os primeiros bytes são de subscrição e os seguintes é a mensagem de subscrição
              */
 
-            byte[] mensagem = null;
+            /*byte[] mensagem = null;
             try{
                 Notificacao notificacao = Notificacao.parseFrom(mensagem);
                 String head = null;
+                
+                if(notificacao.getTipo() == TipoNotificacao.CRIACAO){
+                    
+                }else{
+                    if(notificacao.getTipo() == TipoNotificacao.LICITACAO){
+
+                    }else{
+
+                    }
+                }
 
                 if(notificacao.getTipo() == TipoNotificacao.CRIACAOLEILAO){
                     head = "Foi criado um leilão pela empresa ";
@@ -131,17 +142,17 @@ public class Notificacoes implements Runnable{
                 }
 
                 /*switch(notificacao.getTipo()){
-                    case TipoNotificacao.CRIACAOLEILAO: head = "Foi criado um leilão pela empresa "; break;
+                    case Tipif(notificacao.)oNotificacao.CRIACAOLEILAO: head = "Foi criado um leilão pela empresa "; break;
                     case TipoNotificacao.LICITACAOLEILAO: head = "Foi acrescentada uma licitação ao leilão da empresa "; break;
                     case TipoNotificacao.CRIACOEMISSAO: head = "Foi criada uma emissão pela empresa "; break;
                     case TipoNotificacao.LICITACAOEMISSAO: head = "Foi acrescentada uma subscrição à emissão da empresa "; break;
                 }*/
 
-                String msg = head + notificacao.getEmpresa() + " com o montante " + notificacao.getMontante() + " e uma taxa de " + notificacao.getTaxa();
+               /* String msg = head + notificacao.getEmpresa() + " com o montante " + notificacao.getMontante() + " e uma taxa de " + notificacao.getTaxa();
                 System.out.println(msg);
             }catch(Exception e){
                 System.out.println("ERRO: Deu um erro a fazer parse da NOtificacao");
-            }
+            }*/
         }
 
 
