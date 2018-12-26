@@ -58,13 +58,14 @@ public class Exchange{
     }
 
     public static void main(String[] args){
+        System.out.println("====================Chegou ao exchange=====================");
         //carrega de alguma forma as empresas
         //carrega de alguma forma os seus enderecos e portas
         //carrega de alguma forma os enderecos e portas do diretorio e exchange
         ZMQ.Context context = ZMQ.context(1);
-        EstruturaExchange estrutura = new EstruturaExchange(context, "12345", "12347");
+        EstruturaExchange estrutura = new EstruturaExchange(context, "12350", "12352");
         ZMQ.Socket socketExchangePull = context.socket(ZMQ.PULL);
-        String myPull = "12346";
+        String myPull = "12351";
     
         socketExchangePull.bind("tcp://*:" + myPull);
         Thread acaba = new Thread(new TerminaEmprestimo(estrutura));

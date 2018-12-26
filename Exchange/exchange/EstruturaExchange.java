@@ -63,6 +63,11 @@ class EstruturaExchange{
         socketExchangePush = context.socket(ZMQ.PUSH);
         socketExchangePush.bind("tcp://*:" + myPush);
         socketNotificacoes.bind("tcp://*:" + myPub);
+        
+        empresas.put("emp1", new Empresa("emp1"));
+        empresas.put("emp2", new Empresa("emp2"));
+
+        System.out.println("Estrutura configurada");
 
     }
     private void possoInterromper(){

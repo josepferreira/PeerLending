@@ -46,6 +46,7 @@ class ComunicaCliente implements Runnable{
              * Se for unsub@ -> então é para tirar o subscribe
              */
 
+
             String decisao = msgResposta.split("@")[0];
             String sub = msgResposta.split("@")[1];
             System.out.println("A decisao é " + decisao + ". A subscrição: " + sub);
@@ -75,7 +76,7 @@ class ComunicaCliente implements Runnable{
         }
     }
 
-}
+}scoket.connect("tcp://*:12352");
 
 public class Notificacoes implements Runnable{
 
@@ -90,6 +91,7 @@ public class Notificacoes implements Runnable{
     public void run(){
         //Vou ter de me associar às exchanges
         ZMQ.Socket socket = context.socket(ZMQ.SUB);
+        socket.connect("tcp://*:12352");
         /**
          * Agora é necessário ter os IPs e portas ... Vou buscar ao diretorio?
          * socket.connect("tcp://ip:"+porta);

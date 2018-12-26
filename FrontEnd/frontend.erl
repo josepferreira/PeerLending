@@ -5,15 +5,42 @@
 
 
 %Função para criar um mapa: PidState - [Empresa]
-mapaStateEmpresa(Map) ->
-  PidStateA = frontend_state:start(12),
+mapaStateEmpresa(Map, Push, Pull) ->
+  PidStateA = frontend_state:start(Push, Pull),
   Map2 = maps:put(PidStateA, ["emp1", "emp2"], Map),
   Map2
 .
 
 start() ->
   login_manager:start(),
-  MapState = mapaStateEmpresa(#{}),
+  {ok, Socket} = chumak:socket(push),
+
+  case chumak:connect(Socket, tcp, "localhost", 12351) of
+      {ok, _} ->
+          io:format("Binding OK with Pid: ~p\n", [Socket]);
+      {error, Reason} ->
+          io:format("Connection Failed for this reason: ~p\n", [Reason]);
+      X ->
+          io:format("Unhandled reply for bind ~p \n", [X])
+  end,
+  
+  SocketExchPush = application:start(chumak),
+
+  {ok, Socket1} = chumak:socket(pull),
+
+  case chumak:connect(Socket1, tcp, "localhost", 12350) of
+      {ok, _BindPid} ->
+          io:format("Binding OK with Pid: ~p\n", [Socket1]);
+      {error, Reason1} ->
+          io:format("Connection Failed for this reason: ~p\n", [Reason1]);
+      X1 ->
+          io:format("Unhandled reply for bind ~p \n", [X1])
+  end,
+  SocketExchPull = application:start(chumak),
+
+    
+  MapState = mapaStateEmpresa(#{}, SocketExchPush, SocketExchPull),
+
   io:format("Servidor principal ja esta a correr!"),
   {ok, LSock} = gen_tcp:listen(12345, [binary, {packet, 4}, {active, true}, {reuseaddr, true}]),
   acceptor(LSock, MapState).

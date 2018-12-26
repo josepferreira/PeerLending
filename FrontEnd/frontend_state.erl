@@ -1,5 +1,5 @@
 -module(frontend_state).
--export([start/1]).
+-export([start/2]).
 
 -include("ccs.hrl").
 
@@ -11,14 +11,25 @@
 %Falta ligar aos sockets da exchange e atualizar ultima taxa, se for para manter isso aqui
 
 
-start(SockExch) ->
+recebeExchange(Pull, Loop) ->
+    io:format("recebeExchange a correr"),
+    {ok, Data} = chumak:recv(Pull),
+    Loop ! {exchangeReceiver, Data},
+    recebeExchange(Pull, Loop)
+.
+
+
+start(Push, Pull) ->
   io:format("State ja esta a correr!"),
+  
+
   %Ligacao aos sockets da exchange
-  MyPid = spawn (fun() -> loop (SockExch, #{"emp1" => {false, false, -1, []}}) end),
+  MyPid = spawn (fun() -> loop (Push, Pull, #{"emp1" => {false, false, -1, []}}) end),
+  _ = spawn( fun() -> recebeExchange(Pull, MyPid) end),
   MyPid
 .
 
-loop (SockExch, MapEstado) -> 
+loop (Push, Pull, MapEstado) -> 
     receive
         %Receive para as mensagens vindas do frontend_client
         {licitacao, Empresa, User, From, ProtoBufBin}->
@@ -27,12 +38,12 @@ loop (SockExch, MapEstado) ->
                 {ok, {Leilao, Emissao, UltimaTaxa, UtilizadoresInteressados }} when Leilao == true -> 
                     NovaLista = [{User, From} | UtilizadoresInteressados],
                     NewMap = maps:put(Empresa, {Leilao, Emissao, UltimaTaxa, NovaLista}, MapEstado),
-                    gen_tcp:send(SockExch, ProtoBufBin),
-                    loop(SockExch, NewMap)
+                    chumak:send(Push, ProtoBufBin),
+                    loop(Push, Pull, NewMap)
                 ;
                 _-> 
                     From ! {self(), invalid, "Não ha um leilao em curso para a empresa" ++ Empresa},
-                    loop(SockExch, MapEstado)
+                    loop(Push, Pull, MapEstado)
             end
         ;
         {emissao, Empresa, User, From, ProtoBufBin}->
@@ -41,12 +52,12 @@ loop (SockExch, MapEstado) ->
                 {ok, {Leilao, Emissao, UltimaTaxa, UtilizadoresInteressados }} when Emissao == true -> 
                     NovaLista = [{User, From} | UtilizadoresInteressados],
                     NewMap = maps:put(Empresa, {Leilao, Emissao, UltimaTaxa, NovaLista}, MapEstado),
-                    gen_tcp:send(SockExch, ProtoBufBin),
-                    loop(SockExch, NewMap)
+                    chumak:send(Push, ProtoBufBin),
+                    loop(Push, Pull, NewMap)
                 ;
                 _-> 
                     From ! {self(), invalid, "Não ha uma emissao em curso para a empresa" ++ Empresa},
-                    loop(SockExch, MapEstado)
+                    loop(Push, Pull, MapEstado)
             end
         ;
         {iniciaLeilao, Empresa, From, ProtoBufBin}->
@@ -58,11 +69,11 @@ loop (SockExch, MapEstado) ->
                     %gen_tcp:send(SockExch, ProtoBufBin),
                     Binario = ccs:encode_msg(#'RespostaExchange'{tipo='RESULTADO',resultado=#'Resultado'{tipo='LEILAO',empresa="emp1",texto="Nao foste tu"}}),
                     From ! {self(), Binario},
-                    loop(SockExch, NewMap)
+                    loop(Push, Pull, NewMap)
                 ;
                 _-> 
                     From ! {self(), invalid, "Não pode criar um leilao de momento! Já se encontra em atividade!"},
-                    loop(SockExch, MapEstado)
+                    loop(Push, Pull, MapEstado)
             end
         ;
         {iniciaEmissao, Empresa, From, ProtoBufBin}->
@@ -71,16 +82,16 @@ loop (SockExch, MapEstado) ->
                 {ok, {Leilao, Emissao, UltimaTaxa, _}} when Emissao == false , Leilao == false -> 
                     NovaLista = [],
                     NewMap = maps:put(Empresa, {Leilao, true, UltimaTaxa, NovaLista}, MapEstado),
-                    gen_tcp:send(SockExch, ProtoBufBin),
-                    loop(SockExch, NewMap)
+                    chumak:send(Push, ProtoBufBin),
+                    loop(Push, Pull, NewMap)
                 ;
                 _-> 
                     From ! {self(), invalid, "Não pode criar uma emissao de momento! Já se encontra em atividade!"},
-                    loop(SockExch, MapEstado)
+                    loop(Push, Pull, MapEstado)
             end
         ;
         %Receive para as mensagens das exchanges
-        {tcp, _, RespostaExchange} ->
+        {exchangeReceiver, RespostaExchange} ->
             {'RespostaExchange', Tipo, Notificacao, Resultado} = ccs:decode_msg(RespostaExchange,'RespostaExchange'),
             case Tipo of
                 'RESULTADO' -> 
@@ -89,7 +100,7 @@ loop (SockExch, MapEstado) ->
                         {ok, {_, _, UltimaTaxa, ListaUsers}} ->
                             [UserPid ! {self(), RespostaExchange} || {_, UserPid} <- ListaUsers ],
                             NewMap = maps:put(Empresa, {false, false, UltimaTaxa, []}),
-                            loop(SockExch, NewMap)
+                            loop(Push, Pull, NewMap)
                     end
                 ;
                 'NOTIFICACAO' ->
