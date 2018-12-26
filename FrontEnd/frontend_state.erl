@@ -66,9 +66,9 @@ loop (Push, Pull, MapEstado) ->
                 {ok, {Leilao, Emissao, UltimaTaxa, _}} when Leilao == false , Emissao == false -> 
                     NovaLista = [],
                     NewMap = maps:put(Empresa, {true, Emissao, UltimaTaxa, NovaLista}, MapEstado),
-                    %gen_tcp:send(SockExch, ProtoBufBin),
-                    Binario = ccs:encode_msg(#'RespostaExchange'{tipo='RESULTADO',resultado=#'Resultado'{tipo='LEILAO',empresa="emp1",texto="Nao foste tu"}}),
-                    From ! {self(), Binario},
+                    chumak:send(Push, ProtoBufBin),
+                    % Binario = ccs:encode_msg(#'RespostaExchange'{tipo='RESULTADO',resultado=#'Resultado'{tipo='LEILAO',empresa="emp1",texto="Nao foste tu"}}),
+                    % From ! {self(), Binario},
                     loop(Push, Pull, NewMap)
                 ;
                 _-> 

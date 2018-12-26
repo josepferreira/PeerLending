@@ -145,10 +145,15 @@ class Licitador{
                                             .setTaxa(taxaAux)
                                             .build();
 
-        MensagemInvestidor mensagem = MensagemInvestidor.newBuilder()
-                                                .setTipo(TipoMensagem.LEILAO)
+        MensagemInvestidor mensagemInvestidor = MensagemInvestidor.newBuilder()
                                                 .setLeilao(leilao)
+                                                .build();
+
+        MensagemUtilizador mensagem = MensagemUtilizador.newBuilder()
+                                                .setTipo(TipoMensagem.LEILAO)
+                                                .setTipoUtilizador(TipoUtilizador.INVESTIDOR)
                                                 .setUtilizador(this.username)
+                                                .setInvestidor(mensagemInvestidor)
                                                 .build();
       
         byte[] ba = mensagem.toByteArray();
@@ -206,10 +211,15 @@ class Licitador{
                                             .setMontante(montante)
                                             .build();
 
-        MensagemInvestidor mensagem = MensagemInvestidor.newBuilder()
-                                                .setTipo(TipoMensagem.EMISSAO)
+        MensagemInvestidor mensagemInvestidor = MensagemInvestidor.newBuilder()
                                                 .setEmissao(emissao)
+                                                .build();
+
+        MensagemUtilizador mensagem = MensagemUtilizador.newBuilder()
+                                                .setTipo(TipoMensagem.EMISSAO)
+                                                .setTipoUtilizador(TipoUtilizador.INVESTIDOR)
                                                 .setUtilizador(this.username)
+                                                .setInvestidor(mensagemInvestidor)
                                                 .build();
       
         byte[] ba = mensagem.toByteArray();
@@ -357,13 +367,19 @@ class Licitador{
         CriacaoLeilao leilao = CriacaoLeilao.newBuilder()
                                             .setMontante(montante)
                                             .setTaxa(taxaAux)
+                                            .setTempo(10)
                                             .build();
 
-        MensagemEmpresa mensagem = MensagemEmpresa.newBuilder()
-                                                .setTipo(TipoMensagem.LEILAO)
+        MensagemEmpresa mensagemEmpresa = MensagemEmpresa.newBuilder()
                                                 .setLeilao(leilao)
-                                                .setUtilizador(this.username)
                                                 .build();
+
+        MensagemUtilizador mensagem = MensagemUtilizador.newBuilder()
+                                            .setTipo(TipoMensagem.LEILAO)
+                                            .setTipoUtilizador(TipoUtilizador.EMPRESA)
+                                            .setUtilizador(this.username)
+                                            .setEmpresa(mensagemEmpresa)
+                                            .build();
       
         byte[] ba = mensagem.toByteArray();
 
@@ -411,13 +427,19 @@ class Licitador{
 
         EmissaoTaxaFixa emissao = EmissaoTaxaFixa.newBuilder()
                                             .setMontante(montante)
+                                            .setTempo(10)
                                             .build();
 
-        MensagemEmpresa mensagem = MensagemEmpresa.newBuilder()
-                                                .setTipo(TipoMensagem.EMISSAO)
+        MensagemEmpresa mensagemEmpresa = MensagemEmpresa.newBuilder()
                                                 .setEmissao(emissao)
-                                                .setUtilizador(this.username)
                                                 .build();
+        
+        MensagemUtilizador mensagem = MensagemUtilizador.newBuilder()
+                                            .setTipo(TipoMensagem.EMISSAO)
+                                            .setTipoUtilizador(TipoUtilizador.EMPRESA)
+                                            .setUtilizador(this.username)
+                                            .setEmpresa(mensagemEmpresa)
+                                            .build();
       
         byte[] ba = mensagem.toByteArray();
 
