@@ -35,8 +35,8 @@ message MensagemUtilizador{
 }
 
 message MensagemEmpresa{
-    optional CriacaoLeilao leilao = 1;
-    optional EmissaoTaxaFixa emissao = 2;
+    optional CriacaoLeilao leilao = 2;
+    optional EmissaoTaxaFixa emissao = 3;
 }
 
 message CriacaoLeilao{
@@ -51,8 +51,8 @@ message EmissaoTaxaFixa{
 }
 
 message MensagemInvestidor{
-    optional LicitacaoLeilao leilao = 1;
-    optional SubscricaoTaxaFixa emissao = 2;
+    optional LicitacaoLeilao leilao = 2;
+    optional SubscricaoTaxaFixa emissao = 3;
 }
 
 message LicitacaoLeilao{

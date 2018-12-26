@@ -2962,28 +2962,28 @@ public final class Ccs {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>optional .exchange.CriacaoLeilao leilao = 1;</code>
+     * <code>optional .exchange.CriacaoLeilao leilao = 2;</code>
      */
     boolean hasLeilao();
     /**
-     * <code>optional .exchange.CriacaoLeilao leilao = 1;</code>
+     * <code>optional .exchange.CriacaoLeilao leilao = 2;</code>
      */
     exchange.Ccs.CriacaoLeilao getLeilao();
     /**
-     * <code>optional .exchange.CriacaoLeilao leilao = 1;</code>
+     * <code>optional .exchange.CriacaoLeilao leilao = 2;</code>
      */
     exchange.Ccs.CriacaoLeilaoOrBuilder getLeilaoOrBuilder();
 
     /**
-     * <code>optional .exchange.EmissaoTaxaFixa emissao = 2;</code>
+     * <code>optional .exchange.EmissaoTaxaFixa emissao = 3;</code>
      */
     boolean hasEmissao();
     /**
-     * <code>optional .exchange.EmissaoTaxaFixa emissao = 2;</code>
+     * <code>optional .exchange.EmissaoTaxaFixa emissao = 3;</code>
      */
     exchange.Ccs.EmissaoTaxaFixa getEmissao();
     /**
-     * <code>optional .exchange.EmissaoTaxaFixa emissao = 2;</code>
+     * <code>optional .exchange.EmissaoTaxaFixa emissao = 3;</code>
      */
     exchange.Ccs.EmissaoTaxaFixaOrBuilder getEmissaoOrBuilder();
   }
@@ -3026,7 +3026,7 @@ public final class Ccs {
             case 0:
               done = true;
               break;
-            case 10: {
+            case 18: {
               exchange.Ccs.CriacaoLeilao.Builder subBuilder = null;
               if (((bitField0_ & 0x00000001) == 0x00000001)) {
                 subBuilder = leilao_.toBuilder();
@@ -3039,7 +3039,7 @@ public final class Ccs {
               bitField0_ |= 0x00000001;
               break;
             }
-            case 18: {
+            case 26: {
               exchange.Ccs.EmissaoTaxaFixa.Builder subBuilder = null;
               if (((bitField0_ & 0x00000002) == 0x00000002)) {
                 subBuilder = emissao_.toBuilder();
@@ -3085,43 +3085,43 @@ public final class Ccs {
     }
 
     private int bitField0_;
-    public static final int LEILAO_FIELD_NUMBER = 1;
+    public static final int LEILAO_FIELD_NUMBER = 2;
     private exchange.Ccs.CriacaoLeilao leilao_;
     /**
-     * <code>optional .exchange.CriacaoLeilao leilao = 1;</code>
+     * <code>optional .exchange.CriacaoLeilao leilao = 2;</code>
      */
     public boolean hasLeilao() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
     /**
-     * <code>optional .exchange.CriacaoLeilao leilao = 1;</code>
+     * <code>optional .exchange.CriacaoLeilao leilao = 2;</code>
      */
     public exchange.Ccs.CriacaoLeilao getLeilao() {
       return leilao_ == null ? exchange.Ccs.CriacaoLeilao.getDefaultInstance() : leilao_;
     }
     /**
-     * <code>optional .exchange.CriacaoLeilao leilao = 1;</code>
+     * <code>optional .exchange.CriacaoLeilao leilao = 2;</code>
      */
     public exchange.Ccs.CriacaoLeilaoOrBuilder getLeilaoOrBuilder() {
       return leilao_ == null ? exchange.Ccs.CriacaoLeilao.getDefaultInstance() : leilao_;
     }
 
-    public static final int EMISSAO_FIELD_NUMBER = 2;
+    public static final int EMISSAO_FIELD_NUMBER = 3;
     private exchange.Ccs.EmissaoTaxaFixa emissao_;
     /**
-     * <code>optional .exchange.EmissaoTaxaFixa emissao = 2;</code>
+     * <code>optional .exchange.EmissaoTaxaFixa emissao = 3;</code>
      */
     public boolean hasEmissao() {
       return ((bitField0_ & 0x00000002) == 0x00000002);
     }
     /**
-     * <code>optional .exchange.EmissaoTaxaFixa emissao = 2;</code>
+     * <code>optional .exchange.EmissaoTaxaFixa emissao = 3;</code>
      */
     public exchange.Ccs.EmissaoTaxaFixa getEmissao() {
       return emissao_ == null ? exchange.Ccs.EmissaoTaxaFixa.getDefaultInstance() : emissao_;
     }
     /**
-     * <code>optional .exchange.EmissaoTaxaFixa emissao = 2;</code>
+     * <code>optional .exchange.EmissaoTaxaFixa emissao = 3;</code>
      */
     public exchange.Ccs.EmissaoTaxaFixaOrBuilder getEmissaoOrBuilder() {
       return emissao_ == null ? exchange.Ccs.EmissaoTaxaFixa.getDefaultInstance() : emissao_;
@@ -3154,10 +3154,10 @@ public final class Ccs {
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        output.writeMessage(1, getLeilao());
+        output.writeMessage(2, getLeilao());
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        output.writeMessage(2, getEmissao());
+        output.writeMessage(3, getEmissao());
       }
       unknownFields.writeTo(output);
     }
@@ -3170,11 +3170,11 @@ public final class Ccs {
       size = 0;
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(1, getLeilao());
+          .computeMessageSize(2, getLeilao());
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(2, getEmissao());
+          .computeMessageSize(3, getEmissao());
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -3511,13 +3511,13 @@ public final class Ccs {
       private com.google.protobuf.SingleFieldBuilderV3<
           exchange.Ccs.CriacaoLeilao, exchange.Ccs.CriacaoLeilao.Builder, exchange.Ccs.CriacaoLeilaoOrBuilder> leilaoBuilder_;
       /**
-       * <code>optional .exchange.CriacaoLeilao leilao = 1;</code>
+       * <code>optional .exchange.CriacaoLeilao leilao = 2;</code>
        */
       public boolean hasLeilao() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
       }
       /**
-       * <code>optional .exchange.CriacaoLeilao leilao = 1;</code>
+       * <code>optional .exchange.CriacaoLeilao leilao = 2;</code>
        */
       public exchange.Ccs.CriacaoLeilao getLeilao() {
         if (leilaoBuilder_ == null) {
@@ -3527,7 +3527,7 @@ public final class Ccs {
         }
       }
       /**
-       * <code>optional .exchange.CriacaoLeilao leilao = 1;</code>
+       * <code>optional .exchange.CriacaoLeilao leilao = 2;</code>
        */
       public Builder setLeilao(exchange.Ccs.CriacaoLeilao value) {
         if (leilaoBuilder_ == null) {
@@ -3543,7 +3543,7 @@ public final class Ccs {
         return this;
       }
       /**
-       * <code>optional .exchange.CriacaoLeilao leilao = 1;</code>
+       * <code>optional .exchange.CriacaoLeilao leilao = 2;</code>
        */
       public Builder setLeilao(
           exchange.Ccs.CriacaoLeilao.Builder builderForValue) {
@@ -3557,7 +3557,7 @@ public final class Ccs {
         return this;
       }
       /**
-       * <code>optional .exchange.CriacaoLeilao leilao = 1;</code>
+       * <code>optional .exchange.CriacaoLeilao leilao = 2;</code>
        */
       public Builder mergeLeilao(exchange.Ccs.CriacaoLeilao value) {
         if (leilaoBuilder_ == null) {
@@ -3577,7 +3577,7 @@ public final class Ccs {
         return this;
       }
       /**
-       * <code>optional .exchange.CriacaoLeilao leilao = 1;</code>
+       * <code>optional .exchange.CriacaoLeilao leilao = 2;</code>
        */
       public Builder clearLeilao() {
         if (leilaoBuilder_ == null) {
@@ -3590,7 +3590,7 @@ public final class Ccs {
         return this;
       }
       /**
-       * <code>optional .exchange.CriacaoLeilao leilao = 1;</code>
+       * <code>optional .exchange.CriacaoLeilao leilao = 2;</code>
        */
       public exchange.Ccs.CriacaoLeilao.Builder getLeilaoBuilder() {
         bitField0_ |= 0x00000001;
@@ -3598,7 +3598,7 @@ public final class Ccs {
         return getLeilaoFieldBuilder().getBuilder();
       }
       /**
-       * <code>optional .exchange.CriacaoLeilao leilao = 1;</code>
+       * <code>optional .exchange.CriacaoLeilao leilao = 2;</code>
        */
       public exchange.Ccs.CriacaoLeilaoOrBuilder getLeilaoOrBuilder() {
         if (leilaoBuilder_ != null) {
@@ -3609,7 +3609,7 @@ public final class Ccs {
         }
       }
       /**
-       * <code>optional .exchange.CriacaoLeilao leilao = 1;</code>
+       * <code>optional .exchange.CriacaoLeilao leilao = 2;</code>
        */
       private com.google.protobuf.SingleFieldBuilderV3<
           exchange.Ccs.CriacaoLeilao, exchange.Ccs.CriacaoLeilao.Builder, exchange.Ccs.CriacaoLeilaoOrBuilder> 
@@ -3629,13 +3629,13 @@ public final class Ccs {
       private com.google.protobuf.SingleFieldBuilderV3<
           exchange.Ccs.EmissaoTaxaFixa, exchange.Ccs.EmissaoTaxaFixa.Builder, exchange.Ccs.EmissaoTaxaFixaOrBuilder> emissaoBuilder_;
       /**
-       * <code>optional .exchange.EmissaoTaxaFixa emissao = 2;</code>
+       * <code>optional .exchange.EmissaoTaxaFixa emissao = 3;</code>
        */
       public boolean hasEmissao() {
         return ((bitField0_ & 0x00000002) == 0x00000002);
       }
       /**
-       * <code>optional .exchange.EmissaoTaxaFixa emissao = 2;</code>
+       * <code>optional .exchange.EmissaoTaxaFixa emissao = 3;</code>
        */
       public exchange.Ccs.EmissaoTaxaFixa getEmissao() {
         if (emissaoBuilder_ == null) {
@@ -3645,7 +3645,7 @@ public final class Ccs {
         }
       }
       /**
-       * <code>optional .exchange.EmissaoTaxaFixa emissao = 2;</code>
+       * <code>optional .exchange.EmissaoTaxaFixa emissao = 3;</code>
        */
       public Builder setEmissao(exchange.Ccs.EmissaoTaxaFixa value) {
         if (emissaoBuilder_ == null) {
@@ -3661,7 +3661,7 @@ public final class Ccs {
         return this;
       }
       /**
-       * <code>optional .exchange.EmissaoTaxaFixa emissao = 2;</code>
+       * <code>optional .exchange.EmissaoTaxaFixa emissao = 3;</code>
        */
       public Builder setEmissao(
           exchange.Ccs.EmissaoTaxaFixa.Builder builderForValue) {
@@ -3675,7 +3675,7 @@ public final class Ccs {
         return this;
       }
       /**
-       * <code>optional .exchange.EmissaoTaxaFixa emissao = 2;</code>
+       * <code>optional .exchange.EmissaoTaxaFixa emissao = 3;</code>
        */
       public Builder mergeEmissao(exchange.Ccs.EmissaoTaxaFixa value) {
         if (emissaoBuilder_ == null) {
@@ -3695,7 +3695,7 @@ public final class Ccs {
         return this;
       }
       /**
-       * <code>optional .exchange.EmissaoTaxaFixa emissao = 2;</code>
+       * <code>optional .exchange.EmissaoTaxaFixa emissao = 3;</code>
        */
       public Builder clearEmissao() {
         if (emissaoBuilder_ == null) {
@@ -3708,7 +3708,7 @@ public final class Ccs {
         return this;
       }
       /**
-       * <code>optional .exchange.EmissaoTaxaFixa emissao = 2;</code>
+       * <code>optional .exchange.EmissaoTaxaFixa emissao = 3;</code>
        */
       public exchange.Ccs.EmissaoTaxaFixa.Builder getEmissaoBuilder() {
         bitField0_ |= 0x00000002;
@@ -3716,7 +3716,7 @@ public final class Ccs {
         return getEmissaoFieldBuilder().getBuilder();
       }
       /**
-       * <code>optional .exchange.EmissaoTaxaFixa emissao = 2;</code>
+       * <code>optional .exchange.EmissaoTaxaFixa emissao = 3;</code>
        */
       public exchange.Ccs.EmissaoTaxaFixaOrBuilder getEmissaoOrBuilder() {
         if (emissaoBuilder_ != null) {
@@ -3727,7 +3727,7 @@ public final class Ccs {
         }
       }
       /**
-       * <code>optional .exchange.EmissaoTaxaFixa emissao = 2;</code>
+       * <code>optional .exchange.EmissaoTaxaFixa emissao = 3;</code>
        */
       private com.google.protobuf.SingleFieldBuilderV3<
           exchange.Ccs.EmissaoTaxaFixa, exchange.Ccs.EmissaoTaxaFixa.Builder, exchange.Ccs.EmissaoTaxaFixaOrBuilder> 
@@ -5113,28 +5113,28 @@ public final class Ccs {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>optional .exchange.LicitacaoLeilao leilao = 1;</code>
+     * <code>optional .exchange.LicitacaoLeilao leilao = 2;</code>
      */
     boolean hasLeilao();
     /**
-     * <code>optional .exchange.LicitacaoLeilao leilao = 1;</code>
+     * <code>optional .exchange.LicitacaoLeilao leilao = 2;</code>
      */
     exchange.Ccs.LicitacaoLeilao getLeilao();
     /**
-     * <code>optional .exchange.LicitacaoLeilao leilao = 1;</code>
+     * <code>optional .exchange.LicitacaoLeilao leilao = 2;</code>
      */
     exchange.Ccs.LicitacaoLeilaoOrBuilder getLeilaoOrBuilder();
 
     /**
-     * <code>optional .exchange.SubscricaoTaxaFixa emissao = 2;</code>
+     * <code>optional .exchange.SubscricaoTaxaFixa emissao = 3;</code>
      */
     boolean hasEmissao();
     /**
-     * <code>optional .exchange.SubscricaoTaxaFixa emissao = 2;</code>
+     * <code>optional .exchange.SubscricaoTaxaFixa emissao = 3;</code>
      */
     exchange.Ccs.SubscricaoTaxaFixa getEmissao();
     /**
-     * <code>optional .exchange.SubscricaoTaxaFixa emissao = 2;</code>
+     * <code>optional .exchange.SubscricaoTaxaFixa emissao = 3;</code>
      */
     exchange.Ccs.SubscricaoTaxaFixaOrBuilder getEmissaoOrBuilder();
   }
@@ -5177,7 +5177,7 @@ public final class Ccs {
             case 0:
               done = true;
               break;
-            case 10: {
+            case 18: {
               exchange.Ccs.LicitacaoLeilao.Builder subBuilder = null;
               if (((bitField0_ & 0x00000001) == 0x00000001)) {
                 subBuilder = leilao_.toBuilder();
@@ -5190,7 +5190,7 @@ public final class Ccs {
               bitField0_ |= 0x00000001;
               break;
             }
-            case 18: {
+            case 26: {
               exchange.Ccs.SubscricaoTaxaFixa.Builder subBuilder = null;
               if (((bitField0_ & 0x00000002) == 0x00000002)) {
                 subBuilder = emissao_.toBuilder();
@@ -5236,43 +5236,43 @@ public final class Ccs {
     }
 
     private int bitField0_;
-    public static final int LEILAO_FIELD_NUMBER = 1;
+    public static final int LEILAO_FIELD_NUMBER = 2;
     private exchange.Ccs.LicitacaoLeilao leilao_;
     /**
-     * <code>optional .exchange.LicitacaoLeilao leilao = 1;</code>
+     * <code>optional .exchange.LicitacaoLeilao leilao = 2;</code>
      */
     public boolean hasLeilao() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
     /**
-     * <code>optional .exchange.LicitacaoLeilao leilao = 1;</code>
+     * <code>optional .exchange.LicitacaoLeilao leilao = 2;</code>
      */
     public exchange.Ccs.LicitacaoLeilao getLeilao() {
       return leilao_ == null ? exchange.Ccs.LicitacaoLeilao.getDefaultInstance() : leilao_;
     }
     /**
-     * <code>optional .exchange.LicitacaoLeilao leilao = 1;</code>
+     * <code>optional .exchange.LicitacaoLeilao leilao = 2;</code>
      */
     public exchange.Ccs.LicitacaoLeilaoOrBuilder getLeilaoOrBuilder() {
       return leilao_ == null ? exchange.Ccs.LicitacaoLeilao.getDefaultInstance() : leilao_;
     }
 
-    public static final int EMISSAO_FIELD_NUMBER = 2;
+    public static final int EMISSAO_FIELD_NUMBER = 3;
     private exchange.Ccs.SubscricaoTaxaFixa emissao_;
     /**
-     * <code>optional .exchange.SubscricaoTaxaFixa emissao = 2;</code>
+     * <code>optional .exchange.SubscricaoTaxaFixa emissao = 3;</code>
      */
     public boolean hasEmissao() {
       return ((bitField0_ & 0x00000002) == 0x00000002);
     }
     /**
-     * <code>optional .exchange.SubscricaoTaxaFixa emissao = 2;</code>
+     * <code>optional .exchange.SubscricaoTaxaFixa emissao = 3;</code>
      */
     public exchange.Ccs.SubscricaoTaxaFixa getEmissao() {
       return emissao_ == null ? exchange.Ccs.SubscricaoTaxaFixa.getDefaultInstance() : emissao_;
     }
     /**
-     * <code>optional .exchange.SubscricaoTaxaFixa emissao = 2;</code>
+     * <code>optional .exchange.SubscricaoTaxaFixa emissao = 3;</code>
      */
     public exchange.Ccs.SubscricaoTaxaFixaOrBuilder getEmissaoOrBuilder() {
       return emissao_ == null ? exchange.Ccs.SubscricaoTaxaFixa.getDefaultInstance() : emissao_;
@@ -5305,10 +5305,10 @@ public final class Ccs {
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        output.writeMessage(1, getLeilao());
+        output.writeMessage(2, getLeilao());
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        output.writeMessage(2, getEmissao());
+        output.writeMessage(3, getEmissao());
       }
       unknownFields.writeTo(output);
     }
@@ -5321,11 +5321,11 @@ public final class Ccs {
       size = 0;
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(1, getLeilao());
+          .computeMessageSize(2, getLeilao());
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(2, getEmissao());
+          .computeMessageSize(3, getEmissao());
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -5662,13 +5662,13 @@ public final class Ccs {
       private com.google.protobuf.SingleFieldBuilderV3<
           exchange.Ccs.LicitacaoLeilao, exchange.Ccs.LicitacaoLeilao.Builder, exchange.Ccs.LicitacaoLeilaoOrBuilder> leilaoBuilder_;
       /**
-       * <code>optional .exchange.LicitacaoLeilao leilao = 1;</code>
+       * <code>optional .exchange.LicitacaoLeilao leilao = 2;</code>
        */
       public boolean hasLeilao() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
       }
       /**
-       * <code>optional .exchange.LicitacaoLeilao leilao = 1;</code>
+       * <code>optional .exchange.LicitacaoLeilao leilao = 2;</code>
        */
       public exchange.Ccs.LicitacaoLeilao getLeilao() {
         if (leilaoBuilder_ == null) {
@@ -5678,7 +5678,7 @@ public final class Ccs {
         }
       }
       /**
-       * <code>optional .exchange.LicitacaoLeilao leilao = 1;</code>
+       * <code>optional .exchange.LicitacaoLeilao leilao = 2;</code>
        */
       public Builder setLeilao(exchange.Ccs.LicitacaoLeilao value) {
         if (leilaoBuilder_ == null) {
@@ -5694,7 +5694,7 @@ public final class Ccs {
         return this;
       }
       /**
-       * <code>optional .exchange.LicitacaoLeilao leilao = 1;</code>
+       * <code>optional .exchange.LicitacaoLeilao leilao = 2;</code>
        */
       public Builder setLeilao(
           exchange.Ccs.LicitacaoLeilao.Builder builderForValue) {
@@ -5708,7 +5708,7 @@ public final class Ccs {
         return this;
       }
       /**
-       * <code>optional .exchange.LicitacaoLeilao leilao = 1;</code>
+       * <code>optional .exchange.LicitacaoLeilao leilao = 2;</code>
        */
       public Builder mergeLeilao(exchange.Ccs.LicitacaoLeilao value) {
         if (leilaoBuilder_ == null) {
@@ -5728,7 +5728,7 @@ public final class Ccs {
         return this;
       }
       /**
-       * <code>optional .exchange.LicitacaoLeilao leilao = 1;</code>
+       * <code>optional .exchange.LicitacaoLeilao leilao = 2;</code>
        */
       public Builder clearLeilao() {
         if (leilaoBuilder_ == null) {
@@ -5741,7 +5741,7 @@ public final class Ccs {
         return this;
       }
       /**
-       * <code>optional .exchange.LicitacaoLeilao leilao = 1;</code>
+       * <code>optional .exchange.LicitacaoLeilao leilao = 2;</code>
        */
       public exchange.Ccs.LicitacaoLeilao.Builder getLeilaoBuilder() {
         bitField0_ |= 0x00000001;
@@ -5749,7 +5749,7 @@ public final class Ccs {
         return getLeilaoFieldBuilder().getBuilder();
       }
       /**
-       * <code>optional .exchange.LicitacaoLeilao leilao = 1;</code>
+       * <code>optional .exchange.LicitacaoLeilao leilao = 2;</code>
        */
       public exchange.Ccs.LicitacaoLeilaoOrBuilder getLeilaoOrBuilder() {
         if (leilaoBuilder_ != null) {
@@ -5760,7 +5760,7 @@ public final class Ccs {
         }
       }
       /**
-       * <code>optional .exchange.LicitacaoLeilao leilao = 1;</code>
+       * <code>optional .exchange.LicitacaoLeilao leilao = 2;</code>
        */
       private com.google.protobuf.SingleFieldBuilderV3<
           exchange.Ccs.LicitacaoLeilao, exchange.Ccs.LicitacaoLeilao.Builder, exchange.Ccs.LicitacaoLeilaoOrBuilder> 
@@ -5780,13 +5780,13 @@ public final class Ccs {
       private com.google.protobuf.SingleFieldBuilderV3<
           exchange.Ccs.SubscricaoTaxaFixa, exchange.Ccs.SubscricaoTaxaFixa.Builder, exchange.Ccs.SubscricaoTaxaFixaOrBuilder> emissaoBuilder_;
       /**
-       * <code>optional .exchange.SubscricaoTaxaFixa emissao = 2;</code>
+       * <code>optional .exchange.SubscricaoTaxaFixa emissao = 3;</code>
        */
       public boolean hasEmissao() {
         return ((bitField0_ & 0x00000002) == 0x00000002);
       }
       /**
-       * <code>optional .exchange.SubscricaoTaxaFixa emissao = 2;</code>
+       * <code>optional .exchange.SubscricaoTaxaFixa emissao = 3;</code>
        */
       public exchange.Ccs.SubscricaoTaxaFixa getEmissao() {
         if (emissaoBuilder_ == null) {
@@ -5796,7 +5796,7 @@ public final class Ccs {
         }
       }
       /**
-       * <code>optional .exchange.SubscricaoTaxaFixa emissao = 2;</code>
+       * <code>optional .exchange.SubscricaoTaxaFixa emissao = 3;</code>
        */
       public Builder setEmissao(exchange.Ccs.SubscricaoTaxaFixa value) {
         if (emissaoBuilder_ == null) {
@@ -5812,7 +5812,7 @@ public final class Ccs {
         return this;
       }
       /**
-       * <code>optional .exchange.SubscricaoTaxaFixa emissao = 2;</code>
+       * <code>optional .exchange.SubscricaoTaxaFixa emissao = 3;</code>
        */
       public Builder setEmissao(
           exchange.Ccs.SubscricaoTaxaFixa.Builder builderForValue) {
@@ -5826,7 +5826,7 @@ public final class Ccs {
         return this;
       }
       /**
-       * <code>optional .exchange.SubscricaoTaxaFixa emissao = 2;</code>
+       * <code>optional .exchange.SubscricaoTaxaFixa emissao = 3;</code>
        */
       public Builder mergeEmissao(exchange.Ccs.SubscricaoTaxaFixa value) {
         if (emissaoBuilder_ == null) {
@@ -5846,7 +5846,7 @@ public final class Ccs {
         return this;
       }
       /**
-       * <code>optional .exchange.SubscricaoTaxaFixa emissao = 2;</code>
+       * <code>optional .exchange.SubscricaoTaxaFixa emissao = 3;</code>
        */
       public Builder clearEmissao() {
         if (emissaoBuilder_ == null) {
@@ -5859,7 +5859,7 @@ public final class Ccs {
         return this;
       }
       /**
-       * <code>optional .exchange.SubscricaoTaxaFixa emissao = 2;</code>
+       * <code>optional .exchange.SubscricaoTaxaFixa emissao = 3;</code>
        */
       public exchange.Ccs.SubscricaoTaxaFixa.Builder getEmissaoBuilder() {
         bitField0_ |= 0x00000002;
@@ -5867,7 +5867,7 @@ public final class Ccs {
         return getEmissaoFieldBuilder().getBuilder();
       }
       /**
-       * <code>optional .exchange.SubscricaoTaxaFixa emissao = 2;</code>
+       * <code>optional .exchange.SubscricaoTaxaFixa emissao = 3;</code>
        */
       public exchange.Ccs.SubscricaoTaxaFixaOrBuilder getEmissaoOrBuilder() {
         if (emissaoBuilder_ != null) {
@@ -5878,7 +5878,7 @@ public final class Ccs {
         }
       }
       /**
-       * <code>optional .exchange.SubscricaoTaxaFixa emissao = 2;</code>
+       * <code>optional .exchange.SubscricaoTaxaFixa emissao = 3;</code>
        */
       private com.google.protobuf.SingleFieldBuilderV3<
           exchange.Ccs.SubscricaoTaxaFixa, exchange.Ccs.SubscricaoTaxaFixa.Builder, exchange.Ccs.SubscricaoTaxaFixaOrBuilder> 
@@ -11612,13 +11612,13 @@ public final class Ccs {
       "\007empresa\030\004 \001(\0132\031.exchange.MensagemEmpres" +
       "a\0220\n\ninvestidor\030\005 \001(\0132\034.exchange.Mensage" +
       "mInvestidor\"f\n\017MensagemEmpresa\022\'\n\006leilao" +
-      "\030\001 \001(\0132\027.exchange.CriacaoLeilao\022*\n\007emiss" +
-      "ao\030\002 \001(\0132\031.exchange.EmissaoTaxaFixa\">\n\rC" +
+      "\030\002 \001(\0132\027.exchange.CriacaoLeilao\022*\n\007emiss" +
+      "ao\030\003 \001(\0132\031.exchange.EmissaoTaxaFixa\">\n\rC" +
       "riacaoLeilao\022\020\n\010montante\030\001 \002(\003\022\014\n\004taxa\030\002" +
       " \002(\002\022\r\n\005tempo\030\003 \002(\003\"2\n\017EmissaoTaxaFixa\022\020" +
       "\n\010montante\030\001 \002(\003\022\r\n\005tempo\030\002 \002(\003\"n\n\022Mensa" +
-      "gemInvestidor\022)\n\006leilao\030\001 \001(\0132\031.exchange" +
-      ".LicitacaoLeilao\022-\n\007emissao\030\002 \001(\0132\034.exch" +
+      "gemInvestidor\022)\n\006leilao\030\002 \001(\0132\031.exchange" +
+      ".LicitacaoLeilao\022-\n\007emissao\030\003 \001(\0132\034.exch" +
       "ange.SubscricaoTaxaFixa\"B\n\017LicitacaoLeil" +
       "ao\022\017\n\007empresa\030\001 \002(\t\022\020\n\010montante\030\002 \002(\003\022\014\n" +
       "\004taxa\030\003 \002(\002\"7\n\022SubscricaoTaxaFixa\022\017\n\007emp" +

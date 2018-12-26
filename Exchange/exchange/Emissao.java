@@ -2,7 +2,7 @@ package exchange;
 
 import java.time.LocalDateTime;
 
-public class Emissao extends Emprestimo{
+public class Emissao extends Emprestimo implements Comparable{
     
 
     public Emissao(int id, String empresa, long montante, float taxa, LocalDateTime fim){
@@ -40,7 +40,9 @@ public class Emissao extends Emprestimo{
                                     .mapToLong(p -> p.montante)    
                                     .sum();
         long diferenca = montanteAmealhado - montante;
-        propostas.first().montante -= (diferenca > 0 ? diferenca : 0);
+        if(!propostas.isEmpty()){
+            propostas.first().montante -= (diferenca > 0 ? diferenca : 0);
+        }
         return true;
         //termina o respetivo Emissao
     }
@@ -53,5 +55,17 @@ public class Emissao extends Emprestimo{
         Emissao e = (Emissao)o;
 
         return ((e.id == this.id) && (e.empresa.equals(this.empresa)));
+    }
+
+    public int compareTo(Object o){
+        Emissao e = (Emissao)o;
+
+        if(this.id > e.id){
+            return 1;
+        }
+        if(this.id < e.id){
+            return -1;
+        }
+        return 0;
     }
 }

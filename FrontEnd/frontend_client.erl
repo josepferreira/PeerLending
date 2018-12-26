@@ -32,6 +32,7 @@ loopEmpresa(Sock, User, PidState) ->
         %{tcp,_, _} -> io:format("Recebi uma mensagem~n");
         {tcp, _, MensagemEmpresa} ->
             io:format("Recebi uma mensagem do utilizador e agora vou tratar dela~n"),
+            io:format(MensagemEmpresa),
             {'MensagemUtilizador', Tipo, _, Utilizador, _, _} = ccs:decode_msg(MensagemEmpresa, 'MensagemUtilizador'),
             %{'MensagemEmpresa', Tipo, _, _, Utilizador} = ccs:decode_msg(MensagemEmpresa,'MensagemEmpresa'),
             case Tipo of

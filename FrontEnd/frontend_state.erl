@@ -95,11 +95,11 @@ loop (Push, Pull, MapEstado) ->
             {'RespostaExchange', Tipo, Notificacao, Resultado, Resposta} = ccs:decode_msg(RespostaExchange,'RespostaExchange'),
             case Tipo of
                 'RESULTADO' -> 
-                    {_, Empresa, _} = Resultado,
+                    {_, _,Empresa, _} = Resultado,
                     case maps:find(Empresa, MapEstado) of 
                         {ok, {_, _, UltimaTaxa, ListaUsers}} ->
                             [UserPid ! {self(), RespostaExchange} || {_, UserPid} <- ListaUsers ],
-                            NewMap = maps:put(Empresa, {false, false, UltimaTaxa, []}),
+                            NewMap = maps:put(Empresa, {false, false, UltimaTaxa, []}, MapEstado),
                             loop(Push, Pull, NewMap)
                     end
                 ;
@@ -115,8 +115,9 @@ loop (Push, Pull, MapEstado) ->
                     end
                 ;
                 'RESPOSTA' ->
-                    {_, Utilizador, _, _} = Resposta,
-                    io:format("É PRECISO ENCONTRAR O UTILIZADOR " + Utilizador)
+                    {_, _,Utilizador, _, _} = Resposta,
+                    io:format("É PRECISO ENCONTRAR O UTILIZADOR ~s~n", [Utilizador]),
+                    loop(Push, Pull, MapEstado)
             end
     end
 .

@@ -16,6 +16,7 @@ public abstract class Emprestimo{
 
     public Emprestimo(int id, String empresa, long montante, float taxa, LocalDateTime fim){
         this.id = id;
+        this.empresa = empresa;
         this.montante = montante;
         this.taxa = taxa;
         this.fim = fim;

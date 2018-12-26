@@ -37,7 +37,10 @@ class TerminaEmprestimo implements Runnable{
             
             try{
                 long tempoDormir = estrutura.tempoDormir();
-                Thread.sleep(tempoDormir);
+                System.out.println("Vou dormir: " + tempoDormir);
+                if(tempoDormir > 0){
+                    Thread.sleep(tempoDormir);
+                }
                 estrutura.termina();
             }
             catch(InterruptedException ie){
@@ -74,12 +77,17 @@ public class Exchange{
 
         while(true){
             byte[] bResposta = socketExchangePull.recv();
+            System.out.println("Recebi mensagem");
+            System.out.println(bResposta);
+            System.out.println(new String(bResposta));
             try{
                 MensagemUtilizador resposta = MensagemUtilizador.parseFrom(bResposta);
+                System.out.println("Fiz decode");
 
                 //verifica tipo da mensagem
                 if(resposta.getTipoUtilizador() == TipoUtilizador.EMPRESA){
                     if(resposta.getTipo() == TipoMensagem.LEILAO){
+                        System.out.println("é leilao de empresa");
                         estrutura.adicionaLeilao(resposta.getUtilizador(),
                             resposta.getEmpresa().getLeilao().getMontante(),
                             resposta.getEmpresa().getLeilao().getTaxa(),
@@ -119,6 +127,7 @@ public class Exchange{
             }
             catch(Exception exc){
                 System.out.println(exc);
+                exc.printStackTrace();
             }
         }
     }

@@ -21,14 +21,15 @@ import org.zeromq.ZMQ;
 import exchange.Ccs.*;
 import exchange.NotificacaoOuterClass.*;
 
-class EmprestimoProntoTerminar{
+class EmprestimoProntoTerminar implements Comparable{
     public Emprestimo emprestimo;
 
     public EmprestimoProntoTerminar(Emprestimo e){
         emprestimo = e;
     }
 
-    public int compareTo(EmprestimoProntoTerminar ept){
+    public int compareTo(Object o){
+        EmprestimoProntoTerminar ept = (EmprestimoProntoTerminar)o;
         return this.emprestimo.fim.compareTo(ept.emprestimo.fim);
     }
 
@@ -84,9 +85,12 @@ class EstruturaExchange{
         Emprestimo aux = empresas.get(empresa).criarEmissao(montante,fim);
         if(aux != null){
             EmprestimoProntoTerminar ept = new EmprestimoProntoTerminar(aux);
-            if(ept.equals(paraTerminar.first())){
+            if(paraTerminar.isEmpty() || ept.equals(paraTerminar.first())){
                 possoInterromper();
             }
+            paraTerminar.add(ept);
+            System.out.println("Adicionei: " + aux.empresa);
+            System.out.println("Adicionei: " + ept.emprestimo.empresa);
             //manda para o diretorio
             Resposta respostaEmissao = Resposta.newBuilder()
                                             .setTipo(TipoMensagem.EMISSAO)
@@ -222,9 +226,10 @@ class EstruturaExchange{
         Emprestimo aux = empresas.get(empresa).criarLeilao(montante, taxa, fim);
         if(aux != null){
             EmprestimoProntoTerminar ept = new EmprestimoProntoTerminar(aux);
-            if(ept.equals(paraTerminar.first())){
+            if(paraTerminar.isEmpty() || ept.equals(paraTerminar.first())){
                 possoInterromper();
             }
+            paraTerminar.add(ept);
             //manda para o diretorio
             Resposta respostaLeilao = Resposta.newBuilder()
                                             .setTipo(TipoMensagem.LEILAO)
@@ -386,6 +391,7 @@ class EstruturaExchange{
 
     public synchronized void termina(/*, o para comunicacao com o diretorio*/){
         //verifica todos os leiloes e termina os que já tiverem sido passados o tempo
+        System.out.println("Terminar!!!");
         ArrayList<EmprestimoProntoTerminar> eliminar = new ArrayList<>();
         for(EmprestimoProntoTerminar ept: paraTerminar){
             if(ept.emprestimo.fim.compareTo(LocalDateTime.now()) > 0){
@@ -393,6 +399,7 @@ class EstruturaExchange{
             }
             else{
                 eliminar.add(ept);
+                System.out.println(ept.emprestimo.empresa);
                 Emprestimo emp = empresas.get(ept.emprestimo.empresa).terminaEmprestimo(ept.emprestimo.id);
                 
                 if(emp != null){

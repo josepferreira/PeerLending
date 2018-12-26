@@ -392,6 +392,8 @@ class Licitador{
                                             .build();
       
         byte[] ba = mensagem.toByteArray();
+        System.out.println(ba);
+        System.out.println(new String(ba));
 
         System.out.println("Len: " + ba.length);
         cos.writeSFixed32NoTag(little2big(ba.length));

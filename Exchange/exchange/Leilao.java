@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
-public class Leilao extends Emprestimo{
+public class Leilao extends Emprestimo implements Comparable{
     private boolean sucesso;
     
     public Leilao(int id, String empresa, long montante, float taxa, LocalDateTime fim){
@@ -91,5 +91,17 @@ public class Leilao extends Emprestimo{
         Leilao e = (Leilao)o;
 
         return ((e.id == this.id) && (e.empresa.equals(this.empresa)));
+    }
+
+    public int compareTo(Object o){
+        Leilao e = (Leilao)o;
+
+        if(this.id > e.id){
+            return 1;
+        }
+        if(this.id < e.id){
+            return -1;
+        }
+        return 0;
     }
 }
