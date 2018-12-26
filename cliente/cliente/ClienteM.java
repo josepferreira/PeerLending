@@ -37,11 +37,21 @@ class RecebeMensagens implements Runnable{
                 System.out.println("O resultado do leilão da empresa " + resultado.getEmpresa() + " é: " + resultado.getTexto());
                 System.out.println(" -----");
             }else{
-                //Vou imprimir a dizer que foi ultrapassado
-                NotificacaoUltrapassado notificacao = resposta.getNotificacao();
-                System.out.println("\n -----");
-                System.out.println("INFO: Foste ultrapassado no leilao da empresa: " + notificacao.getEmpresa());
-                System.out.println(" -----");
+                if(resposta.getTipo() == TipoResposta.RESPOSTA){
+                    Resposta r = resposta.getResposta();
+                    String pal = null;
+                    if(r.getTipo() == TipoMensagem.LEILAO)
+                        pal = "licitação";
+                    else
+                        pal = "subscrição";
+                    System.out.println("O resultado da sua " + pal + " é: " + (r.getSucesso() ? "sucesso!" : "insucesso"));
+                }else{
+                    //Vou imprimir a dizer que foi ultrapassado
+                    NotificacaoUltrapassado notificacao = resposta.getNotificacao();
+                    System.out.println("\n -----");
+                    System.out.println("INFO: Foste ultrapassado no leilao da empresa: " + notificacao.getEmpresa());
+                    System.out.println(" -----");
+                }
             }
         }
         catch(Exception e){

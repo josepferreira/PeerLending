@@ -92,7 +92,7 @@ loop (Push, Pull, MapEstado) ->
         ;
         %Receive para as mensagens das exchanges
         {exchangeReceiver, RespostaExchange} ->
-            {'RespostaExchange', Tipo, Notificacao, Resultado} = ccs:decode_msg(RespostaExchange,'RespostaExchange'),
+            {'RespostaExchange', Tipo, Notificacao, Resultado, Resposta} = ccs:decode_msg(RespostaExchange,'RespostaExchange'),
             case Tipo of
                 'RESULTADO' -> 
                     {_, Empresa, _} = Resultado,
@@ -113,6 +113,10 @@ loop (Push, Pull, MapEstado) ->
                         _ ->
                             io:format("Erro na linha 101")
                     end
+                ;
+                'RESPOSTA' ->
+                    {_, Utilizador, _, _} = Resposta,
+                    io:format("É PRECISO ENCONTRAR O UTILIZADOR " + Utilizador)
             end
     end
 .
