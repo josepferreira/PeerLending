@@ -97,7 +97,7 @@ loopLicitador(Sock, User, MapState) ->
                     %{licitacao, Empresa, User, From, ProtoBufBin}
                     {'MensagemInvestidor', Leilao, _} = Investidor,
                     {'LicitacaoLeilao', Empresa, _, _} = Leilao,
-                    PidState = pidEmpresa(MapState, User),
+                    PidState = pidEmpresa(MapState, Empresa),
                     PidState ! {licitacao, Empresa, Utilizador, self(), MensagemLicitador},
                     loopLicitador(Sock, User, MapState)
                 ;
