@@ -4,7 +4,8 @@
 -include("ccs.hrl").
 
 
-%Função para criar um mapa: PidState - [Empresa]
+%Função para criar um mapa: PidState -> [Empresa], para sabermos qual o ator de state que gere as operacoes daquela empresa
+
 mapaStateEmpresa(Map, Push, Pull) ->
   PidStateA = frontend_state:start(Push, Pull),
   Map2 = maps:put(PidStateA, ["emp1", "emp2"], Map),
@@ -12,8 +13,11 @@ mapaStateEmpresa(Map, Push, Pull) ->
 .
 
 start() ->
+    
   login_manager:start(),
   application:start(chumak),
+
+  %%%  Ligacao via zeromq à exchange
 
   {ok, Push} = chumak:socket(push),
 
@@ -24,7 +28,7 @@ start() ->
           io:format("Connection Failed for this reason: ~p\n", [Reason]);
       X ->
           io:format("Unhandled reply for bind ~p \n", [X])
-  end,
+    end,
   
   {ok, Pull} = chumak:socket(pull),
 
@@ -35,26 +39,28 @@ start() ->
           io:format("Connection Failed for this reason: ~p\n", [Reason1]);
       X1 ->
           io:format("Unhandled reply for bind ~p \n", [X1])
-  end,
-  SocketExchPull = application:start(chumak),
+    end,
 
-    
+ %% Fim da ligacao
+
+%% Inicializacao do frontendState, com os sockets de push e pull
   MapState = mapaStateEmpresa(#{}, Push, Pull),
 
-  io:format("Servidor principal ja esta a correr!"),
+  io:format("Servidor de Frontend Principal ja esta a correr!~n"),
+
   {ok, LSock} = gen_tcp:listen(12345, [binary, {packet, 4}, {active, true}, {reuseaddr, true}]),
   acceptor(LSock, MapState).
 
 acceptor(LSock, MapState) ->
   {ok, Sock} = gen_tcp:accept(LSock),
   spawn(fun() -> acceptor(LSock, MapState) end),
-  autenticaCliente(Sock, MapState),
-  acceptor(LSock, MapState).
+  autenticaCliente(Sock, MapState).
+  %acceptor(LSock, MapState).
 
 
   
 autenticaCliente(Sock, MapState) ->
-   io:format("Vou receber\n"),
+   io:format("Vou receber~n"),
    receive
       {tcp, _, Autenticacao} -> 
 
@@ -86,7 +92,7 @@ autenticaCliente(Sock, MapState) ->
                     io:format("Já recebi papel do State e papel : ~p~n",[Papel]),
                     Bin = ccs:encode_msg(#'RespostaAutenticacao'{sucesso = true, papel = Papel}),
                     gen_tcp:send(Sock, Bin),
-                    %%Agora vou iniciar o ator que vai tratar do cliente
+                    %%Agora vou iniciar o ator que vai tratar da empresa
                     Pid = spawn(frontend_client, start, [Sock, User, Papel, MapState]),
                     gen_tcp:controlling_process(Sock, Pid),
                     io:format("O PID do processo criado é: ~p~n", [Pid])

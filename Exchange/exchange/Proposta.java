@@ -1,6 +1,6 @@
 package exchange;
 
-public class Proposta{
+public class Proposta implements Comparable{
 
     public int id;
     public String cliente;

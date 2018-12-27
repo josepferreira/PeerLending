@@ -118,7 +118,7 @@ loopLicitador(Sock, User, MapState) ->
                     {'SubscricaoTaxaFixa', Empresa, _} = Emissao,
                     io:format(Empresa),
                     io:format('~n'),
-                    PidState = pidEmpresa(MapState, User),
+                    PidState = pidEmpresa(MapState, Empresa),
                     PidState ! {emissao, Empresa, Utilizador, self(), MensagemLicitador},
                     loopLicitador(Sock, User, MapState)
                     % receive

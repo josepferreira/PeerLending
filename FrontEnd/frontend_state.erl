@@ -20,11 +20,12 @@ recebeExchange(Pull, Loop) ->
 
 
 start(Push, Pull) ->
-  io:format("State ja esta a correr!"),
-  
+  io:format("State ja esta a correr!~n"),
 
-  %Ligacao aos sockets da exchange
+  % Colocar loop a correr, fica a receber mensagens vindas do frontend e do exchangeReceiver
   MyPid = spawn (fun() -> loop (Push, Pull, #{"emp1" => {false, false, -1, []}}) end),
+  
+  % Coloca o recebeExchange a correr, fica bloqueado a receber mensagens da exchange e envia-as para o loop
   _ = spawn( fun() -> recebeExchange(Pull, MyPid) end),
   MyPid
 .
