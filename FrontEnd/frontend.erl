@@ -94,7 +94,9 @@ autenticaCliente(Sock, MapState) ->
                     %user(Sock, User, Pid);
 
 
-                invalid -> autenticaCliente(Sock, MapState)
+                invalid -> Bin = ccs:encode_msg(#'RespostaAutenticacao'{sucesso = false}),
+                    gen_tcp:send(Sock, Bin),
+                    autenticaCliente(Sock, MapState)
               end
             ;
           %          gen_tcp:send(Sock, "Autenticação inválida\n"),

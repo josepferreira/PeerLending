@@ -114,7 +114,7 @@ loopLicitador(Sock, User, MapState) ->
                     %{emissao, Empresa, User, From, ProtoBufBin}
                     %{'SubscricaoTaxaFixa', Empresa, _} = Emissao,
                     {'MensagemInvestidor', _, Emissao} = Investidor,
-                    {'LicitacaoLeilao', Empresa, _} = Emissao,
+                    {'SubscricaoTaxaFixa', Empresa, _} = Emissao,
                     PidState = pidEmpresa(MapState, User),
                     PidState ! {emissao, Empresa, Utilizador, self(), MensagemLicitador},
                     loopLicitador(Sock, User, MapState)

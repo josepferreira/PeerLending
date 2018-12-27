@@ -194,11 +194,13 @@ class Licitador{
 
     public void apresentaSubscricaoTaxaFixa() throws Exception{
         String empresa = null;
+        System.out.println("Subscricao!");
 
         do{
             System.out.println("Insira a empresa: ");
             empresa = inP.readLine();
-        }while(empresa != null);
+            System.out.println("EMP: " + empresa);
+        }while(empresa == null);
 
         long montante = 0;
         boolean lido = false;
@@ -264,7 +266,7 @@ class Licitador{
         boolean continua = true;
         while(continua){
 
-            System.out.println("1 - Criar Leilao");
+            System.out.println("1 - Licitar Leilao");
             System.out.println("2 - Emissão Taxa Fixa");
             System.out.println("3 - Gerir Subscrições");
             System.out.print("Opção: ");
@@ -524,7 +526,7 @@ class Licitador{
      * Devolve o papel "empresa" ou "cliente" consoante o papel do utilizador
      */
     public static String leMensagemInicial(CodedInputStream cis){
-
+        System.out.println("Ler mensagem inicial!");
         try{
             int len = cis.readRawLittleEndian32();
             len = little2big(len);
@@ -624,14 +626,14 @@ class Licitador{
 
             CodedInputStream cis = CodedInputStream.newInstance(s.getInputStream());
             CodedOutputStream cos = CodedOutputStream.newInstance(s.getOutputStream());
-
-            while(!autenticado){
+            
+            while(!autenticado && !sair){
                 System.out.println("1 - Autenticar");
                 System.out.println("2 - Visualizar Leilões Ativos");
                 System.out.println("Outro para sair");
 
                 System.out.print("Opção: ");
-                int opcao = 2;
+                int opcao = 3;
 
                 try{
                     opcao = Integer.parseInt(inP.readLine());
@@ -642,22 +644,30 @@ class Licitador{
                 String user = null;
                 String papel = null;
 
+                
                 switch(opcao){
                     //Se calhar só vamos buscar o papel se o user nao for nulo (poed acontecer se der uma exceçao)
                     case 1: user = autenticaCliente(inP,cos); papel = leMensagemInicial(cis); break;
                     case 2: System.out.println("A funcionalidade ainda nao esta implementada"); break;
-                    default: autenticado = true; break;
+                    default: sair = true; break;
                 }
                 
+                autenticado = true;
+                
                 if(user==null || papel==null){
+                    autenticado = false;
                     System.out.println("bye!");
-                }else{
+                }
+                else{
+                    System.out.println("Papel definido!");
                     switch(papel){
                         case "empresa": autenticado=true; System.out.println("É uma empresa"); (new Empresa(user, s)).menuInicial(); System.out.println("bye!"); break; //mandar para a empresa
                         case "licitador": autenticado=true; System.out.println("É um licitador"); (new Licitador(user, s)).menuInicial(); System.out.println("bye!"); break; //mandar para o licitador
                         default: break;
                     }
                 }
+
+                
 
             }
         }

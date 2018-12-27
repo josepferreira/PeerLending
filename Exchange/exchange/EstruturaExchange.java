@@ -77,11 +77,14 @@ class EstruturaExchange{
     
     //tempo em dias para minutos (1 dia corresponde a 1 minuto), devolve em nanos
     private long converteTempo(long tempo){
-        return (long)((tempo*(10^9))/(24*60));
+        
+        return (long)(((tempo*Math.pow(10, 9)*12)));///(24*60));
     }
 
     public synchronized boolean adicionaEmissao(String empresa, long montante, long tempo){
-        LocalDateTime fim = LocalDateTime.now().plusNanos(converteTempo(tempo));
+        long tempoAux = converteTempo(tempo);
+        System.out.println("TEMPO: " + tempoAux);
+        LocalDateTime fim = LocalDateTime.now().plusNanos(tempoAux);
         Emprestimo aux = empresas.get(empresa).criarEmissao(montante,fim);
         if(aux != null){
             EmprestimoProntoTerminar ept = new EmprestimoProntoTerminar(aux);
