@@ -111,10 +111,13 @@ loopLicitador(Sock, User, MapState) ->
                     %         loopLicitador(Sock, User, MapState)
                     % end;
                 'EMISSAO' ->
+                    io:format('Emissao~n'),
                     %{emissao, Empresa, User, From, ProtoBufBin}
                     %{'SubscricaoTaxaFixa', Empresa, _} = Emissao,
                     {'MensagemInvestidor', _, Emissao} = Investidor,
                     {'SubscricaoTaxaFixa', Empresa, _} = Emissao,
+                    io:format(Empresa),
+                    io:format('~n'),
                     PidState = pidEmpresa(MapState, User),
                     PidState ! {emissao, Empresa, Utilizador, self(), MensagemLicitador},
                     loopLicitador(Sock, User, MapState)
