@@ -112,7 +112,8 @@ class Licitador{
         do{
             System.out.println("Insira a empresa: ");
             empresa = inP.readLine();
-        }while(empresa != null);
+        }
+        while(empresa == null);
         
         long montante = 0;
         int taxa = 0;

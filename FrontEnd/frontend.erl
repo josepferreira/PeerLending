@@ -49,13 +49,14 @@ start() ->
   io:format("Servidor de Frontend Principal ja esta a correr!~n"),
 
   {ok, LSock} = gen_tcp:listen(12345, [binary, {packet, 4}, {active, true}, {reuseaddr, true}]),
+
   acceptor(LSock, MapState).
 
 acceptor(LSock, MapState) ->
   {ok, Sock} = gen_tcp:accept(LSock),
   spawn(fun() -> acceptor(LSock, MapState) end),
-  autenticaCliente(Sock, MapState).
-  %acceptor(LSock, MapState).
+  autenticaCliente(Sock, MapState),
+  acceptor(LSock, MapState).
 
 
   

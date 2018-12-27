@@ -14,7 +14,7 @@ carregaMapa(Map) ->
     M4 = maps:put( "cli2",{ "123",false, "licitador" },M3 ),
     M4.
 
-login( User,Pass ) ->
+login( User, Pass ) ->
     rpc( { login, User, Pass, self() } ).
 
 logout( User ) ->
@@ -28,8 +28,10 @@ online() ->
 %logout( User ) -> rpc( { logout,U,self() } ).
 rpc( Req ) -> login_manager ! Req,
                 receive
-                    { login_manager,ok, Papel } -> 
+                    { login_manager, ok, Papel } -> 
                        Papel;
+                    { login_manager, ok } -> 
+                       ok;
                     {login_manager, invalid } ->
                         invalid
                     end
@@ -38,27 +40,22 @@ rpc( Req ) -> login_manager ! Req,
 
 loop( Map ) ->
     receive
-        { login,U,P,From } ->
+        { login, U, P, From } ->
             case maps:find( U,Map ) of
                 { ok,{ P,false, Papel } } ->
-                    From ! { login_manager,ok, Papel  },
+                    From ! { login_manager, ok, Papel  },
                     loop( maps:put( U,{ P,true, Papel },Map ) );
                 _ -> 
                     From ! { login_manager,invalid },
                     loop( Map )
             end;
-        { logout,U,From } ->
-            case maps:find( U,Map ) of
-                { ok,{ P,true, Papel } } ->
-                    From ! { login_manager,ok, Papel },
-                    loop( maps:put( U,{ P,false, Papel },Map ) );
+        { logout, U, From } ->
+            case maps:find( U, Map ) of
+                { ok,{ P, true, Papel } } ->
+                    From ! { login_manager, ok, Papel },
+                    loop( maps:put( U, { P, false, Papel }, Map ) );
                 _ -> 
-                    From ! { login_manager,invalid },
+                    From ! { login_manager, invalid },
                     loop( Map )
             end
-        % { online,From } ->
-        %         Predicado = fun( _,{ _,V2 } ) -> V2 == true end,
-        %         NovoMap = maps:filter( Predicado,Map ),
-        %         From ! { login_manager,maps:keys(NovoMap) },
-        %         loop( Map )
     end.

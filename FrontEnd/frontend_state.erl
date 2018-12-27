@@ -4,17 +4,13 @@
 -include("ccs.hrl").
 
 %Neste modulo vao ser implementadas funcoes de comunicacao com exchange e gestao da logica dessa comunicacao
-% MapEstado :  empresa -> {Socket da Exchange, Leilao, Emissao, UltimaTaxa, UtilizadoresInteressados = []}
-
-
-
-%Falta ligar aos sockets da exchange e atualizar ultima taxa, se for para manter isso aqui
-
+% MapEstado :  empresa -> {Leilao, Emissao, UtilizadoresInteressados = []}
 
 recebeExchange(Pull, Loop) ->
-    io:format("recebeExchange a correr"),
+    io:format("recebeExchange a correr~n"),
     {ok, Data} = chumak:recv(Pull),
     Loop ! {exchangeReceiver, Data},
+    io:format("recebeExchange recebeu mensagem da exchange e enviou ao Loop~n"),
     recebeExchange(Pull, Loop)
 .
 
@@ -23,7 +19,7 @@ start(Push, Pull) ->
   io:format("State ja esta a correr!~n"),
 
   % Colocar loop a correr, fica a receber mensagens vindas do frontend e do exchangeReceiver
-  MyPid = spawn (fun() -> loop (Push, Pull, #{"emp1" => {false, false, -1, []}}) end),
+  MyPid = spawn (fun() -> loop (Push, Pull, #{"emp1" => {false, false, []}, "emp2" => {false, false, []}}) end),
   
   % Coloca o recebeExchange a correr, fica bloqueado a receber mensagens da exchange e envia-as para o loop
   _ = spawn( fun() -> recebeExchange(Pull, MyPid) end),
@@ -34,11 +30,11 @@ loop (Push, Pull, MapEstado) ->
     receive
         %Receive para as mensagens vindas do frontend_client
         {licitacao, Empresa, User, From, ProtoBufBin}->
-            io:format("Loop recebeu licitacao ~n"),
+            io:format("Loop recebeu licitacao vinda do frontend ~n"),
             case maps:find(Empresa, MapEstado) of
-                {ok, {Leilao, Emissao, UltimaTaxa, UtilizadoresInteressados }} when Leilao == true -> 
+                {ok, {Leilao, Emissao, UtilizadoresInteressados }} when Leilao == true -> 
                     NovaLista = [{User, From} | UtilizadoresInteressados],
-                    NewMap = maps:put(Empresa, {Leilao, Emissao, UltimaTaxa, NovaLista}, MapEstado),
+                    NewMap = maps:put(Empresa, {Leilao, Emissao, NovaLista}, MapEstado),
                     chumak:send(Push, ProtoBufBin),
                     loop(Push, Pull, NewMap)
                 ;
@@ -48,11 +44,11 @@ loop (Push, Pull, MapEstado) ->
             end
         ;
         {emissao, Empresa, User, From, ProtoBufBin}->
-            io:format("Loop recebeu emissao ~n"),
+            io:format("Loop recebeu emissao vinda do frontend ~n"),
             case maps:find(Empresa, MapEstado) of
-                {ok, {Leilao, Emissao, UltimaTaxa, UtilizadoresInteressados }} when Emissao == true -> 
+                {ok, {Leilao, Emissao, UtilizadoresInteressados }} when Emissao == true -> 
                     NovaLista = [{User, From} | UtilizadoresInteressados],
-                    NewMap = maps:put(Empresa, {Leilao, Emissao, UltimaTaxa, NovaLista}, MapEstado),
+                    NewMap = maps:put(Empresa, {Leilao, Emissao, NovaLista}, MapEstado),
                     chumak:send(Push, ProtoBufBin),
                     loop(Push, Pull, NewMap)
                 ;
@@ -62,11 +58,11 @@ loop (Push, Pull, MapEstado) ->
             end
         ;
         {iniciaLeilao, Empresa, From, ProtoBufBin}->
-            io:format("Loop recebeu iniciaLeilao ~n"),
+            io:format("Loop recebeu iniciaLeilao vinda do frontend ~n"),
             case maps:find(Empresa, MapEstado) of
-                {ok, {Leilao, Emissao, UltimaTaxa, _}} when Leilao == false , Emissao == false -> 
+                {ok, {Leilao, Emissao, _}} when Leilao == false , Emissao == false -> 
                     NovaLista = [],
-                    NewMap = maps:put(Empresa, {true, Emissao, UltimaTaxa, NovaLista}, MapEstado),
+                    NewMap = maps:put(Empresa, {true, Emissao, NovaLista}, MapEstado),
                     chumak:send(Push, ProtoBufBin),
                     % Binario = ccs:encode_msg(#'RespostaExchange'{tipo='RESULTADO',resultado=#'Resultado'{tipo='LEILAO',empresa="emp1",texto="Nao foste tu"}}),
                     % From ! {self(), Binario},
@@ -78,11 +74,11 @@ loop (Push, Pull, MapEstado) ->
             end
         ;
         {iniciaEmissao, Empresa, From, ProtoBufBin}->
-            io:format("Loop recebeu iniciaEmissao ~n"),
+            io:format("Loop recebeu iniciaEmissao vinda do frontend ~n"),
             case maps:find(Empresa, MapEstado) of
-                {ok, {Leilao, Emissao, UltimaTaxa, _}} when Emissao == false , Leilao == false -> 
+                {ok, {Leilao, Emissao, _}} when Emissao == false , Leilao == false -> 
                     NovaLista = [],
-                    NewMap = maps:put(Empresa, {Leilao, true, UltimaTaxa, NovaLista}, MapEstado),
+                    NewMap = maps:put(Empresa, {Leilao, true, NovaLista}, MapEstado),
                     chumak:send(Push, ProtoBufBin),
                     loop(Push, Pull, NewMap)
                 ;
@@ -93,18 +89,23 @@ loop (Push, Pull, MapEstado) ->
         ;
         %Receive para as mensagens das exchanges
         {exchangeReceiver, RespostaExchange} ->
+
+            io:format("Loop recebeu Mensagem da exchange vinda do exchangeReceiver ~n"),
+            
             {'RespostaExchange', Tipo, Notificacao, Resultado, Resposta} = ccs:decode_msg(RespostaExchange,'RespostaExchange'),
             case Tipo of
-                'RESULTADO' -> 
+                'RESULTADO' ->
+                    io:format("É do tipo RESULTADO ~n"),
                     {_, _,Empresa, _} = Resultado,
                     case maps:find(Empresa, MapEstado) of 
-                        {ok, {_, _, UltimaTaxa, ListaUsers}} ->
+                        {ok, {_, _,  ListaUsers}} ->
                             [UserPid ! {self(), RespostaExchange} || {_, UserPid} <- ListaUsers ],
-                            NewMap = maps:put(Empresa, {false, false, UltimaTaxa, []}, MapEstado),
+                            NewMap = maps:put(Empresa, {false, false,  []}, MapEstado),
                             loop(Push, Pull, NewMap)
                     end
                 ;
                 'NOTIFICACAO' ->
+                    io:format("É do tipo NOTIFICACAO ~n"),
                     {_, Empresa, Utilizador, _, _, _} = Notificacao,
                     case maps:find(Empresa, MapEstado) of 
                         {ok, {_, _, _, ListaUsers}} ->
@@ -116,34 +117,10 @@ loop (Push, Pull, MapEstado) ->
                     end
                 ;
                 'RESPOSTA' ->
+                    io:format("É do tipo RESPOSTA ~n"),
                     {_, _,Utilizador, _, _} = Resposta,
                     io:format("É PRECISO ENCONTRAR O UTILIZADOR ~s~n", [Utilizador]),
                     loop(Push, Pull, MapEstado)
             end
     end
 .
-
-
-
-% rpc( Req ) ->
-%     frontend_state ! Req,
-%     receive
-%         {frontend_state, Res } -> 
-%             %io:format("RPC recebeu ~p~n", [Res]),
-%             Res
-%     end
-% .
-
-% getPapel (User) ->
-%     io:format("Dentro do getPapel do frontend_state"),
-%     rpc ({getPapel, User, self()}) 
-    
-% .
-
-
-% licitacao (Valor, Empresa, User) ->
-%     io:format("Dentro do licitacao do frontend_state"),
-%     rpc ({licitacao, Valor, Empresa, User, self()}) 
-    
-% .
-

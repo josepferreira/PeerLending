@@ -14,7 +14,8 @@ public class Proposta implements Comparable{
         this.taxa = taxa;
     }
 
-    public int compareTo(Proposta p){
+    public int compareTo(Object o){
+        Proposta p = (Proposta) o;
         if(taxa < p.taxa){
             return 1;
         }

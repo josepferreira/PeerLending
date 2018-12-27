@@ -27,11 +27,11 @@ start(Sock, User, Papel, MapState) ->
 
 %Se for para manter assim, para receber a mensagme do "state" posso por isso numa função a parte
 loopEmpresa(Sock, User, PidState) ->
-    io:format("Vou tratatr da empersa~n"),
+    io:format("Vou tratar da empresa~n"),
     receive
         %{tcp,_, _} -> io:format("Recebi uma mensagem~n");
         {tcp, _, MensagemEmpresa} ->
-            io:format("Recebi uma mensagem do utilizador e agora vou tratar dela~n"),
+            io:format("Recebi uma mensagem do utilizador via TCP e agora vou tratar dela~n"),
             io:format(MensagemEmpresa),
             {'MensagemUtilizador', Tipo, _, Utilizador, _, _} = ccs:decode_msg(MensagemEmpresa, 'MensagemUtilizador'),
             %{'MensagemEmpresa', Tipo, _, _, Utilizador} = ccs:decode_msg(MensagemEmpresa,'MensagemEmpresa'),
