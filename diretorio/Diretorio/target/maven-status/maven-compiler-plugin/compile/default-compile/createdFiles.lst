@@ -1,0 +1,5 @@
+hello/representations/Saying.class
+hello/HelloConfiguration.class
+hello/health/TemplateHealthCheck.class
+hello/resources/HelloResource.class
+hello/HelloApplication.class

@@ -49,7 +49,7 @@ class ComunicaCliente implements Runnable{
 
             String decisao = msgResposta.split("@")[0];
             String subResposta = msgResposta.split("@")[1];
-            System.out.println("A decisao é " + decisao + ". A subscrição: " + subResposta);
+            System.out.println("\nA decisao é " + decisao + ". A subscrição: " + subResposta);
             /**
              * Vou adicionar a subscricao à classe subscricao e ao socket
              * ATENÇAO!!! NAO SEI SE POSSO FAZER ISTO ..
@@ -61,6 +61,7 @@ class ComunicaCliente implements Runnable{
                     default: String empresa = subResposta.split("::")[1]; subscricao.adicionaEmpresa(empresa); break;
                 }
                 sub.subscribe(subResposta.getBytes());
+                System.out.println("Ja subscrevi!!");
             }else{
                 if(decisao.equals("unsub")){
                     switch(subResposta){
@@ -69,6 +70,7 @@ class ComunicaCliente implements Runnable{
                         default: String empresa = subResposta.split("::")[1]; subscricao.removeEmpresa(empresa); break;
                     }
                     sub.unsubscribe(subResposta.getBytes());
+                    System.out.println("Ja tirei a subscricao!!");
                 }else{
                     System.out.println("ERRO: Não vai fazer sub nem unsub!");
                 }

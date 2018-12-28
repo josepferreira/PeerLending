@@ -77,6 +77,7 @@ public class GerirSubscricoes{
             System.out.println("1 - Subscreve todos os leiloes");
             System.out.println("2 - Subscreve todas as emissões");
             System.out.println("3 - Subscreve uma empresa");
+            System.out.println("0 - Voltar");
             System.out.print("Opção: ");
             
             try{
@@ -91,7 +92,6 @@ public class GerirSubscricoes{
                         }else{
                             System.out.println("ERRO: Leilões já se encontram subscritas ... Ação inválida!");
                         }
-                        continua = false;
                         break;
                     case 2:
                         if(emissoesSubscritas == false){
@@ -101,7 +101,6 @@ public class GerirSubscricoes{
                         }else{
                             System.out.println("ERRO: Emissões já se encontram subscritas ... Ação inválida!");
                         }
-                        continua = false;
                         break;
                     case 3:
                         System.out.print("Escreva o nome da empresa: ");
@@ -113,8 +112,8 @@ public class GerirSubscricoes{
                         }else{
                             System.out.println("ERRO: Empresa já se encontra subscrita ... Ação inválida!");
                         }
-                        continua = false;
                         break;
+                    case 0: continua = false; break;
                     default:
                         System.out.println("Opção Inválida!");
                 }
