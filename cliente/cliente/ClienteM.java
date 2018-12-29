@@ -21,41 +21,49 @@ class RecebeMensagens implements Runnable{
 
     public RecebeMensagens(CodedInputStream cis){
         this.cis = cis;
+        System.out.println("Foi criada uma recebeMensagens");
     }
 
     public void run(){
-        try{
-            int len = cis.readRawLittleEndian32();
-            len = little2big(len);
-            byte[] bResposta = cis.readRawBytes(len);
-            RespostaExchange resposta = RespostaExchange.parseFrom(bResposta);
+        while(!Thread.interrupted()){
+            try{
+                System.out.println("Antes de tudo!");
+                int len = cis.readRawLittleEndian32();
+                System.out.println("O len: " + len);
+                len = little2big(len);
+                System.out.println("O len com a função: " + len);
+                byte[] bResposta = cis.readRawBytes(len);
+                RespostaExchange resposta = RespostaExchange.parseFrom(bResposta);
+                System.out.println("\n Recebi uma resposta!");
+                System.out.println("O tipo é " + resposta.getTipo());
 
-            if(resposta.getTipo() == TipoResposta.RESULTADO){
-                //Vou imprimir o resultado de um leilao
-                Resultado resultado = resposta.getResultado();
-                System.out.println("\n -----");
-                System.out.println("O resultado do leilão da empresa " + resultado.getEmpresa() + " é: " + resultado.getTexto());
-                System.out.println(" -----");
-            }else{
-                if(resposta.getTipo() == TipoResposta.RESPOSTA){
-                    Resposta r = resposta.getResposta();
-                    String pal = null;
-                    if(r.getTipo() == TipoMensagem.LEILAO)
-                        pal = "licitação";
-                    else
-                        pal = "subscrição";
-                    System.out.println("O resultado da sua " + pal + " é: " + (r.getSucesso() ? "sucesso!" : "insucesso"));
-                }else{
-                    //Vou imprimir a dizer que foi ultrapassado
-                    NotificacaoUltrapassado notificacao = resposta.getNotificacao();
+                if(resposta.getTipo() == TipoResposta.RESULTADO){
+                    //Vou imprimir o resultado de um leilao
+                    Resultado resultado = resposta.getResultado();
                     System.out.println("\n -----");
-                    System.out.println("INFO: Foste ultrapassado no leilao da empresa: " + notificacao.getEmpresa());
+                    System.out.println("O resultado do leilão da empresa " + resultado.getEmpresa() + " é: " + resultado.getTexto());
                     System.out.println(" -----");
+                }else{
+                    if(resposta.getTipo() == TipoResposta.RESPOSTA){
+                        Resposta r = resposta.getResposta();
+                        String pal = null;
+                        if(r.getTipo() == TipoMensagem.LEILAO)
+                            pal = "licitação";
+                        else
+                            pal = "subscrição";
+                        System.out.println("O resultado da sua " + pal + " é: " + (r.getSucesso() ? "sucesso!" : "insucesso"));
+                    }else{
+                        //Vou imprimir a dizer que foi ultrapassado
+                        NotificacaoUltrapassado notificacao = resposta.getNotificacao();
+                        System.out.println("\n -----");
+                        System.out.println("INFO: Foste ultrapassado no leilao da empresa: " + notificacao.getEmpresa());
+                        System.out.println(" -----");
+                    }
                 }
             }
-        }
-        catch(Exception e){
-            System.out.println(e);
+            catch(Exception e){
+                System.out.println("Houve uma exceção: " + e);
+            }
         }
     }
 
