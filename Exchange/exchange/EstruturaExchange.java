@@ -118,7 +118,7 @@ class EstruturaExchange{
                                             .build();
 
             String topic = "emissao::" + empresa + "::";
-            socketNotificacoes.send(topic.getBytes(),1/*ZMQ_SNDMORE*/);
+            socketNotificacoes.send(topic.getBytes(), ZMQ.SNDMORE);
             socketNotificacoes.send(notificacao.toByteArray());
 
             return true;
@@ -173,7 +173,7 @@ class EstruturaExchange{
                                             .build();
 
                 String topic = "emissao::" + empresa + "::";
-                socketNotificacoes.send(topic.getBytes(),1/*ZMQ_SNDMORE*/);
+                socketNotificacoes.send(topic.getBytes(), ZMQ.SNDMORE);
                 socketNotificacoes.send(notificacao.toByteArray());
                     
                 //tem de enviar para o diretorio
@@ -202,7 +202,7 @@ class EstruturaExchange{
                                             .setMontante(montante)
                                             .build();
                 String topic = "emissao::" + empresa + "::";
-                socketNotificacoes.send(topic.getBytes(),1/*ZMQ_SNDMORE*/);
+                socketNotificacoes.send(topic.getBytes(), ZMQ.SNDMORE);
                 socketNotificacoes.send(notificacao.toByteArray());
                                                 
             }
@@ -256,7 +256,7 @@ class EstruturaExchange{
                                             .build();
 
             String topic = "leilao::" + empresa + "::";
-            socketNotificacoes.send(topic.getBytes(),1/*ZMQ_SNDMORE*/);
+            socketNotificacoes.send(topic.getBytes(), ZMQ.SNDMORE);
             socketNotificacoes.send(notificacao.toByteArray());
 
             return true;
@@ -316,7 +316,7 @@ class EstruturaExchange{
                                             .setTaxa(taxa)
                                             .build();
                 String topic = "leilao::" + empresa + "::";
-                socketNotificacoes.send(topic.getBytes(),1/*ZMQ_SNDMORE*/);
+                socketNotificacoes.send(topic.getBytes(), ZMQ.SNDMORE);
                 socketNotificacoes.send(notificacao.toByteArray());
             }
         
@@ -362,7 +362,7 @@ class EstruturaExchange{
                                             .setTaxa(taxa)
                                             .build();
             String topic = "leilao::" + empresa + "::";
-            socketNotificacoes.send(topic.getBytes(),1/*ZMQ_SNDMORE*/);
+            socketNotificacoes.send(topic.getBytes(), ZMQ.SNDMORE);
             socketNotificacoes.send(notificacao.toByteArray());
 
             //manda aos que foram ultrapassados
@@ -435,7 +435,7 @@ class EstruturaExchange{
                                     .build();
 
                         String topic = "leilao::" + emp.empresa + "::";
-                        socketNotificacoes.send(topic.getBytes(),1/*ZMQ_SNDMORE*/);
+                        socketNotificacoes.send(topic.getBytes(), ZMQ.SNDMORE);
                         socketNotificacoes.send(notificacao.toByteArray());
 
                         //tem de enviar para o diretorio
@@ -469,7 +469,7 @@ class EstruturaExchange{
                                                     .build();
 
                         String topic = "emissao::" + emp.empresa + "::";
-                        socketNotificacoes.send(topic.getBytes(),1/*ZMQ_SNDMORE*/);
+                        socketNotificacoes.send(topic.getBytes(), ZMQ.SNDMORE);
                         socketNotificacoes.send(notificacao.toByteArray());
                             
                         //tem de enviar para o diretorio
