@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import java.net.HttpURLConnection;
+
 
 import java.io.*;
 import java.util.*;
@@ -56,6 +58,7 @@ class EstruturaExchange{
     public ZMQ.Context context;
     public ZMQ.Socket socketExchangePush;
     public ZMQ.Socket socketNotificacoes;
+
     //so falta o diretorio
 
     public EstruturaExchange(ZMQ.Context c, String myPush, String myPub){
@@ -259,6 +262,31 @@ class EstruturaExchange{
             socketNotificacoes.send(topic.getBytes(), ZMQ.SNDMORE);
             socketNotificacoes.send(notificacao.toByteArray());
 
+
+            try{
+                URL url = new URL("http://localhost:8080/leilao");
+                HttpURLConnection con = (HttpURLConnection) url.openConnection();
+                con.setRequestMethod("POST");
+                con.setDoOutput(true);
+                con.setRequestProperty("Content-Type", "application/json");
+                con.setInstanceFollowRedirects(false);
+                con.setUseCaches(false);
+
+                con.connect();
+                OutputStream out = con.getOutputStream();
+                out.write(((Leilao)aux).getJSON().getBytes());
+                out.flush();
+                out.close();
+
+                System.out.println(((Leilao)aux).getJSON());
+		
+                int responseCode = con.getResponseCode();
+                System.out.println("POST Response Code :: " + responseCode);
+
+            }catch(Exception exc){
+                System.out.println(exc);
+            }
+        
             return true;
         }
         else{
@@ -437,6 +465,8 @@ class EstruturaExchange{
                         String topic = "leilao::" + emp.empresa + "::";
                         socketNotificacoes.send(topic.getBytes(), ZMQ.SNDMORE);
                         socketNotificacoes.send(notificacao.toByteArray());
+
+                        ((Leilao)emp).getJSON();
 
                         //tem de enviar para o diretorio
 
