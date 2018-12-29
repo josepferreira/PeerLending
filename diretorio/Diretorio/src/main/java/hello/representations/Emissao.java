@@ -18,7 +18,7 @@ public class Emissao {
     public boolean terminado = false;
 
     //public LocalDateTime fim;
-    
+
     @JsonCreator
     public Emissao (@JsonProperty("id") int id, @JsonProperty("empresa") String empresa) {
         this.id = id;
