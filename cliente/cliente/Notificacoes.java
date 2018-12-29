@@ -105,60 +105,77 @@ public class Notificacoes implements Runnable{
         (new Thread(cc)).start();
         
         while(!Thread.interrupted()){
-            byte[] b = socket.recv();
-            System.out.println("Recebi uma notificacao!!");
             /**
-             * Aqui vou ter de fazer parse da mensagem 
-             * Os primeiros bytes são de subscrição e os seguintes é a mensagem de subscrição
+             * Aqui recebe os bytes de subscrição
              */
+            byte[] b = socket.recv(0);
+            String recebi = new String(b);
 
-            /*byte[] mensagem = null;
-            try{
-                Notificacao notificacao = Notificacao.parseFrom(mensagem);
-                String head = null;
-                
-                if(notificacao.getTipo() == TipoNotificacao.CRIACAO){
-                    
-                }else{
-                    if(notificacao.getTipo() == TipoNotificacao.LICITACAO){
+            /**
+             * Aqui vai receber o resto da mensagem (multiPart)
+             */
+            if(socket.hasReceiveMore()){
+                byte[] n = socket.recv(0);
+                try{
+                    Notificacao no = Notificacao.parseFrom(n);
+                    String msg = "NOTIFICAÇÃO: ";
 
-                    }else{
-
+                    if(no.getTipo() == TipoNotificacao.CRIACAO){
+                        msg = msg + "A empresa " + no.getEmpresa() + " criou ";
+                        if(no.getTipoMensagem() == TipoAcao.EMISSAO)
+                            msg = msg + "uma emissão ";
+                        else{
+                            if(no.getTipoMensagem() == TipoAcao.LEILAO)
+                                msg = msg + "um leilão ";
+                            else
+                                msg = msg + "erro! ";
+                        }
+                        msg = msg + "com o montante " + no.getMontante() + ".";
+                        if(no.getTaxa() != 0.0)
+                            msg = msg + "À taxa de " + no.getTaxa() + ".";
+                        if(no.getTempo() != 0)
+                            msg = msg + "Com um tempo máximo de " + no.getTempo() + ".";
+                        msg = msg + "! O resultado obtido foi: " + no.getResultado().getTexto();
                     }
-                }
-
-                if(notificacao.getTipo() == TipoNotificacao.CRIACAOLEILAO){
-                    head = "Foi criado um leilão pela empresa ";
-                }else{
-                    if(notificacao.getTipo() == TipoNotificacao.LICITACAOLEILAO){
-                        head = "Foi acrescentada uma licitação ao leilão da empresa ";
-                    }else{
-                        if(notificacao.getTipo() == TipoNotificacao.CRIACOEMISSAO){
-                            head = "Foi criada uma emissão pela empresa ";
-                        }else{
-                            if(notificacao.getTipo() == TipoNotificacao.LICITACAOEMISSAO){
-                                head = "Foi acrescentada uma subscrição à emissão da empresa ";
+                    else{
+                        if(no.getTipo() == TipoNotificacao.LICITACAO){
+                            msg = msg + "Nova licitação ";
+                            if(no.getTipoMensagem() == TipoAcao.EMISSAO)
+                                msg = msg + "na emissão ";
+                            else{
+                                if(no.getTipoMensagem() == TipoAcao.LEILAO)
+                                    msg = msg + "no leilão ";
+                                else
+                                    msg = msg + "erro!";
                             }
+                            msg = msg + "da empresa " + no.getEmpresa() + "!";
+                            msg = msg + no.getResultado().getTexto();
+                        }
+                        else{
+                            if(TipoNotificacao.FIM == no.getTipo()){
+                                msg = msg + "Acabou ";
+                                if(no.getTipoMensagem() == TipoAcao.EMISSAO)
+                                    msg = msg + "a emissão ";
+                                else{
+                                    if(no.getTipoMensagem() == TipoAcao.LEILAO)
+                                        msg = msg + "o leilão ";
+                                    else
+                                        msg = msg + "erro!";
+                                }
+                                msg = msg + "da empresa " + no.getEmpresa() + "!";
+                                msg = msg + no.getResultado().getTexto();
+                            }
+                            else
+                                msg = msg + "ERRO!!!";
                         }
                     }
+                    
+                    System.out.println(msg);
+                    
+                }catch(Exception e){
+                    System.out.println("Deu problemas a receber mais!");
                 }
-
-                /*switch(notificacao.getTipo()){
-                    case Tipif(notificacao.)oNotificacao.CRIACAOLEILAO: head = "Foi criado um leilão pela empresa "; break;
-                    case TipoNotificacao.LICITACAOLEILAO: head = "Foi acrescentada uma licitação ao leilão da empresa "; break;
-                    case TipoNotificacao.CRIACOEMISSAO: head = "Foi criada uma emissão pela empresa "; break;
-                    case TipoNotificacao.LICITACAOEMISSAO: head = "Foi acrescentada uma subscrição à emissão da empresa "; break;
-                }*/
-
-               /* String msg = head + notificacao.getEmpresa() + " com o montante " + notificacao.getMontante() + " e uma taxa de " + notificacao.getTaxa();
-                System.out.println(msg);
-            }catch(Exception e){
-                System.out.println("ERRO: Deu um erro a fazer parse da NOtificacao");
-            }*/
+            }
         }
-
-
-
     }
-
 }

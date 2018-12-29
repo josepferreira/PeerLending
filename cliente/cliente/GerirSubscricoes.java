@@ -214,7 +214,7 @@ public class GerirSubscricoes{
             switch(opcao){
                 case 1: apresentaListaSubscricao(); break;
                 case 2: acrescentaSubscricao(); break;
-                //case 3: retiraSubscricao(); break;
+                case 3: retiraSubscricao(); break;
                 default: continua = false;
             }
         }
