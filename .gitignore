@@ -6,3 +6,4 @@ FrontEnd/_build
 FrontEnd/rebar.lock
 /Exchange/exchange/*.class
 diretorio/Diretorio/.idea/*
+diretorio/Diretorio/target
