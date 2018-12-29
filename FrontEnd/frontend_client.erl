@@ -157,6 +157,7 @@ loopLicitador(Sock, User, MapState) ->
         {Pid, Resposta} ->
             case maps:is_key(Pid, MapState) of
                 true -> 
+                    io:format("VOu enviar uma resposta para o cliente"),
                     gen_tcp:send(Sock, Resposta),
                     loopLicitador(Sock, User, MapState)
                 ;

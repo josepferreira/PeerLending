@@ -177,10 +177,10 @@ class Licitador{
       
         byte[] ba = mensagem.toByteArray();
 
-        System.out.println("Len: " + ba.length);
+        //System.out.println("Len: " + ba.length);
         cos.writeSFixed32NoTag(little2big(ba.length));
         cos.writeRawBytes(ba);
-        System.out.println("Wrote " + ba.length + " bytes");
+        //System.out.println("Wrote " + ba.length + " bytes");
         cos.flush();
 
         // System.out.println("-----");
@@ -245,10 +245,10 @@ class Licitador{
       
         byte[] ba = mensagem.toByteArray();
 
-        System.out.println("Len: " + ba.length);
+        //System.out.println("Len: " + ba.length);
         cos.writeSFixed32NoTag(little2big(ba.length));
         cos.writeRawBytes(ba);
-        System.out.println("Wrote " + ba.length + " bytes");
+        //System.out.println("Wrote " + ba.length + " bytes");
         cos.flush();
 
         // System.out.println("-----");
@@ -383,12 +383,28 @@ class Licitador{
             }
         }while(!lido);
 
+        lido = false;
+        long tempo = 0;
+        do{
+            System.out.print("Insira o Tempo: ");
+            try{
+                tempo = Long.parseLong(inP.readLine());
+                if(tempo > 0)
+                    lido = true;
+                /**
+                 * Tenho de validar se é multiplo de 100?
+                 */
+            } catch(Exception e){
+                System.out.println("O valor introduzido não é valido!");
+            }
+        }while(!lido);
+
         float taxaAux = (float) taxa;
 
         CriacaoLeilao leilao = CriacaoLeilao.newBuilder()
                                             .setMontante(montante)
                                             .setTaxa(taxaAux)
-                                            .setTempo(10)
+                                            .setTempo(tempo)
                                             .build();
 
         MensagemEmpresa mensagemEmpresa = MensagemEmpresa.newBuilder()
@@ -403,13 +419,13 @@ class Licitador{
                                             .build();
       
         byte[] ba = mensagem.toByteArray();
-        System.out.println(ba);
-        System.out.println(new String(ba));
+        //System.out.println(ba);
+        //System.out.println(new String(ba));
 
-        System.out.println("Len: " + ba.length);
+        //System.out.println("Len: " + ba.length);
         cos.writeSFixed32NoTag(little2big(ba.length));
         cos.writeRawBytes(ba);
-        System.out.println("Wrote " + ba.length + " bytes");
+        //System.out.println("Wrote " + ba.length + " bytes");
         cos.flush();
 
         // System.out.println("-----");
@@ -448,9 +464,27 @@ class Licitador{
             }
         }while(!lido);
 
+        lido = false;
+        long tempo = 0;
+        do{
+            System.out.print("Insira o Tempo: ");
+            try{
+                tempo = Long.parseLong(inP.readLine());
+                if(tempo > 0)
+                    lido = true;
+                /**
+                 * Tenho de validar se é multiplo de 100?
+                 */
+            } catch(Exception e){
+                System.out.println("O valor introduzido não é valido!");
+            }
+        }while(!lido);
+
+
+
         EmissaoTaxaFixa emissao = EmissaoTaxaFixa.newBuilder()
                                             .setMontante(montante)
-                                            .setTempo(10)
+                                            .setTempo(tempo)
                                             .build();
 
         MensagemEmpresa mensagemEmpresa = MensagemEmpresa.newBuilder()
@@ -466,10 +500,10 @@ class Licitador{
       
         byte[] ba = mensagem.toByteArray();
 
-        System.out.println("Len: " + ba.length);
+        //System.out.println("Len: " + ba.length);
         cos.writeSFixed32NoTag(little2big(ba.length));
         cos.writeRawBytes(ba);
-        System.out.println("Wrote " + ba.length + " bytes");
+        //System.out.println("Wrote " + ba.length + " bytes");
         cos.flush();
 
         // System.out.println("-----");
