@@ -24,11 +24,95 @@ class ComunicaCliente implements Runnable{
     private ZMQ.Context context;
     private ZMQ.Socket sub;
     private GerirSubscricoes subscricao;
+    private HashMap<String, ArrayList<String>> enderecos = new HashMap<>();
+    private boolean temTodos = false;
 
     public ComunicaCliente(ZMQ.Context context, ZMQ.Socket sub, GerirSubscricoes subscricao){
         this.context = context;
         this.sub = sub;
         this.subscricao = subscricao;
+    }
+
+    private boolean jaTemEndereco(String empresa){
+        for(ArrayList<String> lista: enderecos.values()){
+            if(lista.contains(empresa))
+                return true;
+        }
+
+        //Quer dizer que não encontrou a empresa!
+        return false;
+    }
+
+    private void registaTodosEnderecos(){
+        System.out.println("Vou fazer connect a todos!");
+        this.sub.connect("tcp://*:12352");
+        /*try{
+            URL url = new URL("http://localhost:8080/exchange/todas");
+            System.out.println("VOU EVNIAR UM EPDIDO!");
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.setRequestMethod("GET");
+            con.setRequestProperty("Content-Type", "application/json");
+
+            con.connect();
+            BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+		    String inputLine;
+		    StringBuffer response = new StringBuffer();
+
+		    while ((inputLine = in.readLine()) != null) {
+			    response.append(inputLine);
+		    }
+		    in.close();
+
+		    //print result
+            System.out.println(response.toString());
+            JSONArray jsonArray = new JSONArray(response.toString());
+            for(int i=0; i<jsonArray.length(); i++){
+                JSONObject exchange = jsonArray.getJSONObject(i);
+                String end = exchange.endereco;
+                ArrayList<String> empresas = exchange.empresas;
+                enderecos.put(end, empresas);
+                this.sub.connect("tcp://"+end);
+            }
+            temTodos = true;
+
+        }catch(Exception exc){
+            System.out.println(exc);
+        }*/
+    }
+
+    private void registaNovoEndereco(String empresa){
+        System.out.println("Vou subscrever a empresa " + empresa);
+        this.sub.connect("tcp://*:12352");
+
+        /*try{
+            URL url = new URL("http://localhost:8080/exchange?empresa="+empresa);
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.setRequestMethod("GET");
+            con.setRequestProperty("Content-Type", "application/json");
+
+            con.connect();
+
+            BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+		    String inputLine;
+		    StringBuffer response = new StringBuffer();
+
+		    while ((inputLine = in.readLine()) != null) {
+			    response.append(inputLine);
+		    }
+		    in.close();
+
+		    //print result
+            System.out.println(response.toString());
+            JSONObject exchange = new JSONObject(response.toString());
+            String end = exchange.endereco;
+            ArrayList<String> empresas = exchange.empresas;
+            enderecos.put(end, empresas);
+            this.sub.connect("tcp://"+end);
+
+        }catch(Exception exc){
+            System.out.println(exc);
+        }*/
+
     }
 
     public void run(){
@@ -56,9 +140,23 @@ class ComunicaCliente implements Runnable{
              */
             if(decisao.equals("sub")){
                 switch(subResposta){
-                    case "leilao::": subscricao.leiloesSubscritos = true;  break;
-                    case "emissao::": subscricao.emissoesSubscritas = true; break;
-                    default: String empresa = subResposta.split("::")[1]; subscricao.adicionaEmpresa(empresa); break;
+                    case "leilao::": 
+                    subscricao.leiloesSubscritos = true;
+                    if(!temTodos)
+                        registaTodosEnderecos();  
+                    break;
+                    case "emissao::": 
+                        subscricao.emissoesSubscritas = true; 
+                        if(!temTodos)
+                            registaTodosEnderecos();
+                        break;
+                    default: 
+                        String empresa = subResposta.split("::")[1]; 
+                        subscricao.adicionaEmpresa(empresa);
+                        if(!jaTemEndereco(empresa)){
+                            registaNovoEndereco(empresa);
+                        } 
+                        break;
                 }
                 sub.subscribe(subResposta.getBytes());
                 System.out.println("Ja subscrevi!!");
@@ -67,7 +165,10 @@ class ComunicaCliente implements Runnable{
                     switch(subResposta){
                         case "leilao::": subscricao.leiloesSubscritos = false;  break;
                         case "emissao::": subscricao.emissoesSubscritas = false; break;
-                        default: String empresa = subResposta.split("::")[1]; subscricao.removeEmpresa(empresa); break;
+                        default: 
+                            String empresa = subResposta.split("::")[1]; 
+                            subscricao.removeEmpresa(empresa); 
+                            break;
                     }
                     sub.unsubscribe(subResposta.getBytes());
                     System.out.println("Ja tirei a subscricao!!");
@@ -93,7 +194,8 @@ public class Notificacoes implements Runnable{
     public void run(){
         //Vou ter de me associar às exchanges
         ZMQ.Socket socket = context.socket(ZMQ.SUB);
-        socket.connect("tcp://*:12352");
+        //socket.connect("inproc://enderecos");
+        //socket.connect("tcp://*:12352");
         /**
          * Agora é necessário ter os IPs e portas ... Vou buscar ao diretorio?
          * socket.connect("tcp://ip:"+porta);
@@ -115,6 +217,7 @@ public class Notificacoes implements Runnable{
              * Aqui vai receber o resto da mensagem (multiPart)
              */
             if(socket.hasReceiveMore()){
+
                 byte[] n = socket.recv(0);
                 try{
                     Notificacao no = Notificacao.parseFrom(n);
@@ -175,6 +278,7 @@ public class Notificacoes implements Runnable{
                 }catch(Exception e){
                     System.out.println("Deu problemas a receber mais!");
                 }
+                
             }
         }
     }

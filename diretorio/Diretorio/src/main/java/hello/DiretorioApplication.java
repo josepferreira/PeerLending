@@ -1,6 +1,7 @@
 package hello;
 
 import hello.resources.EmissaoResource;
+import hello.resources.ExchangeResource;
 import hello.resources.LeilaoResource;
 import io.dropwizard.Application;
 import io.dropwizard.setup.Bootstrap;
@@ -33,6 +34,9 @@ public class DiretorioApplication extends Application<DiretorioConfiguration> {
         );
         environment.jersey().register(
                 new EmissaoResource()
+        );
+        environment.jersey().register(
+                new ExchangeResource()
         );
         environment.healthChecks().register("template",
             new TemplateHealthCheck(configuration.template));
