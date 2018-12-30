@@ -117,5 +117,16 @@ public class Leilao extends Emprestimo implements Comparable{
         jo.put("empresa",empresa);
 
         return jo.toString();
-    } 
+    }
+    
+    public String toString(){
+        String res = "Leilao: {";
+        res += "id: " + id;
+        res += "; empresa: " + empresa;
+        res += "; montante total: " + montante;
+        res += "; taxa máxima: " + taxa;
+        res += "; propostas: " + propostas.toString() + "}";
+
+        return res;
+    }
 }

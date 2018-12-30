@@ -9,6 +9,10 @@ import com.google.protobuf.CodedOutputStream;
 
 import org.zeromq.ZMQ;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+
 import cliente.Ccs.*;
 
 class RecebeMensagens implements Runnable{
@@ -659,6 +663,7 @@ class Licitador{
             //con.setUseCaches(false);
 
             con.connect();
+            
             //OutputStream out = con.getOutputStream();
             //out.write(((Leilao)aux).getJSON().getBytes());
             //out.flush();
@@ -675,12 +680,13 @@ class Licitador{
 
 		    //print result
             System.out.println(response.toString());
-            /*JSONArray jsonArray = new JSONArray(response.toString());
+            String resposta = response.toString();
+            JSONArray jsonArray = new JSONArray(resposta);
             System.out.println("Os leilões ativos são: ");
             for(int i=0; i<jsonArray.length(); i++){
                 JSONObject objetoJSON = jsonArray.getJSONObject(i);
-                System.out.println("Empresa: " + objetoJSON.empresa);
-            }*/
+                System.out.println("Empresa: " + objetoJSON.get("empresa"));
+            }
 
         }catch(Exception exc){
             System.out.println(exc);

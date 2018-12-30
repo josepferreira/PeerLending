@@ -69,29 +69,39 @@ public class LeilaoResource {
     @Path("/{empresa}/terminado/{id}")
     public Response terminaLeilao(@PathParam("empresa") String empresa, @PathParam("id") int id) {
         ArrayList<Leilao> leiloesA = leiloesAtivos.get(empresa);
-        Leilao leilao = leiloesA.stream().filter(l -> l.id == id). findFirst().get();
-        System.out.println(leilao);
-        leilao.terminado = true;
-
-        ArrayList<Leilao> leiloesF = leiloesFinalizados.get(empresa);
-        if(leiloesF == null)
-            leiloesF = new ArrayList<Leilao>();
-        leiloesF.add(leilao);
-        boolean continua = true;
-        for(int i=0; i<leiloesA.size() && continua; i++){
-            if(leiloesA.get(i).equals(leilao)) {
-                leiloesA.remove(i);
-                continua = false;
-            }
+        if(leiloesA == null){
+            //dar erro
+            return Response.status(Response.Status.NOT_FOUND).entity("Não existem leiloe ativos para a empresa: " + empresa).build();
         }
+        try {
+            Leilao leilao = leiloesA.stream().filter(l -> l.id == id).findFirst().get();
 
-        leiloesAtivos.put(empresa, leiloesA);
-        leiloesFinalizados.put(empresa, leiloesF);
+            System.out.println(leilao);
+            leilao.terminado = true;
 
-        System.out.println(leiloesAtivos.get(empresa));
-        System.out.println(leiloesFinalizados.get(empresa));
+            ArrayList<Leilao> leiloesF = leiloesFinalizados.get(empresa);
+            if (leiloesF == null)
+                leiloesF = new ArrayList<Leilao>();
+            leiloesF.add(leilao);
+            boolean continua = true;
+            for (int i = 0; i < leiloesA.size() && continua; i++) {
+                if (leiloesA.get(i).equals(leilao)) {
+                    leiloesA.remove(i);
+                    continua = false;
+                }
+            }
 
-        return Response.ok(leilao).build();
+            leiloesAtivos.put(empresa, leiloesA);
+            leiloesFinalizados.put(empresa, leiloesF);
+
+            System.out.println(leiloesAtivos.get(empresa));
+            System.out.println(leiloesFinalizados.get(empresa));
+
+            return Response.ok(leilao).build();
+        }
+        catch(Exception exc){
+            return Response.status(Response.Status.NOT_FOUND).entity("O leilão referido não se encontra ativa").build();
+        }
     }
 
     @POST

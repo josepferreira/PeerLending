@@ -65,44 +65,52 @@ public class EmissaoResource {
     public Response terminaEmissao(@PathParam("empresa") String empresa, @PathParam("id") int id) {
 
         ArrayList<Emissao> emissoesA = emissoesAtivas.get(empresa);
-        Emissao emissao = emissoesA.stream().filter(l -> l.id == id). findFirst().get();
-        System.out.println(emissao);
-        emissao.terminado = true;
-
-        ArrayList<Emissao> emissaoF = emissoesFinalizadas.get(empresa);
-        if(emissaoF == null)
-            emissaoF = new ArrayList<Emissao>();
-        emissaoF.add(emissao);
-        boolean continua = true;
-        for(int i=0; i<emissoesA.size() && continua; i++){
-            if(emissoesA.get(i).equals(emissao)) {
-                emissoesA.remove(i);
-                continua = false;
-            }
+        if(emissoesA == null){
+            //dar erro
+            return Response.status(Response.Status.NOT_FOUND).entity("Não existem emissoes ativas para a empresa: " + empresa).build();
         }
+        try {
+            Emissao emissao = emissoesA.stream().filter(l -> l.id == id).findFirst().get();
 
-        emissoesAtivas.put(empresa, emissoesA);
-        emissoesFinalizadas.put(empresa, emissaoF);
+            System.out.println(emissao);
+            emissao.terminado = true;
 
-        System.out.println(emissoesAtivas.get(empresa));
-        System.out.println(emissoesFinalizadas.get(empresa));
+            ArrayList<Emissao> emissaoF = emissoesFinalizadas.get(empresa);
+            if (emissaoF == null)
+                emissaoF = new ArrayList<Emissao>();
+            emissaoF.add(emissao);
+            boolean continua = true;
+            for (int i = 0; i < emissoesA.size() && continua; i++) {
+                if (emissoesA.get(i).equals(emissao)) {
+                    emissoesA.remove(i);
+                    continua = false;
+                }
+            }
 
-        return Response.ok(emissao).build();
+            emissoesAtivas.put(empresa, emissoesA);
+            emissoesFinalizadas.put(empresa, emissaoF);
+
+            System.out.println(emissoesAtivas.get(empresa));
+            System.out.println(emissoesFinalizadas.get(empresa));
+
+            return Response.ok(emissao).build();
+        }catch(Exception exc){
+            return Response.status(Response.Status.NOT_FOUND).entity("A emissão referida não se encontra ativa").build();
+        }
     }
 
     @POST
     //@Consumes(MediaType.APPLICATION_JSON)
-    public Response add(@FormParam("id") int id, @FormParam("empresa") String empresa) {
-        Emissao emissao = new Emissao(id, empresa);
-        if(emissoesAtivas.containsKey(empresa)){
-            ArrayList<Emissao> l = emissoesAtivas.get(empresa);
+    public Response add(Emissao emissao) {
+        if(emissoesAtivas.containsKey(emissao.empresa)){
+            ArrayList<Emissao> l = emissoesAtivas.get(emissao.empresa);
             l.add(emissao);
-            emissoesAtivas.put(empresa, l);
+            emissoesAtivas.put(emissao.empresa, l);
         }
         else{
             ArrayList<Emissao> l = new ArrayList<>();
             l.add(emissao);
-            emissoesAtivas.put(empresa, l);
+            emissoesAtivas.put(emissao.empresa, l);
         }
         return Response.ok(emissao).build();
     }

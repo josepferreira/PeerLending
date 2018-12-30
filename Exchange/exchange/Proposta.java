@@ -34,5 +34,14 @@ public class Proposta implements Comparable{
         
         return 0;
     }
+
+    public String toString(){
+        String res = "Proposta: {";
+        res += "cliente: " + cliente;
+        res += "; montante: " + montante;
+        res += "; taxa: " + taxa + "}";
+
+        return res;
+    }
     
 }

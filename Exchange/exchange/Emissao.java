@@ -1,6 +1,8 @@
 package exchange;
 
 import java.time.LocalDateTime;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 public class Emissao extends Emprestimo implements Comparable{
     
@@ -67,5 +69,28 @@ public class Emissao extends Emprestimo implements Comparable{
             return -1;
         }
         return 0;
+    }
+
+    public String getJSON(){
+        // podemos depois ter uma funcao que converte leilao em json 
+        // e uma que converte json em leilao
+ 
+         JSONObject jo = new JSONObject();
+ 
+         jo.put("id",id);
+         jo.put("empresa",empresa);
+ 
+         return jo.toString();
+    }
+
+    public String toString(){
+        String res = "Emissao: {";
+        res += "id: " + id;
+        res += "; empresa: " + empresa;
+        res += "; montante total: " + montante;
+        res += "; taxa: " + taxa;
+        res += "; propostas: " + propostas.toString() + "}";
+
+        return res;
     }
 }

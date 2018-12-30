@@ -124,6 +124,30 @@ class EstruturaExchange{
             socketNotificacoes.send(topic.getBytes(), ZMQ.SNDMORE);
             socketNotificacoes.send(notificacao.toByteArray());
 
+            try{
+                URL url = new URL("http://localhost:8080/emissao");
+                HttpURLConnection con = (HttpURLConnection) url.openConnection();
+                con.setRequestMethod("POST");
+                con.setDoOutput(true);
+                con.setRequestProperty("Content-Type", "application/json");
+                con.setInstanceFollowRedirects(false);
+                con.setUseCaches(false);
+    
+                con.connect();
+                OutputStream out = con.getOutputStream();
+                out.write(((Leilao)aux).getJSON().getBytes());
+                out.flush();
+                out.close();
+    
+                System.out.println(((Emissao)aux).getJSON());
+        
+                int responseCode = con.getResponseCode();
+                System.out.println("POST emissao Response Code :: " + responseCode);
+    
+            }catch(Exception exc){
+                System.out.println(exc);
+            }
+
             return true;
         }
         Resposta respostaEmissao = Resposta.newBuilder()
@@ -180,6 +204,19 @@ class EstruturaExchange{
                 socketNotificacoes.send(notificacao.toByteArray());
                     
                 //tem de enviar para o diretorio
+                try{
+                    URL url = new URL("http://localhost:8080/emissao/" + em.empresa
+                                    + "/terminado/" + em.id);
+                    HttpURLConnection con = (HttpURLConnection) url.openConnection();
+                    con.setRequestMethod("PUT");
+                    con.connect();
+                    
+                    int responseCode = con.getResponseCode();
+                    System.out.println("PUT emissao Response Code :: " + responseCode);
+        
+                }catch(Exception exc){
+                    System.out.println(exc);
+                }
 
             }
             
@@ -281,7 +318,7 @@ class EstruturaExchange{
                 System.out.println(((Leilao)aux).getJSON());
 		
                 int responseCode = con.getResponseCode();
-                System.out.println("POST Response Code :: " + responseCode);
+                System.out.println("POST leilao Response Code :: " + responseCode);
 
             }catch(Exception exc){
                 System.out.println(exc);
@@ -466,7 +503,20 @@ class EstruturaExchange{
                         socketNotificacoes.send(topic.getBytes(), ZMQ.SNDMORE);
                         socketNotificacoes.send(notificacao.toByteArray());
 
-                        ((Leilao)emp).getJSON();
+                        
+                        try{
+                            URL url = new URL("http://localhost:8080/leilao/" + emp.empresa
+                                            + "/terminado/" + emp.id);
+                            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+                            con.setRequestMethod("PUT");
+                            con.connect();
+                            
+                            int responseCode = con.getResponseCode();
+                            System.out.println("PUT leilao Response Code :: " + responseCode);
+                
+                        }catch(Exception exc){
+                            System.out.println(exc);
+                        }
 
                         //tem de enviar para o diretorio
 
@@ -503,6 +553,19 @@ class EstruturaExchange{
                         socketNotificacoes.send(notificacao.toByteArray());
                             
                         //tem de enviar para o diretorio
+                        try{
+                            URL url = new URL("http://localhost:8080/emissao/" + emp.empresa
+                                            + "/terminado/" + emp.id);
+                            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+                            con.setRequestMethod("PUT");
+                            con.connect();
+                            
+                            int responseCode = con.getResponseCode();
+                            System.out.println("PUT emissao Response Code :: " + responseCode);
+                
+                        }catch(Exception exc){
+                            System.out.println(exc);
+                        }
                 
                     }
                 }
