@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 public class Leilao extends Emprestimo implements Comparable{
     private boolean sucesso;
@@ -104,4 +106,16 @@ public class Leilao extends Emprestimo implements Comparable{
         }
         return 0;
     }
+
+    public String getJSON(){
+       // podemos depois ter uma funcao que converte leilao em json 
+       // e uma que converte json em leilao
+
+        JSONObject jo = new JSONObject();
+
+        jo.put("id",id);
+        jo.put("empresa",empresa);
+
+        return jo.toString();
+    } 
 }

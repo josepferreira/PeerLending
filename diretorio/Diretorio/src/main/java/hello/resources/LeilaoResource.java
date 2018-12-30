@@ -88,19 +88,20 @@ public class LeilaoResource {
     }
 
     @POST
-    //@Consumes(MediaType.APPLICATION_JSON)
-    public Response add(@FormParam("id") int id, @FormParam("empresa") String empresa) {
-        Leilao leilao = new Leilao(id, empresa);
-        if(leiloesAtivos.containsKey(empresa)){
-            ArrayList<Leilao> l = leiloesAtivos.get(empresa);
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response add(Leilao leilao) {
+        System.out.println("Cheguei");
+        if(leiloesAtivos.containsKey(leilao.empresa)){
+            ArrayList<Leilao> l = leiloesAtivos.get(leilao.empresa);
             l.add(leilao);
-            leiloesAtivos.put(empresa, l);
+            leiloesAtivos.put(leilao.empresa, l);
         }
         else{
             ArrayList<Leilao> l = new ArrayList<>();
             l.add(leilao);
-            leiloesAtivos.put(empresa, l);
+            leiloesAtivos.put(leilao.empresa, l);
         }
+        
         return Response.ok(leilao).build();
     }
 

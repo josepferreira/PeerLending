@@ -1,0 +1,2 @@
+javac -cp .:json-simple-1.1.jar AnalisaJSON.java
+java -cp .:json-simple-1.1.jar AnalisaJSON m1.json
