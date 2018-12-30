@@ -22,6 +22,12 @@ public class LeilaoResource {
 
     public LeilaoResource(){
         System.out.println("Fui criada!");
+        ArrayList<Leilao> leiloes = new ArrayList<>();
+        leiloes.add(new Leilao(1, "ola"));
+        leiloes.add(new Leilao(2, "ola"));
+        leiloes.add(new Leilao(3, "mania"));
+        leiloesAtivos.put("ola", leiloes);
+
     }
 
     //Leiloes ativos
@@ -32,6 +38,7 @@ public class LeilaoResource {
             for(ArrayList<Leilao> aux: leiloesAtivos.values()){
                 leiloes.addAll(aux);
             }
+            System.out.println(leiloes);
             return leiloes;
         }
 

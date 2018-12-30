@@ -647,6 +647,46 @@ class Licitador{
         return opcao;
     }
 
+    private static void leiloesAtivos(){
+        try{
+            URL url = new URL("http://localhost:8080/leilao");
+            System.out.println("VOU EVNIAR UM EPDIDO!");
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.setRequestMethod("GET");
+            //con.setDoOutput(true);
+            con.setRequestProperty("Content-Type", "application/json");
+            //con.setInstanceFollowRedirects(false);
+            //con.setUseCaches(false);
+
+            con.connect();
+            //OutputStream out = con.getOutputStream();
+            //out.write(((Leilao)aux).getJSON().getBytes());
+            //out.flush();
+            //out.close();
+
+            BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+		    String inputLine;
+		    StringBuffer response = new StringBuffer();
+
+		    while ((inputLine = in.readLine()) != null) {
+			    response.append(inputLine);
+		    }
+		    in.close();
+
+		    //print result
+            System.out.println(response.toString());
+            /*JSONArray jsonArray = new JSONArray(response.toString());
+            System.out.println("Os leilões ativos são: ");
+            for(int i=0; i<jsonArray.length(); i++){
+                JSONObject objetoJSON = jsonArray.getJSONObject(i);
+                System.out.println("Empresa: " + objetoJSON.empresa);
+            }*/
+
+        }catch(Exception exc){
+            System.out.println(exc);
+        }
+    }
+
     public static void main(String args[]) throws Exception{
         Thread outraT = null;
         Scanner sc = new Scanner(System.in);
@@ -691,15 +731,15 @@ class Licitador{
                 switch(opcao){
                     //Se calhar só vamos buscar o papel se o user nao for nulo (poed acontecer se der uma exceçao)
                     case 1: user = autenticaCliente(inP,cos); papel = leMensagemInicial(cis); break;
-                    case 2: System.out.println("A funcionalidade ainda nao esta implementada"); break;
-                    default: sair = true; break;
+                    case 2: leiloesAtivos(); break;
+                    default: sair = true; System.out.println("bye!"); break;
                 }
                 
                 autenticado = true;
                 
                 if(user==null || papel==null){
                     autenticado = false;
-                    System.out.println("bye!");
+                    //System.out.println("bye!");
                 }
                 else{
                     System.out.println("Papel definido!");
