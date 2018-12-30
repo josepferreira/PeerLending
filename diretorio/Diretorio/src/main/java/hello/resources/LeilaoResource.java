@@ -101,7 +101,7 @@ public class LeilaoResource {
             l.add(leilao);
             leiloesAtivos.put(leilao.empresa, l);
         }
-        
+
         return Response.ok(leilao).build();
     }
 
