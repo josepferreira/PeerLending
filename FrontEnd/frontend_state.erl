@@ -61,7 +61,7 @@ loop (Push, Pull, MapEstado) ->
             io:format("Loop recebeu iniciaLeilao vinda do frontend ~n"),
             case maps:find(Empresa, MapEstado) of
                 {ok, {Leilao, Emissao, _}} when Leilao == false , Emissao == false -> 
-                    NovaLista = [],
+                    NovaLista = [{Empresa, From}],
                     NewMap = maps:put(Empresa, {true, Emissao, NovaLista}, MapEstado),
                     chumak:send(Push, ProtoBufBin),
                     % Binario = ccs:encode_msg(#'RespostaExchange'{tipo='RESULTADO',resultado=#'Resultado'{tipo='LEILAO',empresa="emp1",texto="Nao foste tu"}}),
@@ -77,7 +77,7 @@ loop (Push, Pull, MapEstado) ->
             io:format("Loop recebeu iniciaEmissao vinda do frontend ~n"),
             case maps:find(Empresa, MapEstado) of
                 {ok, {Leilao, Emissao, _}} when Emissao == false , Leilao == false -> 
-                    NovaLista = [],
+                    NovaLista = [{Empresa, From}],
                     NewMap = maps:put(Empresa, {Leilao, true, NovaLista}, MapEstado),
                     chumak:send(Push, ProtoBufBin),
                     loop(Push, Pull, NewMap)
@@ -120,7 +120,17 @@ loop (Push, Pull, MapEstado) ->
                     io:format("É do tipo RESPOSTA ~n"),
                     {_, _,Utilizador, _, _} = Resposta,
                     io:format("É PRECISO ENCONTRAR O UTILIZADOR ~s~n", [Utilizador]),
+                    Values = maps:values(MapEstado),
+                    io:format("~p~n", [Values]),
+                    ListaListas = [Lista || {_,_,Lista} <- Values],
+                    Utilizadores = append2(ListaListas),
+                    io:format("Lista = ~p", [Utilizadores]),
+                    [{Utilizador, UserPid}|_] = lists:filter( fun( {U,_}) -> U == Utilizador end, Utilizadores),
+                    UserPid ! {self(), RespostaExchange},
                     loop(Push, Pull, MapEstado)
             end
     end
 .
+append2(List) -> append2(List,[]).
+append2([], Acc) -> Acc;
+append2([H|T],Acc) -> append2(T, H ++ Acc).
