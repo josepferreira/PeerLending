@@ -8,7 +8,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 public class Leilao extends Emprestimo implements Comparable{
-    private boolean sucesso;
+    public  boolean sucesso;
     
     public Leilao(int id, String empresa, long montante, float taxa, LocalDateTime fim){
         super(id, empresa, montante, taxa, fim);
@@ -85,6 +85,10 @@ public class Leilao extends Emprestimo implements Comparable{
         return sucesso;
     }
 
+    public float taxaMaxima(){
+        return propostas.last().taxa;
+    }
+
     public boolean equals(Object o){
         if(o==null) return false;
 
@@ -115,6 +119,10 @@ public class Leilao extends Emprestimo implements Comparable{
 
         jo.put("id",id);
         jo.put("empresa",empresa);
+        jo.put("montante",montante);
+        jo.put("taxa",taxa);
+        //jo.put("fim",fim);
+        jo.put("propostas",propostas);
 
         return jo.toString();
     }

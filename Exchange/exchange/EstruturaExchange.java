@@ -88,7 +88,25 @@ class EstruturaExchange{
         long tempoAux = converteTempo(tempo);
         System.out.println("TEMPO: " + tempoAux);
         LocalDateTime fim = LocalDateTime.now().plusNanos(tempoAux);
-        Emprestimo aux = empresas.get(empresa).criarEmissao(montante,fim);
+        Emprestimo aux = null;
+        try{
+            aux = empresas.get(empresa).criarEmissao(montante,fim);
+        }
+        catch(ExcecaoIndisponivel ei){
+            Resposta respostaEmissao = Resposta.newBuilder()
+                            .setTipo(TipoMensagem.EMISSAO)
+                            .setUtilizador(empresa)
+                            .setSucesso(false)
+                            .setMensagem(ei.mensagem)
+                            .build();
+            RespostaExchange respostaFinal = RespostaExchange.newBuilder()
+                            .setTipo(TipoResposta.RESPOSTA)
+                            .setResposta(respostaEmissao)
+                            .build();
+            socketExchangePush.send(respostaFinal.toByteArray());
+            return false;
+        }
+
         if(aux != null){
             EmprestimoProntoTerminar ept = new EmprestimoProntoTerminar(aux);
             if(paraTerminar.isEmpty() || ept.equals(paraTerminar.first())){
@@ -150,6 +168,7 @@ class EstruturaExchange{
 
             return true;
         }
+
         Resposta respostaEmissao = Resposta.newBuilder()
                             .setTipo(TipoMensagem.EMISSAO)
                             .setUtilizador(empresa)
@@ -269,6 +288,7 @@ class EstruturaExchange{
         Emprestimo aux = empresas.get(empresa).criarLeilao(montante, taxa, fim);
         if(aux != null){
             EmprestimoProntoTerminar ept = new EmprestimoProntoTerminar(aux);
+            System.out.println(paraTerminar);
             if(paraTerminar.isEmpty() || ept.equals(paraTerminar.first())){
                 possoInterromper();
             }

@@ -59,6 +59,13 @@ public class Emissao extends Emprestimo implements Comparable{
         return ((e.id == this.id) && (e.empresa.equals(this.empresa)));
     }
 
+    public boolean sucesso(){
+        long montanteAmealhado = propostas.stream()
+                                    .mapToLong(p -> p.montante)    
+                                    .sum();
+        return montanteAmealhado >= montante;
+    }
+
     public int compareTo(Object o){
         Emissao e = (Emissao)o;
 
@@ -74,13 +81,17 @@ public class Emissao extends Emprestimo implements Comparable{
     public String getJSON(){
         // podemos depois ter uma funcao que converte leilao em json 
         // e uma que converte json em leilao
+
+        JSONObject jo = new JSONObject();
+
+        jo.put("id",id);
+        jo.put("empresa",empresa);
+        jo.put("montante",montante);
+        jo.put("taxa",taxa);
+        //jo.put("fim",fim);
+        jo.put("propostas",propostas);
  
-         JSONObject jo = new JSONObject();
- 
-         jo.put("id",id);
-         jo.put("empresa",empresa);
- 
-         return jo.toString();
+        return jo.toString();
     }
 
     public String toString(){

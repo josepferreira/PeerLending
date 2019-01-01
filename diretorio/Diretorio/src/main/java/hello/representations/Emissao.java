@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Objects;
+import java.util.TreeSet;
 
 public class Emissao {
 
@@ -11,9 +12,9 @@ public class Emissao {
 
     public String empresa;
 
-    //public long montante;
-    //public float taxa;
-    //public TreeSet<Proposta> propostas = new TreeSet<>(); //pode estar ordenado ao contrário, ou seja a melhor proposta está no fim
+    public long montante;
+    public float taxa;
+    public TreeSet<Proposta> propostas;// = new TreeSet<>(); //pode estar ordenado ao contrário, ou seja a melhor proposta está no fim
 
     public boolean terminado = false;
 

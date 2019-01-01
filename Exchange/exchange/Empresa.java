@@ -23,11 +23,31 @@ public class Empresa{
         return null;
     }
 
-    public Emprestimo criarEmissao(long montante, LocalDateTime fim){
+    public Emprestimo criarEmissao(long montante, LocalDateTime fim) throws ExcecaoIndisponivel{
         //para criar uma nova emissao
         if(emprestimoCurso == null){
+            if(leiloesEfetuados.stream()
+                    .filter(a -> a.sucesso)
+                    .count()==0){
+                //da excecao a dizer q n pode criar
+                throw new ExcecaoIndisponivel(nome,"Não pode criar uma emissao por ainda não ter um leilao efetuado com sucesso!");
+            }
             //como definir a taxa? ver nas duvidas ----------------------------FALTA
-            int taxa = 0;
+            float taxa = 0;
+            if(leiloesEfetuados.first().id > emissoesEfetuadas.first().id){
+                //taxa do leilao
+                taxa = leiloesEfetuados.first().taxaMaxima();
+                if(!leiloesEfetuados.first().sucesso){
+                    taxa *= 1.1;
+                }
+            }
+            else{
+                //taxa da emissao
+                taxa = emissoesEfetuadas.first().taxa;
+                if(!emissoesEfetuadas.first().sucesso()){
+                    taxa *= 1.1;
+                }
+            }
             emprestimoCurso = new Emissao(idEmprestimo++, this.nome,montante, taxa, fim);
             return emprestimoCurso;
         }

@@ -1,6 +1,7 @@
 Falta fazer:
-* ver a taxa na emissao e se pode realizar a mesma
+* ver a taxa na emissao e se pode realizar a mesma  -> penso que já está mas é preciso testar depois
 * ver o parse a partir de json (tanto em java com erlang)
 * ver melhor o proto das respostas
 * pedir os enderecos da exchange ao diretorio
-* por as propostas, montante e taxa no diretorio
+* por as propostas, montante e taxa no diretorio -> penso que já só falta o put (n sei bem como fazer ainda)
+pomos tbm a data de fim?
