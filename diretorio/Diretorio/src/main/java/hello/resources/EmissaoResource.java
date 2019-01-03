@@ -62,18 +62,23 @@ public class EmissaoResource {
     @PUT
     @Path("/{empresa}/terminado/{id}")
 
-    public Response terminaEmissao(@PathParam("empresa") String empresa, @PathParam("id") int id) {
+    public Response terminaEmissao(@PathParam("empresa") String empresa, @PathParam("id") int id, Emissao em) {
 
         ArrayList<Emissao> emissoesA = emissoesAtivas.get(empresa);
         if(emissoesA == null){
             //dar erro
             return Response.status(Response.Status.NOT_FOUND).entity("Não existem emissoes ativas para a empresa: " + empresa).build();
         }
+
+        if(em.id != id){
+            return Response.status(Response.Status.NOT_FOUND).entity("Ids incompativeis no put das emissoes para a empresa: " + empresa).build();
+        }
         try {
             Emissao emissao = emissoesA.stream().filter(l -> l.id == id).findFirst().get();
 
             System.out.println(emissao);
             emissao.terminado = true;
+            emissao.propostas = em.propostas;
 
             ArrayList<Emissao> emissaoF = emissoesFinalizadas.get(empresa);
             if (emissaoF == null)
@@ -100,7 +105,7 @@ public class EmissaoResource {
     }
 
     @POST
-    //@Consumes(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
     public Response add(Emissao emissao) {
         if(emissoesAtivas.containsKey(emissao.empresa)){
             ArrayList<Emissao> l = emissoesAtivas.get(emissao.empresa);

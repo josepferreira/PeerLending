@@ -23,9 +23,9 @@ public class LeilaoResource {
     public LeilaoResource(){
         System.out.println("Fui criada!");
         ArrayList<Leilao> leiloes = new ArrayList<>();
-        leiloes.add(new Leilao(1, "ola"));
-        leiloes.add(new Leilao(2, "ola"));
-        leiloes.add(new Leilao(3, "mania"));
+        leiloes.add(new Leilao(1, "ola", new ArrayList<>(),10,(float)0.5));
+        leiloes.add(new Leilao(2, "ola", new ArrayList<>(),11,(float)0.6));
+        leiloes.add(new Leilao(3, "mania", new ArrayList<>(), 11, (float)1.5));
         leiloesAtivos.put("ola", leiloes);
 
     }
@@ -67,17 +67,24 @@ public class LeilaoResource {
      */
     @PUT
     @Path("/{empresa}/terminado/{id}")
-    public Response terminaLeilao(@PathParam("empresa") String empresa, @PathParam("id") int id) {
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response terminaLeilao(@PathParam("empresa") String empresa, @PathParam("id") int id, Leilao leilaoA) {
+        System.out.println("Cheguei ao put leilao");
         ArrayList<Leilao> leiloesA = leiloesAtivos.get(empresa);
+        System.out.println(leilaoA);
         if(leiloesA == null){
             //dar erro
             return Response.status(Response.Status.NOT_FOUND).entity("Não existem leiloe ativos para a empresa: " + empresa).build();
+        }
+        if(leilaoA.id != id){
+            return Response.status(Response.Status.NOT_FOUND).entity("Erro nos ids dos leiloes que esta a tentar alterar: " + empresa).build();
         }
         try {
             Leilao leilao = leiloesA.stream().filter(l -> l.id == id).findFirst().get();
 
             System.out.println(leilao);
             leilao.terminado = true;
+            leilao.propostas = leilaoA.propostas;
 
             ArrayList<Leilao> leiloesF = leiloesFinalizados.get(empresa);
             if (leiloesF == null)

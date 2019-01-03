@@ -228,7 +228,16 @@ class EstruturaExchange{
                                     + "/terminado/" + em.id);
                     HttpURLConnection con = (HttpURLConnection) url.openConnection();
                     con.setRequestMethod("PUT");
-                    con.connect();
+                    con.setDoOutput(true);
+                            con.setRequestProperty("Content-Type", "application/json");
+                            con.setInstanceFollowRedirects(false);
+                            con.setUseCaches(false);
+                
+                            con.connect();
+                            OutputStream out = con.getOutputStream();
+                            out.write(em.getJSON().getBytes());
+                            out.flush();
+                            out.close();
                     
                     int responseCode = con.getResponseCode();
                     System.out.println("PUT emissao Response Code :: " + responseCode);
@@ -529,7 +538,17 @@ class EstruturaExchange{
                                             + "/terminado/" + emp.id);
                             HttpURLConnection con = (HttpURLConnection) url.openConnection();
                             con.setRequestMethod("PUT");
+                            con.setDoOutput(true);
+                            con.setRequestProperty("Content-Type", "application/json");
+                            con.setInstanceFollowRedirects(false);
+                            con.setUseCaches(false);
+                
                             con.connect();
+                            OutputStream out = con.getOutputStream();
+                            out.write(((Leilao)emp).getJSON().getBytes());
+                            out.flush();
+                            out.close();
+                
                             
                             int responseCode = con.getResponseCode();
                             System.out.println("PUT leilao Response Code :: " + responseCode);
@@ -578,7 +597,17 @@ class EstruturaExchange{
                                             + "/terminado/" + emp.id);
                             HttpURLConnection con = (HttpURLConnection) url.openConnection();
                             con.setRequestMethod("PUT");
+                            con.setDoOutput(true);
+                            con.setRequestProperty("Content-Type", "application/json");
+                            con.setInstanceFollowRedirects(false);
+                            con.setUseCaches(false);
+                
                             con.connect();
+                            OutputStream out = con.getOutputStream();
+                            out.write(((Emissao)emp).getJSON().getBytes());
+                            out.flush();
+                            out.close();
+                
                             
                             int responseCode = con.getResponseCode();
                             System.out.println("PUT emissao Response Code :: " + responseCode);

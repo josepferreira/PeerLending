@@ -3,6 +3,7 @@ package hello.representations;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.TreeSet;
 
@@ -14,16 +15,23 @@ public class Emissao {
 
     public long montante;
     public float taxa;
-    public TreeSet<Proposta> propostas;// = new TreeSet<>(); //pode estar ordenado ao contrário, ou seja a melhor proposta está no fim
+    public ArrayList<Proposta> propostas;// = new TreeSet<>(); //pode estar ordenado ao contrário, ou seja a melhor proposta está no fim
 
     public boolean terminado = false;
 
     //public LocalDateTime fim;
-
     @JsonCreator
-    public Emissao (@JsonProperty("id") int id, @JsonProperty("empresa") String empresa) {
+    public Emissao (@JsonProperty("id") int id, @JsonProperty("empresa") String empresa,
+                   @JsonProperty("propostas") ArrayList<Proposta> p,
+                   @JsonProperty("montante") long montante, @JsonProperty("taxa") float taxa) {
+        System.out.println("Cheguei ao contrutor com 3 no leilao");
+        System.out.println("Propotas");
+        System.out.println(p);
         this.id = id;
         this.empresa = empresa;
+        this.propostas = p;
+        this.montante = montante;
+        this.taxa = taxa;
     }
 
     @Override
