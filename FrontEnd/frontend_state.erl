@@ -62,7 +62,7 @@ loop (Push, Pull, MapEstado) ->
             case maps:find(Empresa, MapEstado) of
                 {ok, {Leilao, Emissao, _}} when Leilao == false , Emissao == false -> 
                     NovaLista = [{Empresa, From}],
-                    NewMap = maps:put(Empresa, {true, Emissao, NovaLista}, MapEstado),
+                    NewMap = maps:put(Empresa, {false, Emissao, NovaLista}, MapEstado),
                     chumak:send(Push, ProtoBufBin),
                     % Binario = ccs:encode_msg(#'RespostaExchange'{tipo='RESULTADO',resultado=#'Resultado'{tipo='LEILAO',empresa="emp1",texto="Nao foste tu"}}),
                     % From ! {self(), Binario},
@@ -78,7 +78,7 @@ loop (Push, Pull, MapEstado) ->
             case maps:find(Empresa, MapEstado) of
                 {ok, {Leilao, Emissao, _}} when Emissao == false , Leilao == false -> 
                     NovaLista = [{Empresa, From}],
-                    NewMap = maps:put(Empresa, {Leilao, true, NovaLista}, MapEstado),
+                    NewMap = maps:put(Empresa, {Leilao, false, NovaLista}, MapEstado),
                     chumak:send(Push, ProtoBufBin),
                     loop(Push, Pull, NewMap)
                 ;
@@ -102,6 +102,9 @@ loop (Push, Pull, MapEstado) ->
                             [UserPid ! {self(), RespostaExchange} || {_, UserPid} <- ListaUsers ],
                             NewMap = maps:put(Empresa, {false, false,  []}, MapEstado),
                             loop(Push, Pull, NewMap)
+                        ;
+                        _ ->
+                            loop(Push, Pull, MapEstado)
                     end
                 ;
                 'NOTIFICACAO' ->
@@ -110,27 +113,59 @@ loop (Push, Pull, MapEstado) ->
                     case maps:find(Empresa, MapEstado) of 
                         {ok, {_, _, _, ListaUsers}} ->
                             [{_, UserPid }] = lists:filter( fun({U,_}) -> U == Utilizador end, ListaUsers),
-                            UserPid ! {self(), RespostaExchange}
+                            UserPid ! {self(), RespostaExchange},
+                            loop(Push, Pull, MapEstado)
                         ;
                         _ ->
-                            io:format("Erro na linha 101")
+                            io:format("Erro na linha 101"),
+                            loop(Push, Pull, MapEstado)
                     end
                 ;
                 'RESPOSTA' ->
-                    io:format("É do tipo RESPOSTA ~n"),
-                    {_, _,Utilizador, _, _} = Resposta,
-                    io:format("É PRECISO ENCONTRAR O UTILIZADOR ~s~n", [Utilizador]),
-                    Values = maps:values(MapEstado),
-                    io:format("~p~n", [Values]),
-                    ListaListas = [Lista || {_,_,Lista} <- Values],
-                    Utilizadores = append2(ListaListas),
-                    io:format("Lista = ~p", [Utilizadores]),
-                    [{Utilizador, UserPid}|_] = lists:filter( fun( {U,_}) -> U == Utilizador end, Utilizadores),
-                    UserPid ! {self(), RespostaExchange},
-                    loop(Push, Pull, MapEstado)
+                    {Tipo, Utilizador, Sucesso, _} = Resposta,
+                    case Sucesso of
+                        false ->
+                            io:format("Teve sucesso a ação, quer seja empresa ou licitador!"),
+                            enviaMensagem(MapEstado, Utilizador, RespostaExchange),
+                            loop(Push, Pull, MapEstado)
+                        ;
+                        true ->
+                            case maps:find(Utilizador, MapEstado) of
+                                {ok, {Leilao, Emissao, Lista}} ->
+                                    case Tipo of 
+                                        'LEILAO' ->
+                                            NewMap = maps:put(Utilizador, {true, Emissao, Lista}, MapEstado),
+                                            enviaMensagem(NewMap, Utilizador, RespostaExchange),
+                                            loop(Push, Pull, NewMap)
+                                        ;
+                                        'EMISSAO' ->
+                                            NewMap = maps:put(Utilizador, {Leilao, true, Lista}, MapEstado),
+                                            enviaMensagem(NewMap, Utilizador, RespostaExchange),
+                                            loop(Push, Pull, NewMap)
+                                    end
+                                ;
+                                _ ->
+                                    io:format("O utilizador nao é uma empresa!!!"), 
+                                    enviaMensagem(MapEstado, Utilizador, RespostaExchange),
+                                    loop(Push, Pull, MapEstado)
+                            end
+                    end
             end
     end
 .
+
+enviaMensagem(MapEstado, Utilizador, RespostaExchange) ->
+    io:format("É do tipo RESPOSTA ~n"),
+    io:format("É PRECISO ENCONTRAR O UTILIZADOR ~s~n", [Utilizador]),
+    Values = maps:values(MapEstado),
+    io:format("~p~n", [Values]),
+    ListaListas = [Lista || {_,_,Lista} <- Values],
+    Utilizadores = append2(ListaListas),
+    io:format("Lista = ~p", [Utilizadores]),
+    [{Utilizador, UserPid}|_] = lists:filter( fun( {U,_}) -> U == Utilizador end, Utilizadores),
+    UserPid ! {self(), RespostaExchange}
+.
+
 append2(List) -> append2(List,[]).
 append2([], Acc) -> Acc;
 append2([H|T],Acc) -> append2(T, H ++ Acc).
