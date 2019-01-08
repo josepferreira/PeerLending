@@ -7,6 +7,11 @@ import java.util.HashMap;
 import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import java.io.FileReader;
+import java.util.Iterator;
+import org.json.*;
+
+
 
 import java.io.*;
 import java.util.*;
@@ -56,20 +61,73 @@ public class Exchange{
     //ZMQ.Socket socketNotificacoes = context.socket(ZMQ.PUB);
     //falta o socket de comunicacao com o diretorio
 
+    public static class ExchangeAux{
+        String portaPush;
+        String portaPull;
+        String portaPub;
+        String endDir;
+        String portaDir;
+        ArrayList<String> empresas = new ArrayList<>();
+    }
+
     public static int little2big(int i) {
         return (i&0xff)<<24 | (i&0xff00)<<8 | (i&0xff0000)>>8 | (i>>24)&0xff;
     }
 
+    public static ExchangeAux parseExchange(String ficheiro){
+        try{
+            JSONTokener tokener = new JSONTokener(new FileReader("./exchange1.json"));
+            JSONObject jo = new JSONObject(tokener);
+            ExchangeAux ea = new ExchangeAux();
+            
+            System.out.println("PortaPush: " + jo.get("portaPush"));
+            ea.portaPush = jo.get("portaPush").toString();
+            System.out.println("PortaPull: " + jo.get("portaPull"));
+            ea.portaPull = jo.get("portaPull").toString();
+            System.out.println("PortaPub: " + jo.get("portaPub"));
+            ea.portaPub = jo.get("portaPub").toString();
+            System.out.println("Diretorio: " + jo.get("enderecoDiretorio"));
+            ea.endDir = jo.get("enderecoDiretorio").toString();
+            System.out.println("PortaDir: " + jo.get("portaDiretorio"));
+            ea.portaDir = jo.get("portaDiretorio").toString();
+
+
+            JSONArray ja = jo.getJSONArray("empresas");
+            System.out.println("-------------EMPRESAS-------------");
+            for(int i=0; i<ja.length();i++){
+                System.out.println("E: " + ja.get(i));
+                ea.empresas.add(ja.get(i).toString());
+            }
+
+            return ea;
+        }
+        catch(Exception e){
+            System.out.println(e);
+            return null;
+        }
+        
+
+    }
+
     public static void main(String[] args){
+        if(args.length==0){
+            System.out.println("Sem argumentos não há exchange!");
+            return;
+        }
         System.out.println("====================Chegou ao exchange=====================");
         //carrega de alguma forma as empresas
         //carrega de alguma forma os seus enderecos e portas
         //carrega de alguma forma os enderecos e portas do diretorio e exchange
         ZMQ.Context context = ZMQ.context(1);
-        EstruturaExchange estrutura = new EstruturaExchange(context, "12350", "12352");
+        ExchangeAux exca = parseExchange(args[0]);
+        if(exca == null){
+            System.out.println("Erro no parsing!");
+            return;
+        }
+        EstruturaExchange estrutura = new EstruturaExchange(context, exca.portaPush,exca.portaPub,
+                                                exca.empresas,exca.endDir,exca.portaDir);
         ZMQ.Socket socketExchangePull = context.socket(ZMQ.PULL);
-        String myPull = "12351";
-    
+        String myPull = exca.portaPull;
         socketExchangePull.bind("tcp://*:" + myPull);
         Thread acaba = new Thread(new TerminaEmprestimo(estrutura));
         acaba.start();

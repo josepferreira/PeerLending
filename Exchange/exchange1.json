@@ -1,0 +1,10 @@
+{
+    "portaPush": 12350,
+    "portaPull": 12351,
+    "portaPub": 12352,
+    "enderecoDiretorio": "localhost",
+    "portaDiretorio": 8080,
+    "empresas": [
+        "emp1","emp2","emp3"
+    ]
+}

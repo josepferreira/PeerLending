@@ -8,4 +8,4 @@ javac -cp .:\* exchange/Emissao.java
 javac -cp .:\* exchange/Empresa.java
 javac -cp .:\* exchange/EstruturaExchange.java
 javac -cp .:\* exchange/Exchange.java 
-./run exchange/Exchange
+./run exchange/Exchange exchange1.json

@@ -1,8 +1,7 @@
 package exchange;
 
 import java.time.LocalDateTime;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
+import org.json.*;
 
 public class Emissao extends Emprestimo implements Comparable{
     
@@ -82,7 +81,8 @@ public class Emissao extends Emprestimo implements Comparable{
         // podemos depois ter uma funcao que converte leilao em json 
         // e uma que converte json em leilao
 
-        JSONObject jo = new JSONObject();
+        try{
+            JSONObject jo = new JSONObject();
 
         jo.put("id",id);
         jo.put("empresa",empresa);
@@ -92,6 +92,10 @@ public class Emissao extends Emprestimo implements Comparable{
         jo.put("propostas",propostas);
  
         return jo.toString();
+        }
+        catch(Exception e){
+            return "";
+        }
     }
 
     public String toString(){

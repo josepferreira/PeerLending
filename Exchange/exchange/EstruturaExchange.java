@@ -58,18 +58,22 @@ class EstruturaExchange{
     public ZMQ.Context context;
     public ZMQ.Socket socketExchangePush;
     public ZMQ.Socket socketNotificacoes;
+    public String urlDiretorio;
 
     //so falta o diretorio
 
-    public EstruturaExchange(ZMQ.Context c, String myPush, String myPub){
+    public EstruturaExchange(ZMQ.Context c, String myPush, String myPub, 
+                    ArrayList<String> empresas, String endDir, String portaDir){
         context = c;
         socketNotificacoes = context.socket(ZMQ.PUB);
         socketExchangePush = context.socket(ZMQ.PUSH);
         socketExchangePush.bind("tcp://*:" + myPush);
         socketNotificacoes.bind("tcp://*:" + myPub);
+        urlDiretorio  = "http://" + endDir + ":" + portaDir + "/";
         
-        empresas.put("emp1", new Empresa("emp1"));
-        empresas.put("emp2", new Empresa("emp2"));
+        for(String emp: empresas){
+            this.empresas.put(emp, new Empresa(emp));
+        }
 
         System.out.println("Estrutura configurada");
 
@@ -143,7 +147,7 @@ class EstruturaExchange{
             socketNotificacoes.send(notificacao.toByteArray());
 
             try{
-                URL url = new URL("http://localhost:8080/emissao");
+                URL url = new URL(urlDiretorio + "emissao");
                 HttpURLConnection con = (HttpURLConnection) url.openConnection();
                 con.setRequestMethod("POST");
                 con.setDoOutput(true);
@@ -224,7 +228,7 @@ class EstruturaExchange{
                     
                 //tem de enviar para o diretorio
                 try{
-                    URL url = new URL("http://localhost:8080/emissao/" + em.empresa
+                    URL url = new URL(urlDiretorio + "emissao/" + em.empresa
                                     + "/terminado/" + em.id);
                     HttpURLConnection con = (HttpURLConnection) url.openConnection();
                     con.setRequestMethod("PUT");
@@ -330,7 +334,7 @@ class EstruturaExchange{
 
 
             try{
-                URL url = new URL("http://localhost:8080/leilao");
+                URL url = new URL(urlDiretorio + "leilao");
                 HttpURLConnection con = (HttpURLConnection) url.openConnection();
                 con.setRequestMethod("POST");
                 con.setDoOutput(true);
@@ -534,7 +538,7 @@ class EstruturaExchange{
 
                         
                         try{
-                            URL url = new URL("http://localhost:8080/leilao/" + emp.empresa
+                            URL url = new URL(urlDiretorio + "leilao/" + emp.empresa
                                             + "/terminado/" + emp.id);
                             HttpURLConnection con = (HttpURLConnection) url.openConnection();
                             con.setRequestMethod("PUT");
@@ -593,7 +597,7 @@ class EstruturaExchange{
                             
                         //tem de enviar para o diretorio
                         try{
-                            URL url = new URL("http://localhost:8080/emissao/" + emp.empresa
+                            URL url = new URL(urlDiretorio + "emissao/" + emp.empresa
                                             + "/terminado/" + emp.id);
                             HttpURLConnection con = (HttpURLConnection) url.openConnection();
                             con.setRequestMethod("PUT");
