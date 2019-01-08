@@ -123,6 +123,7 @@ public class Leilao extends Emprestimo implements Comparable{
         jo.put("taxa",taxa);
         //jo.put("fim",fim);
         jo.put("propostas",propostas);
+        jo.put("fim",fim.toString());
 
         return jo.toString();
     }

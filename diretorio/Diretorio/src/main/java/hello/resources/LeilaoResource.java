@@ -23,9 +23,9 @@ public class LeilaoResource {
     public LeilaoResource(){
         System.out.println("Fui criada!");
         ArrayList<Leilao> leiloes = new ArrayList<>();
-        leiloes.add(new Leilao(1, "ola", new ArrayList<>(),10,(float)0.5));
-        leiloes.add(new Leilao(2, "ola", new ArrayList<>(),11,(float)0.6));
-        leiloes.add(new Leilao(3, "mania", new ArrayList<>(), 11, (float)1.5));
+        //leiloes.add(new Leilao(1, "ola", new ArrayList<>(),10,(float)0.5));
+        //leiloes.add(new Leilao(2, "ola", new ArrayList<>(),11,(float)0.6));
+        //leiloes.add(new Leilao(3, "mania", new ArrayList<>(), 11, (float)1.5));
         leiloesAtivos.put("ola", leiloes);
 
     }

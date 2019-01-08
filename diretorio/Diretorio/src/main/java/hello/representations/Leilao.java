@@ -1,6 +1,7 @@
 package hello.representations;
 
 import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.jaxrs.json.annotation.JSONP;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -14,11 +15,12 @@ public class Leilao {
     public float taxa;
     public ArrayList<Proposta> propostas;// = new TreeSet<>(); //pode estar ordenado ao contrário, ou seja a melhor proposta está no fim
     public boolean terminado = false;
-    //public LocalDateTime fim;
+    public String fim;
     @JsonCreator
     public Leilao (@JsonProperty("id") int id, @JsonProperty("empresa") String empresa,
                    @JsonProperty("propostas") ArrayList<Proposta> p,
-                   @JsonProperty("montante") long montante, @JsonProperty("taxa") float taxa) {
+                   @JsonProperty("montante") long montante, @JsonProperty("taxa") float taxa,
+                   @JsonProperty("fim") String fim) {
         System.out.println("Cheguei ao contrutor com 3 no leilao");
         System.out.println("Propotas");
         System.out.println(p);
@@ -27,6 +29,7 @@ public class Leilao {
         this.propostas = p;
         this.montante = montante;
         this.taxa = taxa;
+        this.fim =fim;
     }
 
     /*@JsonCreator
