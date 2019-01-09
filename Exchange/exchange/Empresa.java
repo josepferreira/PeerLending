@@ -34,18 +34,26 @@ public class Empresa{
             }
             //como definir a taxa? ver nas duvidas ----------------------------FALTA
             float taxa = 0;
-            if(leiloesEfetuados.first().id > emissoesEfetuadas.first().id){
-                //taxa do leilao
+            if(emissoesEfetuadas.size()==0){
                 taxa = leiloesEfetuados.first().taxaMaxima();
                 if(!leiloesEfetuados.first().sucesso){
                     taxa *= 1.1;
                 }
             }
             else{
-                //taxa da emissao
-                taxa = emissoesEfetuadas.first().taxa;
-                if(!emissoesEfetuadas.first().sucesso()){
-                    taxa *= 1.1;
+                if(leiloesEfetuados.first().id > emissoesEfetuadas.first().id){
+                    //taxa do leilao
+                    taxa = leiloesEfetuados.first().taxaMaxima();
+                    if(!leiloesEfetuados.first().sucesso){
+                        taxa *= 1.1;
+                    }
+                }
+                else{
+                    //taxa da emissao
+                    taxa = emissoesEfetuadas.first().taxa;
+                    if(!emissoesEfetuadas.first().sucesso()){
+                        taxa *= 1.1;
+                    }
                 }
             }
             emprestimoCurso = new Emissao(idEmprestimo++, this.nome,montante, taxa, fim);

@@ -1,6 +1,7 @@
 package exchange;
 
 import java.time.LocalDateTime;
+import java.util.stream.Collectors;
 import org.json.*;
 
 public class Emissao extends Emprestimo implements Comparable{
@@ -88,8 +89,11 @@ public class Emissao extends Emprestimo implements Comparable{
         jo.put("empresa",empresa);
         jo.put("montante",montante);
         jo.put("taxa",taxa);
-        //jo.put("fim",fim);
-        jo.put("propostas",propostas);
+        jo.put("fim",fim.toString());
+        jo.put("propostas",propostas.stream()
+                .map(p -> p.getJSON())
+                .collect(Collectors.toList()));
+        
  
         return jo.toString();
         }

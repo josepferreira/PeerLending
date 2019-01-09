@@ -19,11 +19,12 @@ public class Emissao {
 
     public boolean terminado = false;
 
-    //public LocalDateTime fim;
+    public String fim;
     @JsonCreator
     public Emissao (@JsonProperty("id") int id, @JsonProperty("empresa") String empresa,
                    @JsonProperty("propostas") ArrayList<Proposta> p,
-                   @JsonProperty("montante") long montante, @JsonProperty("taxa") float taxa) {
+                   @JsonProperty("montante") long montante, @JsonProperty("taxa") float taxa,
+                    @JsonProperty("fim") String fim) {
         System.out.println("Cheguei ao contrutor com 3 no leilao");
         System.out.println("Propotas");
         System.out.println(p);
@@ -32,6 +33,7 @@ public class Emissao {
         this.propostas = p;
         this.montante = montante;
         this.taxa = taxa;
+        this.fim = fim;
     }
 
     @Override
