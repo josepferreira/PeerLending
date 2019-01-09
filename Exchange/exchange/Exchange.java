@@ -109,6 +109,40 @@ public class Exchange{
 
     }
 
+    public static String getJSON(ExchangeAux ea) throws Exception{
+        JSONObject jo = new JSONObject();
+        jo.put("endereco",ea.portaPub);
+        jo.put("empresas",ea.empresas);
+
+        System.out.println(jo.toString());
+        return jo.toString();
+    }
+
+    public static void registaExchange(ExchangeAux ea){
+        try{
+            URL url = new URL("http://" + ea.endDir + 
+                            ":" + ea.portaDir + "/exchange");
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.setRequestMethod("POST");
+            con.setDoOutput(true);
+            con.setRequestProperty("Content-Type", "application/json");
+            con.setInstanceFollowRedirects(false);
+            con.setUseCaches(false);
+
+            con.connect();
+            OutputStream out = con.getOutputStream();
+            String json = getJSON(ea);
+            out.write(json.getBytes());
+            out.flush();
+            out.close();
+
+            int responseCode = con.getResponseCode();
+            System.out.println("POST emissao Response Code :: " + responseCode);
+
+        }catch(Exception exc){
+            System.out.println(exc);
+        }
+    }
     public static void main(String[] args){
         if(args.length==0){
             System.out.println("Sem argumentos não há exchange!");
@@ -124,6 +158,7 @@ public class Exchange{
             System.out.println("Erro no parsing!");
             return;
         }
+        registaExchange(exca);
         EstruturaExchange estrutura = new EstruturaExchange(context, exca.portaPush,exca.portaPub,
                                                 exca.empresas,exca.endDir,exca.portaDir);
         ZMQ.Socket socketExchangePull = context.socket(ZMQ.PULL);

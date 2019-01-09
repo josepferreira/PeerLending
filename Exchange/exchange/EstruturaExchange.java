@@ -91,6 +91,7 @@ class EstruturaExchange{
     public synchronized boolean adicionaEmissao(String empresa, long montante, long tempo){
         long tempoAux = converteTempo(tempo);
         System.out.println("TEMPO: " + tempoAux);
+        System.out.println("EMpresa: " + empresa);
         LocalDateTime fim = LocalDateTime.now().plusNanos(tempoAux);
         Emprestimo aux = null;
         try{
@@ -157,7 +158,7 @@ class EstruturaExchange{
     
                 con.connect();
                 OutputStream out = con.getOutputStream();
-                out.write(((Leilao)aux).getJSON().getBytes());
+                out.write(((Emissao)aux).getJSON().getBytes());
                 out.flush();
                 out.close();
     

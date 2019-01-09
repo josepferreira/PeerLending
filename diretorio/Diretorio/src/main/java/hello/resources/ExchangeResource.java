@@ -18,12 +18,7 @@ public class ExchangeResource {
     HashMap<String, Exchange> enderecos = new HashMap<>();
 
     public ExchangeResource(){
-        ArrayList<String> emp = new ArrayList<>();
-        emp.add("emp1");
-        emp.add("emp2");
-        emp.add("emp3");
-        Exchange exc = new Exchange("12352", emp);
-        enderecos.put("12352",exc);
+
     }
 
     @GET

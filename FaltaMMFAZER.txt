@@ -6,3 +6,6 @@ falta ver aquilo no front-end de n enviar!!!
 * pedir os enderecos da exchange ao diretorio
 * por as propostas, montante e taxa no diretorio -> penso q ja esta, mas testar
 pomos tbm a data de fim? fazia sentido nao?
+
+* por sucesso na resposta?
+* por sucesso no diretorio?
