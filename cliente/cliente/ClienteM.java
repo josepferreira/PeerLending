@@ -31,11 +31,8 @@ class RecebeMensagens implements Runnable{
     public void run(){
         while(!Thread.interrupted()){
             try{
-                System.out.println("Antes de tudo!");
                 int len = cis.readRawLittleEndian32();
-                System.out.println("O len: " + len);
                 len = little2big(len);
-                System.out.println("O len com a função: " + len);
                 byte[] bResposta = cis.readRawBytes(len);
                 RespostaExchange resposta = RespostaExchange.parseFrom(bResposta);
                 System.out.println("\n Recebi uma resposta!");
@@ -65,7 +62,10 @@ class RecebeMensagens implements Runnable{
                         //Vou imprimir a dizer que foi ultrapassado
                         NotificacaoUltrapassado notificacao = resposta.getNotificacao();
                         System.out.println("\n -----");
-                        System.out.println("INFO: Foste ultrapassado no leilao da empresa: " + notificacao.getEmpresa());
+                        System.out.println("INFO: Foi ultrapassado no leilao da empresa: " + notificacao.getEmpresa());
+                        System.out.println("O valor é de " + notificacao.getValor());
+                        if(notificacao.getTexto() != null)
+                            System.out.println("Info adicional: " + notificacao.getTexto());
                         System.out.println(" -----");
                     }
                 }
@@ -578,6 +578,7 @@ class Enderecos{
  class ClienteM{
 
     public static Enderecos enderecos;
+
     public static Enderecos parseEnderecos(String ficheiro){
         try{
             JSONTokener tokener = new JSONTokener(new FileReader(ficheiro));
@@ -693,7 +694,7 @@ class Enderecos{
 
     private static void leiloesAtivos(){
         try{
-            URL url = new URL("http://localhost:8080/leilao");
+            URL url = new URL("http://" + enderecos.enderecoDiretorio + ":" + enderecos.portaDiretorio + "/leilao");
             System.out.println("VOU EVNIAR UM EPDIDO!");
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
             con.setRequestMethod("GET");

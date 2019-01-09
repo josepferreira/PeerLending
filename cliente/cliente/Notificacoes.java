@@ -161,7 +161,6 @@ class ComunicaCliente implements Runnable{
             System.out.println("\nA decisao é " + decisao + ". A subscrição: " + subResposta);
             /**
              * Vou adicionar a subscricao à classe subscricao e ao socket
-             * ATENÇAO!!! NAO SEI SE POSSO FAZER ISTO ..
              */
             if(decisao.equals("sub")){
                 switch(subResposta){
@@ -221,14 +220,6 @@ public class Notificacoes implements Runnable{
     public void run(){
         //Vou ter de me associar às exchanges
         ZMQ.Socket socket = context.socket(ZMQ.SUB);
-        //socket.connect("inproc://enderecos");
-        //socket.connect("tcp://*:12352");
-        /**
-         * Agora é necessário ter os IPs e portas ... Vou buscar ao diretorio?
-         * socket.connect("tcp://ip:"+porta);
-         * ip -> endereço da exchange
-         * porta -> porta da exchange
-         */
 
         ComunicaCliente cc = new ComunicaCliente(context, socket, sub, enderecos);
         (new Thread(cc)).start();
