@@ -252,9 +252,9 @@ public class Notificacoes implements Runnable{
                                 msg = msg + "erro! ";
                         }
                         msg = msg + "com o montante " + no.getMontante() + ".";
-                        if(no.getTaxa() != 0.0)
+                        if(no.hasTaxa())
                             msg = msg + "À taxa de " + no.getTaxa() + ".";
-                        if(no.getTempo() != 0)
+                        if(no.hasTempo())
                             msg = msg + "Com um tempo máximo de " + no.getTempo() + ".";
                         msg = msg + "! O resultado obtido foi: " + no.getResultado().getTexto();
                     }

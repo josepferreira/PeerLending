@@ -42,7 +42,8 @@ class RecebeMensagens implements Runnable{
                     //Vou imprimir o resultado de um leilao
                     Resultado resultado = resposta.getResultado();
                     System.out.println("\n -----");
-                    System.out.println("O resultado do leilão da empresa " + resultado.getEmpresa() + " é: " + resultado.getTexto());
+                    String resultadoMsg = resultado.hasTexto() ? resultado.getTexto() : "Impossivel apresentar";
+                    System.out.println("O resultado do leilão da empresa " + resultado.getEmpresa() + " é: " + (resultadoMsg.equals("[]") ? "sem qualquer proposta apresentada!" : resultadoMsg));
                     System.out.println(" -----");
                 }else{
                     if(resposta.getTipo() == TipoResposta.RESPOSTA){
@@ -53,9 +54,9 @@ class RecebeMensagens implements Runnable{
                         else
                             pal = "subscrição";
                         System.out.println("O resultado da sua " + pal + " é: " + (r.getSucesso() ? "sucesso!" : "insucesso"));
-                        String msg = r.getMensagem();
-                        if (msg.length() > 0 ){
-                            System.out.println("Mensagem adicional:  " + msg + " !");
+                        String msg = r.hasMensagem() ? r.getMensagem() : null;
+                        if (msg != null){
+                            System.out.println("Mensagem adicional:  " + msg);
                         }
                         
                     }else{
@@ -64,7 +65,7 @@ class RecebeMensagens implements Runnable{
                         System.out.println("\n -----");
                         System.out.println("INFO: Foi ultrapassado no leilao da empresa: " + notificacao.getEmpresa());
                         System.out.println("O valor é de " + notificacao.getValor());
-                        if(notificacao.getTexto() != null)
+                        if(notificacao.hasTexto())
                             System.out.println("Info adicional: " + notificacao.getTexto());
                         System.out.println(" -----");
                     }
