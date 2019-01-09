@@ -9,8 +9,8 @@ import com.google.protobuf.CodedOutputStream;
 
 import org.zeromq.ZMQ;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
+import org.json.*;
+
 
 
 import cliente.Ccs.*;
@@ -83,8 +83,9 @@ class Licitador{
     CodedOutputStream cos;
     GerirSubscricoes subscricoes;
     ZMQ.Context context = ZMQ.context(1);
+    //Enderecos enderecos;
 
-    public Licitador(String username, Socket s) throws Exception{
+    public Licitador(String username, Socket s, Enderecos enderecos) throws Exception{
         this.username = username;
         this.s = s;
         inP = new BufferedReader(new InputStreamReader(System.in));
@@ -92,7 +93,7 @@ class Licitador{
         cos = CodedOutputStream.newInstance(s.getOutputStream());
         (new Thread(new RecebeMensagens(cis))).start();
         subscricoes = new GerirSubscricoes(context);
-        Notificacoes n = new Notificacoes(context, subscricoes);
+        Notificacoes n = new Notificacoes(context, subscricoes,enderecos);
         (new Thread(n)).start();
     }
 
@@ -318,7 +319,7 @@ class Licitador{
     GerirSubscricoes subscricoes;
     ZMQ.Context context = ZMQ.context(1);
 
-    public Empresa(String username, Socket s) throws Exception{
+    public Empresa(String username, Socket s, Enderecos enderecos) throws Exception{
         this.username = username;
         this.s = s;
         inP = new BufferedReader(new InputStreamReader(System.in));
@@ -326,7 +327,7 @@ class Licitador{
         cos = CodedOutputStream.newInstance(s.getOutputStream());
         (new Thread(new RecebeMensagens(cis))).start();
         subscricoes = new GerirSubscricoes(context);
-        Notificacoes n = new Notificacoes(context, subscricoes);
+        Notificacoes n = new Notificacoes(context, subscricoes,enderecos);
         (new Thread(n)).start();
 
     }
@@ -562,7 +563,41 @@ class Licitador{
 
 }
 
+class Enderecos{
+    public String enderecoFrontEnd;
+    public String portaFrontEnd;
+    public String enderecoDiretorio;
+    public String portaDiretorio;
+}
+
  class ClienteM{
+
+    public static Enderecos enderecos;
+    public static Enderecos parseEnderecos(String ficheiro){
+        try{
+            JSONTokener tokener = new JSONTokener(new FileReader(ficheiro));
+            JSONObject jo = new JSONObject(tokener);
+            Enderecos ea = new Enderecos();
+            
+            ea.enderecoDiretorio = jo.get("enderecoDiretorio").toString();
+            ea.portaDiretorio = jo.get("portaDiretorio").toString();
+            ea.portaFrontEnd = jo.get("portaFrontEnd").toString();
+            ea.enderecoFrontEnd = jo.get("enderecoFrontEnd").toString();
+
+            System.out.println(ea.portaFrontEnd);
+            System.out.println(ea.enderecoFrontEnd);
+            System.out.println(ea.enderecoDiretorio);
+            System.out.println(ea.portaDiretorio);
+
+            return ea;
+        }
+        catch(Exception e){
+            System.out.println(e);
+            return null;
+        }
+        
+
+    }
 
     public static int little2big(int i) {
         return (i&0xff)<<24 | (i&0xff00)<<8 | (i&0xff0000)>>8 | (i>>24)&0xff;
@@ -700,8 +735,19 @@ class Licitador{
             
             /* ------------------------------------------------- */
             
-            String host = "localhost";
-            Socket s = new Socket(host,12345);
+            if(args.length==0){
+                System.out.println("Tem de fornecer as portas!");
+                return;
+            }
+
+            enderecos = parseEnderecos(args[0]);
+            if(enderecos==null){
+                System.out.println("Erro no parse!");
+                return;
+            }
+
+            
+            Socket s = new Socket(enderecos.enderecoFrontEnd,Integer.parseInt(enderecos.portaFrontEnd));
 
             //BufferedReader in = new BufferedReader(new InputStreamReader( s.getInputStream() ) );
             //PrintWriter out = new PrintWriter( s.getOutputStream() );
@@ -750,8 +796,8 @@ class Licitador{
                 else{
                     System.out.println("Papel definido!");
                     switch(papel){
-                        case "empresa": autenticado=true; System.out.println("É uma empresa"); (new Empresa(user, s)).menuInicial(); System.out.println("bye!"); break; //mandar para a empresa
-                        case "licitador": autenticado=true; System.out.println("É um licitador"); (new Licitador(user, s)).menuInicial(); System.out.println("bye!"); break; //mandar para o licitador
+                        case "empresa": autenticado=true; System.out.println("É uma empresa"); (new Empresa(user, s, enderecos)).menuInicial(); System.out.println("bye!"); break; //mandar para a empresa
+                        case "licitador": autenticado=true; System.out.println("É um licitador"); (new Licitador(user, s, enderecos)).menuInicial(); System.out.println("bye!"); break; //mandar para o licitador
                         default: break;
                     }
                 }

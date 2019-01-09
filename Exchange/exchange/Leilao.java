@@ -122,9 +122,19 @@ public class Leilao extends Emprestimo implements Comparable{
         jo.put("montante",montante);
         jo.put("taxa",taxa);
         //jo.put("fim",fim);
-        jo.put("propostas",propostas);
+        JSONArray ja = new JSONArray();
+        for(JSONObject aux: propostas.stream()
+                                .map(p -> p.getJSON())
+                                .collect(Collectors.toList())){
+            if(aux!=null) ja.put(aux);
+        }
+        System.out.println(ja.toString());
+        jo.put("propostas",propostas.stream()
+                .map(p -> p.getJSON())
+                .collect(Collectors.toList()));
         jo.put("fim",fim.toString());
-
+        
+        System.out.println(jo.toString());
         return jo.toString();
         }catch(Exception e){
             return "";

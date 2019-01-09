@@ -8,6 +8,7 @@ import com.google.protobuf.CodedInputStream;
 import com.google.protobuf.CodedOutputStream;
 
 import org.zeromq.ZMQ;
+import org.json.*;
 
 import cliente.Ccs.*;
 import cliente.NotificacaoOuterClass.*;
@@ -26,11 +27,13 @@ class ComunicaCliente implements Runnable{
     private GerirSubscricoes subscricao;
     private HashMap<String, ArrayList<String>> enderecos = new HashMap<>();
     private boolean temTodos = false;
+    Enderecos end;
 
-    public ComunicaCliente(ZMQ.Context context, ZMQ.Socket sub, GerirSubscricoes subscricao){
+    public ComunicaCliente(ZMQ.Context context, ZMQ.Socket sub, GerirSubscricoes subscricao, Enderecos end){
         this.context = context;
         this.sub = sub;
         this.subscricao = subscricao;
+        this.end = end;
     }
 
     private boolean jaTemEndereco(String empresa){
@@ -45,9 +48,9 @@ class ComunicaCliente implements Runnable{
 
     private void registaTodosEnderecos(){
         System.out.println("Vou fazer connect a todos!");
-        this.sub.connect("tcp://*:12352");
-        /*try{
-            URL url = new URL("http://localhost:8080/exchange/todas");
+        try{
+            URL url = new URL("http://" + end.enderecoDiretorio + 
+                                        ":" + end.portaDiretorio + "/exchange/todas");
             System.out.println("VOU EVNIAR UM EPDIDO!");
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
             con.setRequestMethod("GET");
@@ -57,7 +60,8 @@ class ComunicaCliente implements Runnable{
             BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
 		    String inputLine;
 		    StringBuffer response = new StringBuffer();
-
+            
+            
 		    while ((inputLine = in.readLine()) != null) {
 			    response.append(inputLine);
 		    }
@@ -66,26 +70,36 @@ class ComunicaCliente implements Runnable{
 		    //print result
             System.out.println(response.toString());
             JSONArray jsonArray = new JSONArray(response.toString());
-            for(int i=0; i<jsonArray.length(); i++){
-                JSONObject exchange = jsonArray.getJSONObject(i);
-                String end = exchange.endereco;
-                ArrayList<String> empresas = exchange.empresas;
-                enderecos.put(end, empresas);
-                this.sub.connect("tcp://"+end);
+            for(int ij=0; ij<jsonArray.length(); ij++){
+                JSONObject exchange = jsonArray.getJSONObject(ij);
+                String endExchange = exchange.get("endereco").toString();
+                JSONArray ja = exchange.getJSONArray("empresas");
+                ArrayList<String> empresas = new ArrayList<>();
+
+                for(int i=0; i<ja.length();i++){
+                    System.out.println("E: " + ja.get(i));
+                    empresas.add(ja.get(i).toString());
+                }
+
+                enderecos.put(endExchange, empresas);
+                this.sub.connect("tcp://*:"+endExchange); //e preciso ver isto do asteristo
+                // MUITO PRECISO MESMO
+                // QUASE TANTE COMO O JJ BOCE
+                //88 - oitchenta e otcho
             }
             temTodos = true;
 
         }catch(Exception exc){
             System.out.println(exc);
-        }*/
+        }
     }
 
     private void registaNovoEndereco(String empresa){
         System.out.println("Vou subscrever a empresa " + empresa);
-        this.sub.connect("tcp://*:12352");
-
-        /*try{
-            URL url = new URL("http://localhost:8080/exchange?empresa="+empresa);
+        
+        try{
+            URL url = new URL("http://" + end.enderecoDiretorio + 
+                                    ":" + end.portaDiretorio + "/exchange?empresa="+empresa);
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
             con.setRequestMethod("GET");
             con.setRequestProperty("Content-Type", "application/json");
@@ -104,14 +118,25 @@ class ComunicaCliente implements Runnable{
 		    //print result
             System.out.println(response.toString());
             JSONObject exchange = new JSONObject(response.toString());
-            String end = exchange.endereco;
-            ArrayList<String> empresas = exchange.empresas;
-            enderecos.put(end, empresas);
-            this.sub.connect("tcp://"+end);
+            String endExchange = exchange.get("endereco").toString();
+            JSONArray ja = exchange.getJSONArray("empresas");
+            ArrayList<String> empresas = new ArrayList<>();
+
+            for(int i=0; i<ja.length();i++){
+                System.out.println("E: " + ja.get(i));
+                empresas.add(ja.get(i).toString());
+            }
+
+            enderecos.put(endExchange, empresas);
+            this.sub.connect("tcp://*:"+endExchange); //e preciso ver isto do asteristo
+            // MUITO PRECISO MESMO
+            // QUASE TANTE COMO O JJ BOCE
+            //88 - oitchenta e otcho
 
         }catch(Exception exc){
             System.out.println(exc);
-        }*/
+        }
+    
 
     }
 
@@ -185,10 +210,12 @@ public class Notificacoes implements Runnable{
 
     GerirSubscricoes sub;
     ZMQ.Context context;
+    Enderecos enderecos;
 
-    public Notificacoes(ZMQ.Context context, GerirSubscricoes gb){
+    public Notificacoes(ZMQ.Context context, GerirSubscricoes gb, Enderecos end){
         this.context = context;
         this.sub = gb;
+        enderecos = end;
     }
 
     public void run(){
@@ -203,7 +230,7 @@ public class Notificacoes implements Runnable{
          * porta -> porta da exchange
          */
 
-        ComunicaCliente cc = new ComunicaCliente(context, socket, sub);
+        ComunicaCliente cc = new ComunicaCliente(context, socket, sub, enderecos);
         (new Thread(cc)).start();
         
         while(!Thread.interrupted()){

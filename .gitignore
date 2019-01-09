@@ -7,3 +7,6 @@ FrontEnd/rebar.lock
 /Exchange/exchange/*.class
 diretorio/Diretorio/.idea/*
 diretorio/Diretorio/target
+diretorio/Diretorio/.classpath
+diretorio/Diretorio/.project
+diretorio/Diretorio/.settings/

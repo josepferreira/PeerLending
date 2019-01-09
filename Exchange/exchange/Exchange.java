@@ -76,7 +76,7 @@ public class Exchange{
 
     public static ExchangeAux parseExchange(String ficheiro){
         try{
-            JSONTokener tokener = new JSONTokener(new FileReader("./exchange1.json"));
+            JSONTokener tokener = new JSONTokener(new FileReader(ficheiro));
             JSONObject jo = new JSONObject(tokener);
             ExchangeAux ea = new ExchangeAux();
             

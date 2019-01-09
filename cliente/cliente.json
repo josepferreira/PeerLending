@@ -1,0 +1,6 @@
+{
+    "enderecoDiretorio": "localhost",
+    "portaDiretorio": 8080,
+    "enderecoFrontEnd": "localhost",
+    "portaFrontEnd": 12345
+}

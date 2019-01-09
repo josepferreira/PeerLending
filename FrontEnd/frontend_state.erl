@@ -122,7 +122,8 @@ loop (Push, Pull, MapEstado) ->
                     end
                 ;
                 'RESPOSTA' ->
-                    {Tipo, Utilizador, Sucesso, _} = Resposta,
+                    io:format("~p~n",[Resposta]),
+                    {_, TipoOperacao, Utilizador, Sucesso, _} = Resposta,
                     case Sucesso of
                         false ->
                             io:format("Teve sucesso a ação, quer seja empresa ou licitador!"),
@@ -132,7 +133,7 @@ loop (Push, Pull, MapEstado) ->
                         true ->
                             case maps:find(Utilizador, MapEstado) of
                                 {ok, {Leilao, Emissao, Lista}} ->
-                                    case Tipo of 
+                                    case TipoOperacao of 
                                         'LEILAO' ->
                                             NewMap = maps:put(Utilizador, {true, Emissao, Lista}, MapEstado),
                                             enviaMensagem(NewMap, Utilizador, RespostaExchange),

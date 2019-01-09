@@ -1,4 +1,5 @@
 package exchange;
+import org.json.*;
 
 public class Proposta implements Comparable{
 
@@ -33,6 +34,22 @@ public class Proposta implements Comparable{
         }
         
         return 0;
+    }
+
+    public JSONObject getJSON(){
+        try{
+        JSONObject jo = new JSONObject();
+
+        jo.put("id",id);
+        jo.put("montante",montante);
+        jo.put("taxa",taxa);
+        jo.put("cliente",cliente);
+        System.out.println("Propostas");
+        System.out.println(jo.toString());
+        return jo;
+        }catch(Exception e){
+            return null;
+        }
     }
 
     public String toString(){
