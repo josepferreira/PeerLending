@@ -10,8 +10,18 @@
 %Função que dá o PID do state correspondente à empresa
 pidEmpresa(MapState, Empresa) ->
     Lista = maps:to_list(MapState),
-    [{PidState, _}|_] = lists:filter ( fun( {_, ListEmpresas}) -> lists:member(Empresa, ListEmpresas) end, Lista),
-    PidState. 
+    Resultado = lists:filter ( fun( {_, ListEmpresas}) -> lists:member(Empresa, ListEmpresas) end, Lista),
+    if
+        Resultado /= [] ->
+            [{PidState, _ }| _ ] = Resultado,
+            PidState
+        ;
+        
+        true ->
+            empresaNaoExiste
+
+    end
+. 
 
 start(Sock, User, Papel, MapState) ->
     io:format("Foi aceite a conexao para um cliente: ~p~n", [Papel]),
@@ -98,8 +108,22 @@ loopLicitador(Sock, User, MapState) ->
                     {'MensagemInvestidor', Leilao, _} = Investidor,
                     {'LicitacaoLeilao', Empresa, _, _} = Leilao,
                     PidState = pidEmpresa(MapState, Empresa),
-                    PidState ! {licitacao, Empresa, Utilizador, self(), MensagemLicitador},
-                    loopLicitador(Sock, User, MapState)
+                    case PidState of 
+                        empresaNaoExiste ->
+                            % Empresa nao existe
+
+                            io:format("Empresa nao existe ~n"),
+                            Binario = ccs:encode_msg(#'RespostaExchange'{tipo='RESPOSTA', resposta = #'Resposta'{tipo ='LEILAO', utilizador=User,sucesso=false, mensagem="Empresa nao existe"}}),
+                            gen_tcp:send(Sock, Binario),
+                            loopLicitador(Sock, User, MapState)
+
+                            ;
+                        _ -> 
+                            % Empresa existe
+                            PidState ! {licitacao, Empresa, Utilizador, self(), MensagemLicitador},
+                            loopLicitador(Sock, User, MapState)
+                    end
+                    
                 ;
                     % receive
                     %     {PidState, RespostaBinaria} ->
@@ -119,8 +143,25 @@ loopLicitador(Sock, User, MapState) ->
                     io:format(Empresa),
                     io:format('~n'),
                     PidState = pidEmpresa(MapState, Empresa),
-                    PidState ! {emissao, Empresa, Utilizador, self(), MensagemLicitador},
-                    loopLicitador(Sock, User, MapState)
+
+                    %Testar se PidState e valido ou nao
+
+                    case PidState of 
+                        empresaNaoExiste ->
+                            % Empresa nao existe
+
+                            io:format("Empresa nao existe ~n"),
+                            Binario = ccs:encode_msg(#'RespostaExchange'{tipo='RESPOSTA', resposta = #'Resposta'{tipo ='LEILAO', utilizador=User,sucesso=false, mensagem="Empresa nao existe"}}),
+                            gen_tcp:send(Sock, Binario),
+                            loopLicitador(Sock, User, MapState)
+                            ;
+                        _ -> 
+                            % Empresa existe
+                            PidState ! {emissao, Empresa, Utilizador, self(), MensagemLicitador},
+                            loopLicitador(Sock, User, MapState)
+                    end
+
+                    
                     % receive
                     %     {PidState, RespostaBinaria} ->
                     %         gen_tcp:send(Sock, RespostaBinaria),

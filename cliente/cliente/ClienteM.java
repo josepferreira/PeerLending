@@ -56,6 +56,11 @@ class RecebeMensagens implements Runnable{
                         else
                             pal = "subscrição";
                         System.out.println("O resultado da sua " + pal + " é: " + (r.getSucesso() ? "sucesso!" : "insucesso"));
+                        String msg = r.getMensagem();
+                        if (msg.length() > 0 ){
+                            System.out.println("Mensagem adicional:  " + msg + " !");
+                        }
+                        
                     }else{
                         //Vou imprimir a dizer que foi ultrapassado
                         NotificacaoUltrapassado notificacao = resposta.getNotificacao();
