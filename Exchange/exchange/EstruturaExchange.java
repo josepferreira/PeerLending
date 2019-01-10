@@ -23,6 +23,10 @@ import org.zeromq.ZMQ;
 import exchange.Ccs.*;
 import exchange.NotificacaoOuterClass.*;
 
+
+class GereTempo{
+    long tempoDormir = Long.MAX_VALUE;
+}
 class EmprestimoProntoTerminar implements Comparable{
     public Emprestimo emprestimo;
 
@@ -59,11 +63,13 @@ class EstruturaExchange{
     public ZMQ.Socket socketExchangePush;
     public ZMQ.Socket socketNotificacoes;
     public String urlDiretorio;
+    private GereTempo tempo;
 
     //so falta o diretorio
 
     public EstruturaExchange(ZMQ.Context c, String myPush, String myPub, 
-                    ArrayList<String> empresas, String endDir, String portaDir){
+                    ArrayList<String> empresas, String endDir, String portaDir,
+                    GereTempo t){
         context = c;
         socketNotificacoes = context.socket(ZMQ.PUB);
         socketExchangePush = context.socket(ZMQ.PUSH);
@@ -75,12 +81,17 @@ class EstruturaExchange{
             this.empresas.put(emp, new Empresa(emp));
         }
 
+        tempo = t;
+
         System.out.println("Estrutura configurada");
 
     }
     private void possoInterromper(){
+        System.out.println("Vou interromper!");
         acaba.interrupt();
     }
+
+    
     
     //tempo em dias para minutos (1 dia corresponde a 1 minuto), devolve em nanos
     private long converteTempo(long tempo){
@@ -88,7 +99,7 @@ class EstruturaExchange{
         return (long)(((tempo*Math.pow(10, 9)*12)));///(24*60));
     }
 
-    public synchronized boolean adicionaEmissao(String empresa, long montante, long tempo){
+    public boolean adicionaEmissao(String empresa, long montante, long tempo){
         long tempoAux = converteTempo(tempo);
         System.out.println("TEMPO: " + tempoAux);
         System.out.println("EMpresa: " + empresa);
@@ -114,10 +125,12 @@ class EstruturaExchange{
 
         if(aux != null){
             EmprestimoProntoTerminar ept = new EmprestimoProntoTerminar(aux);
-            if(paraTerminar.isEmpty() || ept.equals(paraTerminar.first())){
-                possoInterromper();
-            }
             paraTerminar.add(ept);
+            if(paraTerminar.isEmpty() || ept.equals(paraTerminar.first())){
+                this.tempo.tempoDormir =  tempoDormir();
+                possoInterromper();
+                 
+            }
             System.out.println("Adicionei: " + aux.empresa);
             System.out.println("Adicionei: " + ept.emprestimo.empresa);
             //manda para o diretorio
@@ -189,7 +202,7 @@ class EstruturaExchange{
         return false;
     }
 
-    public synchronized boolean licitaEmissao(String empresa, long montante, String investidor){
+    public boolean licitaEmissao(String empresa, long montante, String investidor){
         try{
             Empresa aux = empresas.get(empresa);
             if(aux == null){
@@ -198,6 +211,11 @@ class EstruturaExchange{
             Emissao em = aux.licitaEmissao(investidor, montante);
 
             if(em != null){
+                if(paraTerminar.first().emprestimo.equals(em)){
+                    paraTerminar.pollFirst();
+                    this.tempo.tempoDormir =  tempoDormir();
+                    possoInterromper();
+                }
                 //indica que emissao terminou
                 Resultado resultado = Resultado.newBuilder()
                                                 .setTipo(TipoMensagem.EMISSAO)
@@ -297,16 +315,17 @@ class EstruturaExchange{
         return true;
     }
 
-    public synchronized boolean adicionaLeilao(String empresa, long montante, float taxa, long tempo){
+    public boolean adicionaLeilao(String empresa, long montante, float taxa, long tempo){
         LocalDateTime fim = LocalDateTime.now().plusNanos(converteTempo(tempo));
         Emprestimo aux = empresas.get(empresa).criarLeilao(montante, taxa, fim);
         if(aux != null){
             EmprestimoProntoTerminar ept = new EmprestimoProntoTerminar(aux);
             System.out.println(paraTerminar);
+            paraTerminar.add(ept);
             if(paraTerminar.isEmpty() || ept.equals(paraTerminar.first())){
+                this.tempo.tempoDormir =  tempoDormir();
                 possoInterromper();
             }
-            paraTerminar.add(ept);
             //manda para o diretorio
             Resposta respostaLeilao = Resposta.newBuilder()
                                             .setTipo(TipoMensagem.LEILAO)
@@ -376,7 +395,7 @@ class EstruturaExchange{
         }
         return false;
     }
-    public synchronized boolean licitaLeilao(String empresa, long montante, float taxa, String investidor){
+    public boolean licitaLeilao(String empresa, long montante, float taxa, String investidor){
         try{
             Empresa aux = empresas.get(empresa);
             if(aux == null){
@@ -483,7 +502,7 @@ class EstruturaExchange{
         return true;
     }
 
-    public synchronized long tempoDormir(){
+    public long tempoDormir(){
         if(paraTerminar.size() == 0){
             return Long.MAX_VALUE;
         }
@@ -491,7 +510,7 @@ class EstruturaExchange{
         return LocalDateTime.now().until(paraTerminar.first().emprestimo.fim,ChronoUnit.MILLIS);
     }
 
-    public synchronized void termina(/*, o para comunicacao com o diretorio*/){
+    public void termina(/*, o para comunicacao com o diretorio*/){
         //verifica todos os leiloes e termina os que já tiverem sido passados o tempo
         System.out.println("Terminar!!!");
         ArrayList<EmprestimoProntoTerminar> eliminar = new ArrayList<>();
@@ -627,6 +646,9 @@ class EstruturaExchange{
         }
 
         paraTerminar.removeAll(eliminar);
+
+        this.tempo.tempoDormir =  tempoDormir();
+        possoInterromper();
         
     }
     

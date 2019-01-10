@@ -22,25 +22,44 @@ import org.zeromq.ZMQ;
 import exchange.Ccs.*;
 
 class TerminaEmprestimo implements Runnable{
-    //ZMQ.Context context;
-    //ZMQ.Socket socketExchangePush;
+    ZMQ.Context context;
+    ZMQ.Socket socketExchangePush;
+    GereTempo tempo;
+    
     //ZMQ.Socket socketNotificacoes;    
     //falta o de comunicacao com o diretorio
 
     //faltam as proximas a serem terminadas
-    EstruturaExchange estrutura;
+    //EstruturaExchange estrutura;
 
-    public TerminaEmprestimo(EstruturaExchange ee){
+    public TerminaEmprestimo(ZMQ.Context c, GereTempo t){
         
-        estrutura = ee;
+        //estrutura = ee;
+        context = c;
+        socketExchangePush = context.socket(ZMQ.PUSH);
+        socketExchangePush.bind("inproc://enviaTermino");
+        tempo = t;
     }
 
     public void run(){
         //verifica se existem terminadas e caso existam verifica se ja terminaram
         //senao dorme até uma terminar
         while(true){
-            
             try{
+                System.out.println("Vou dormir: " + tempo.tempoDormir);
+            
+                if(tempo.tempoDormir > 0){
+                    Thread.sleep(tempo.tempoDormir);
+                }
+                System.out.println("Vou enviar inside!");
+                String enviar = "::terminar::";
+                socketExchangePush.send(enviar.getBytes());
+            }
+            catch(InterruptedException ie){
+                System.out.println("Fui interrompido!");
+            }
+            
+            /*try{
                 long tempoDormir = estrutura.tempoDormir();
                 System.out.println("Vou dormir: " + tempoDormir);
                 if(tempoDormir > 0){
@@ -50,7 +69,7 @@ class TerminaEmprestimo implements Runnable{
             }
             catch(InterruptedException ie){
                 System.out.println("Fui interrompido!");
-            }
+            }*/
             
         }
     }
@@ -159,12 +178,14 @@ public class Exchange{
             return;
         }
         registaExchange(exca);
+        GereTempo tempo = new GereTempo();
         EstruturaExchange estrutura = new EstruturaExchange(context, exca.portaPush,exca.portaPub,
-                                                exca.empresas,exca.endDir,exca.portaDir);
+                                                exca.empresas,exca.endDir,exca.portaDir,tempo);
         ZMQ.Socket socketExchangePull = context.socket(ZMQ.PULL);
         String myPull = exca.portaPull;
         socketExchangePull.bind("tcp://*:" + myPull);
-        Thread acaba = new Thread(new TerminaEmprestimo(estrutura));
+        Thread acaba = new Thread(new TerminaEmprestimo(context,tempo));
+        socketExchangePull.connect("inproc://enviaTermino");
         acaba.start();
         estrutura.acaba = acaba;
 
@@ -172,7 +193,13 @@ public class Exchange{
             byte[] bResposta = socketExchangePull.recv();
             System.out.println("Recebi mensagem");
             System.out.println(bResposta);
-            System.out.println(new String(bResposta));
+            String verifica = new String(bResposta);
+            System.out.println(verifica);
+
+            if(verifica.equals("::terminar::")){
+                estrutura.termina();
+            }
+            else{
             try{
                 MensagemUtilizador resposta = MensagemUtilizador.parseFrom(bResposta);
                 System.out.println("Fiz decode");
@@ -222,6 +249,7 @@ public class Exchange{
                 System.out.println(exc);
                 exc.printStackTrace();
             }
+        }
         }
     }
     
