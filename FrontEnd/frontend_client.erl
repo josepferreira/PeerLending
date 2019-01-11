@@ -195,6 +195,23 @@ loopLicitador(Sock, User, MapState) ->
             end
         ;
         %A receber a resposta do frontend_state
+        {Pid, invalid, T, Msg} ->
+            case maps:is_key(Pid, MapState) of
+                true -> 
+                    case T of
+                        leilao -> TipoMsg = 'LEILAO';
+                        emissao -> TipoMsg = 'EMISSAO'
+                    end,
+                    Binario = ccs:encode_msg(#'RespostaExchange'{tipo='RESPOSTA',resposta=#'Resposta'{tipo=TipoMsg,utilizador=User,sucesso=false,mensagem=Msg}}),
+                    io:format("VOu enviar uma resposta de ERRO para o cliente"),
+                    gen_tcp:send(Sock, Binario),
+                    loopLicitador(Sock, User, MapState)
+                ;
+                false ->
+                    io:format("Erro na linha 211~n"),
+                    loopLicitador(Sock, User, MapState)
+            end
+        ;
         {Pid, Resposta} ->
             case maps:is_key(Pid, MapState) of
                 true -> 
@@ -203,7 +220,7 @@ loopLicitador(Sock, User, MapState) ->
                     loopLicitador(Sock, User, MapState)
                 ;
                 false ->
-                    io:format("Erro na linha 156~n"),
+                    io:format("Erro na linha 223~n"),
                     loopLicitador(Sock, User, MapState)
             end
     end

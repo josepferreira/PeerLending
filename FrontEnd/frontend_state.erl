@@ -39,7 +39,7 @@ loop (Push, Pull, MapEstado) ->
                     loop(Push, Pull, NewMap)
                 ;
                 _-> 
-                    From ! {self(), invalid, "Não ha um leilao em curso para a empresa" ++ Empresa},
+                    From ! {self(), invalid, leilao, "Não ha um leilao em curso para a empresa" ++ Empresa},
                     loop(Push, Pull, MapEstado)
             end
         ;
@@ -53,7 +53,7 @@ loop (Push, Pull, MapEstado) ->
                     loop(Push, Pull, NewMap)
                 ;
                 _-> 
-                    From ! {self(), invalid, "Não ha uma emissao em curso para a empresa" ++ Empresa},
+                    From ! {self(), invalid, emissao, "Não ha uma emissao em curso para a empresa" ++ Empresa},
                     loop(Push, Pull, MapEstado)
             end
         ;
@@ -69,7 +69,7 @@ loop (Push, Pull, MapEstado) ->
                     loop(Push, Pull, NewMap)
                 ;
                 _-> 
-                    From ! {self(), invalid, "Não pode criar um leilao de momento! Já se encontra em atividade!"},
+                    From ! {self(), invalid, leilao, "Não pode criar um leilao de momento! Já se encontra em atividade!"},
                     loop(Push, Pull, MapEstado)
             end
         ;
@@ -83,7 +83,7 @@ loop (Push, Pull, MapEstado) ->
                     loop(Push, Pull, NewMap)
                 ;
                 _-> 
-                    From ! {self(), invalid, "Não pode criar uma emissao de momento! Já se encontra em atividade!"},
+                    From ! {self(), invalid, emissao, "Não pode criar uma emissao de momento! Já se encontra em atividade!"},
                     loop(Push, Pull, MapEstado)
             end
         ;
@@ -117,7 +117,7 @@ loop (Push, Pull, MapEstado) ->
                             loop(Push, Pull, MapEstado)
                         ;
                         _ ->
-                            io:format("Erro na linha 101"),
+                            io:format("Erro na linha 120"),
                             loop(Push, Pull, MapEstado)
                     end
                 ;
