@@ -21,60 +21,6 @@ import org.zeromq.ZMQ;
 
 import exchange.Ccs.*;
 
-class TerminaEmprestimo implements Runnable{
-    ZMQ.Context context;
-    ZMQ.Socket socketExchangePush;
-    GereTempo tempo;
-    
-    //ZMQ.Socket socketNotificacoes;    
-    //falta o de comunicacao com o diretorio
-
-    //faltam as proximas a serem terminadas
-    //EstruturaExchange estrutura;
-
-    public TerminaEmprestimo(ZMQ.Context c, GereTempo t){
-        
-        //estrutura = ee;
-        context = c;
-        socketExchangePush = context.socket(ZMQ.PUSH);
-        socketExchangePush.bind("inproc://enviaTermino");
-        tempo = t;
-    }
-
-    public void run(){
-        //verifica se existem terminadas e caso existam verifica se ja terminaram
-        //senao dorme até uma terminar
-        while(true){
-            try{
-                System.out.println("Vou dormir: " + tempo.tempoDormir);
-            
-                if(tempo.tempoDormir > 0){
-                    Thread.sleep(tempo.tempoDormir);
-                }
-                System.out.println("Vou enviar inside!");
-                String enviar = "::terminar::";
-                socketExchangePush.send(enviar.getBytes());
-            }
-            catch(InterruptedException ie){
-                System.out.println("Fui interrompido!");
-            }
-            
-            /*try{
-                long tempoDormir = estrutura.tempoDormir();
-                System.out.println("Vou dormir: " + tempoDormir);
-                if(tempoDormir > 0){
-                    Thread.sleep(tempoDormir);
-                }
-                estrutura.termina();
-            }
-            catch(InterruptedException ie){
-                System.out.println("Fui interrompido!");
-            }*/
-            
-        }
-    }
-}
-
 public class Exchange{
     //ZMQ.Socket socketExchangePush = context.socket(ZMQ.PUSH);
     //ZMQ.Socket socketNotificacoes = context.socket(ZMQ.PUB);
@@ -162,6 +108,8 @@ public class Exchange{
             System.out.println(exc);
         }
     }
+
+
     public static void main(String[] args){
         if(args.length==0){
             System.out.println("Sem argumentos não há exchange!");
@@ -177,17 +125,15 @@ public class Exchange{
             System.out.println("Erro no parsing!");
             return;
         }
+        
         registaExchange(exca);
-        GereTempo tempo = new GereTempo();
         EstruturaExchange estrutura = new EstruturaExchange(context, exca.portaPush,exca.portaPub,
-                                                exca.empresas,exca.endDir,exca.portaDir,tempo);
+                                                exca.empresas,exca.endDir,exca.portaDir);
         ZMQ.Socket socketExchangePull = context.socket(ZMQ.PULL);
         String myPull = exca.portaPull;
         socketExchangePull.bind("tcp://*:" + myPull);
-        Thread acaba = new Thread(new TerminaEmprestimo(context,tempo));
-        socketExchangePull.connect("inproc://enviaTermino");
-        acaba.start();
-        estrutura.acaba = acaba;
+        socketExchangePull.bind("inproc://terminar");        
+        
 
         while(true){
             byte[] bResposta = socketExchangePull.recv();

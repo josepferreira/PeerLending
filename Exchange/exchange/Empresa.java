@@ -80,10 +80,12 @@ public class Empresa{
     public Emissao licitaEmissao(String cliente, long montante)
         throws ExcecaoFinalizado{
         //para licitar uma emissao (o id será necessário?)
-
+        System.out.println("Licitar emissao para a empresa: " + nome);
         if(emprestimoCurso == null){
             throw new  ExcecaoFinalizado(nome, "A emissão pretendida já não se encontra ativa!");
         }
+
+        System.out.println("Vou licittar!");
 
         if(!(emprestimoCurso instanceof Emissao)){
             return null;
@@ -100,11 +102,14 @@ public class Empresa{
     }
 
     public Emprestimo terminaEmprestimo(int id){
+        System.out.println("Terminar emprestimo!");
         if(emprestimoCurso == null){
+            System.out.println("Não terminar emprestimo, é null!");
             return null;
         }
 
         if(id != emprestimoCurso.id){
+            System.out.println("Não terminar emprestimo, ids diferentes!");
             return null;
         }
 

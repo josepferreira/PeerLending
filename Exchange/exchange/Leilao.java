@@ -85,7 +85,8 @@ public class Leilao extends Emprestimo implements Comparable{
     }
 
     public float taxaMaxima(){
-        return propostas.last().taxa;
+        System.out.println("LID: " + id);
+        return (propostas.isEmpty() ? taxa : propostas.last().taxa );
     }
 
     public boolean equals(Object o){
@@ -102,10 +103,10 @@ public class Leilao extends Emprestimo implements Comparable{
         Leilao e = (Leilao)o;
 
         if(this.id > e.id){
-            return 1;
+            return -1;
         }
         if(this.id < e.id){
-            return -1;
+            return 1;
         }
         return 0;
     }

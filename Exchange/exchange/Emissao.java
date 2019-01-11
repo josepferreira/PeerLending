@@ -70,10 +70,10 @@ public class Emissao extends Emprestimo implements Comparable{
         Emissao e = (Emissao)o;
 
         if(this.id > e.id){
-            return 1;
+            return -1;
         }
         if(this.id < e.id){
-            return -1;
+            return 1;
         }
         return 0;
     }

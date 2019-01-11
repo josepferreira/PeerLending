@@ -24,52 +24,25 @@ import exchange.Ccs.*;
 import exchange.NotificacaoOuterClass.*;
 
 
-class GereTempo{
-    long tempoDormir = Long.MAX_VALUE;
-}
-class EmprestimoProntoTerminar implements Comparable{
-    public Emprestimo emprestimo;
-
-    public EmprestimoProntoTerminar(Emprestimo e){
-        emprestimo = e;
-    }
-
-    public int compareTo(Object o){
-        EmprestimoProntoTerminar ept = (EmprestimoProntoTerminar)o;
-        return this.emprestimo.fim.compareTo(ept.emprestimo.fim);
-    }
-
-    public boolean equals(Object o){
-        if(o==null){
-            return false;
-        }
-
-        if(!(o instanceof EmprestimoProntoTerminar)){
-            return false;
-        }
-
-        EmprestimoProntoTerminar ept = (EmprestimoProntoTerminar)o;
-
-        return ept.emprestimo.equals(this.emprestimo);
-    }
-}
-
-
 class EstruturaExchange{
-    public TreeSet<EmprestimoProntoTerminar> paraTerminar = new TreeSet<>();
+    public TreeSet<Emprestimo> paraTerminar = new TreeSet<Emprestimo>((o1, o2) -> {
+
+        Emprestimo e1 = (Emprestimo) o1;
+        Emprestimo e2 = (Emprestimo) o2;
+
+        return e1.fim.compareTo(e2.fim);
+    });
+
     public HashMap<String,Empresa> empresas = new HashMap<>();
-    public Thread acaba;
     public ZMQ.Context context;
     public ZMQ.Socket socketExchangePush;
     public ZMQ.Socket socketNotificacoes;
     public String urlDiretorio;
-    private GereTempo tempo;
-
+    
     //so falta o diretorio
 
     public EstruturaExchange(ZMQ.Context c, String myPush, String myPub, 
-                    ArrayList<String> empresas, String endDir, String portaDir,
-                    GereTempo t){
+                    ArrayList<String> empresas, String endDir, String portaDir){
         context = c;
         socketNotificacoes = context.socket(ZMQ.PUB);
         socketExchangePush = context.socket(ZMQ.PUSH);
@@ -81,22 +54,19 @@ class EstruturaExchange{
             this.empresas.put(emp, new Empresa(emp));
         }
 
-        tempo = t;
-
         System.out.println("Estrutura configurada");
 
     }
-    private void possoInterromper(){
-        System.out.println("Vou interromper!");
-        acaba.interrupt();
-    }
-
     
-    
-    //tempo em dias para minutos (1 dia corresponde a 1 minuto), devolve em nanos
+    //tempo: 1 hora -> 12 segundos : devolve em nanos
     private long converteTempo(long tempo){
         
-        return (long)(((tempo*Math.pow(10, 9)*12)));///(24*60));
+        return (long)(((tempo*Math.pow(10, 9)*12)));
+    }
+
+    //cria a thread para acabar com o leilao
+    private void criaThread(Emprestimo emp){
+        new Thread(new TerminaEmprestimo(emp.fim, context)).start();
     }
 
     public boolean adicionaEmissao(String empresa, long montante, long tempo){
@@ -124,15 +94,9 @@ class EstruturaExchange{
         }
 
         if(aux != null){
-            EmprestimoProntoTerminar ept = new EmprestimoProntoTerminar(aux);
-            paraTerminar.add(ept);
-            if(paraTerminar.isEmpty() || ept.equals(paraTerminar.first())){
-                this.tempo.tempoDormir =  tempoDormir();
-                possoInterromper();
-                 
-            }
+            paraTerminar.add(aux);
+            criaThread(aux);
             System.out.println("Adicionei: " + aux.empresa);
-            System.out.println("Adicionei: " + ept.emprestimo.empresa);
             //manda para o diretorio
             Resposta respostaEmissao = Resposta.newBuilder()
                                             .setTipo(TipoMensagem.EMISSAO)
@@ -211,11 +175,6 @@ class EstruturaExchange{
             Emissao em = aux.licitaEmissao(investidor, montante);
 
             if(em != null){
-                if(paraTerminar.first().emprestimo.equals(em)){
-                    paraTerminar.pollFirst();
-                    this.tempo.tempoDormir =  tempoDormir();
-                    possoInterromper();
-                }
                 //indica que emissao terminou
                 Resultado resultado = Resultado.newBuilder()
                                                 .setTipo(TipoMensagem.EMISSAO)
@@ -268,7 +227,7 @@ class EstruturaExchange{
                 }catch(Exception exc){
                     System.out.println(exc);
                 }
-
+                System.out.println("PAssei terminar emissao!");
             }
             
             else{
@@ -319,13 +278,8 @@ class EstruturaExchange{
         LocalDateTime fim = LocalDateTime.now().plusNanos(converteTempo(tempo));
         Emprestimo aux = empresas.get(empresa).criarLeilao(montante, taxa, fim);
         if(aux != null){
-            EmprestimoProntoTerminar ept = new EmprestimoProntoTerminar(aux);
-            System.out.println(paraTerminar);
-            paraTerminar.add(ept);
-            if(paraTerminar.isEmpty() || ept.equals(paraTerminar.first())){
-                this.tempo.tempoDormir =  tempoDormir();
-                possoInterromper();
-            }
+            paraTerminar.add(aux);
+            criaThread(aux);
             //manda para o diretorio
             Resposta respostaLeilao = Resposta.newBuilder()
                                             .setTipo(TipoMensagem.LEILAO)
@@ -502,26 +456,18 @@ class EstruturaExchange{
         return true;
     }
 
-    public long tempoDormir(){
-        if(paraTerminar.size() == 0){
-            return Long.MAX_VALUE;
-        }
-
-        return LocalDateTime.now().until(paraTerminar.first().emprestimo.fim,ChronoUnit.MILLIS);
-    }
-
     public void termina(/*, o para comunicacao com o diretorio*/){
         //verifica todos os leiloes e termina os que já tiverem sido passados o tempo
         System.out.println("Terminar!!!");
-        ArrayList<EmprestimoProntoTerminar> eliminar = new ArrayList<>();
-        for(EmprestimoProntoTerminar ept: paraTerminar){
-            if(ept.emprestimo.fim.compareTo(LocalDateTime.now()) > 0){
+        ArrayList<Emprestimo> eliminar = new ArrayList<>();
+        for(Emprestimo ept: paraTerminar){
+            if(ept.fim.compareTo(LocalDateTime.now()) > 0){
                 break;
             }
             else{
                 eliminar.add(ept);
-                System.out.println(ept.emprestimo.empresa);
-                Emprestimo emp = empresas.get(ept.emprestimo.empresa).terminaEmprestimo(ept.emprestimo.id);
+                System.out.println(ept.empresa);
+                Emprestimo emp = empresas.get(ept.empresa).terminaEmprestimo(ept.id);
                 
                 if(emp != null){
                     //mandar mensagens com o resultado
@@ -646,9 +592,6 @@ class EstruturaExchange{
         }
 
         paraTerminar.removeAll(eliminar);
-
-        this.tempo.tempoDormir =  tempoDormir();
-        possoInterromper();
         
     }
     
