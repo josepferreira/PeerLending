@@ -20,7 +20,7 @@ import cliente.NotificacaoOuterClass.*;
  * 2) Para comunicar com o Exchange
  */
 
-class ComunicaCliente implements Runnable{
+class ComunicaCliente{
 
     private ZMQ.Context context;
     private ZMQ.Socket sub;
@@ -140,14 +140,8 @@ class ComunicaCliente implements Runnable{
 
     }
 
-    public void run(){
-        ZMQ.Socket socket = context.socket(ZMQ.PULL);
-        socket.connect("inproc://notificacoes");
+    public void atoSub(String msgResposta){
 
-        //Vou ficar a escuta de algum pedido de subscrição
-        while(!Thread.interrupted()){
-            byte[] b = socket.recv();
-            String msgResposta = new String(b);
 
             /**
              * Tenho de fazer parse à mensagem
@@ -155,7 +149,7 @@ class ComunicaCliente implements Runnable{
              * Se for unsub@ -> então é para tirar o subscribe
              */
 
-
+            System.out.println("RECEBI A SEGUINTE MENSAGEM: " + msgResposta);
             String decisao = msgResposta.split("@")[0];
             String subResposta = msgResposta.split("@")[1];
             System.out.println("\nA decisao é " + decisao + ". A subscrição: " + subResposta);
@@ -201,7 +195,6 @@ class ComunicaCliente implements Runnable{
                 }
             }
         }
-    }
 
 }
 
@@ -210,6 +203,7 @@ public class Notificacoes implements Runnable{
     GerirSubscricoes sub;
     ZMQ.Context context;
     Enderecos enderecos;
+    ComunicaCliente cc;
 
     public Notificacoes(ZMQ.Context context, GerirSubscricoes gb, Enderecos end){
         this.context = context;
@@ -220,9 +214,10 @@ public class Notificacoes implements Runnable{
     public void run(){
         //Vou ter de me associar às exchanges
         ZMQ.Socket socket = context.socket(ZMQ.SUB);
+        socket.connect("inproc://notificacoes");
+        socket.subscribe("comuSub");
 
-        ComunicaCliente cc = new ComunicaCliente(context, socket, sub, enderecos);
-        (new Thread(cc)).start();
+        cc = new ComunicaCliente(context, socket, sub, enderecos);
         
         while(!Thread.interrupted()){
             /**
@@ -230,6 +225,10 @@ public class Notificacoes implements Runnable{
              */
             byte[] b = socket.recv(0);
             String recebi = new String(b);
+
+            if(recebi.startsWith("comuSub")){
+                cc.atoSub(recebi.substring(7));
+            }
 
             /**
              * Aqui vai receber o resto da mensagem (multiPart)
@@ -256,7 +255,9 @@ public class Notificacoes implements Runnable{
                             msg = msg + "À taxa de " + no.getTaxa() + ".";
                         if(no.hasTempo())
                             msg = msg + "Com um tempo máximo de " + no.getTempo() + ".";
-                        msg = msg + "! O resultado obtido foi: " + no.getResultado().getTexto();
+                        ResultadoAcao aux = no.getResultado();
+                        if(aux.hasTexto())
+                            msg = msg + "! O resultado obtido foi: " + aux.getTexto();
                     }
                     else{
                         if(no.getTipo() == TipoNotificacao.LICITACAO){
@@ -270,7 +271,9 @@ public class Notificacoes implements Runnable{
                                     msg = msg + "erro!";
                             }
                             msg = msg + "da empresa " + no.getEmpresa() + "!";
-                            msg = msg + no.getResultado().getTexto();
+                            ResultadoAcao aux = no.getResultado();
+                            if(aux.hasTexto())
+                                msg = msg + aux.getTexto();
                         }
                         else{
                             if(TipoNotificacao.FIM == no.getTipo()){
@@ -284,7 +287,9 @@ public class Notificacoes implements Runnable{
                                         msg = msg + "erro!";
                                 }
                                 msg = msg + "da empresa " + no.getEmpresa() + "!";
-                                msg = msg + no.getResultado().getTexto();
+                                ResultadoAcao aux = no.getResultado();
+                                if(aux.hasTexto())
+                                    msg = msg + aux.getTexto();
                             }
                             else
                                 msg = msg + "ERRO!!!";

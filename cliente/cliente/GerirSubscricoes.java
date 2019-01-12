@@ -17,10 +17,11 @@ public class GerirSubscricoes{
     HashSet<String> empresasSubscritas = new HashSet<>();
     BufferedReader inP = new BufferedReader(new InputStreamReader(System.in));
     ZMQ.Socket socket;
+    String headSub = "comuSub";
 
 
     public GerirSubscricoes(ZMQ.Context context){
-        this.socket = context.socket(ZMQ.PUSH);
+        this.socket = context.socket(ZMQ.PUB);
         this.socket.bind("inproc://notificacoes");
     }
 
@@ -88,7 +89,7 @@ public class GerirSubscricoes{
                     case 1:
                         if(leiloesSubscritos == false){
                             System.out.println("Vou subscrever todos os leilões");
-                            socket.send("sub@leilao::");
+                            socket.send(headSub + "sub@leilao::");
                             leiloesSubscritos = true;
                         }else{
                             System.out.println("ERRO: Leilões já se encontram subscritas ... Ação inválida!");
@@ -97,7 +98,7 @@ public class GerirSubscricoes{
                     case 2:
                         if(emissoesSubscritas == false){
                             System.out.println("Vou subscrever todos as emissões");
-                            socket.send("sub@emissao::");
+                            socket.send(headSub + "sub@emissao::");
                             emissoesSubscritas = true;
                         }else{
                             System.out.println("ERRO: Emissões já se encontram subscritas ... Ação inválida!");
@@ -108,8 +109,8 @@ public class GerirSubscricoes{
                         String empresa = inP.readLine();
                         if(!empresasSubscritas.contains(empresa)){
                             System.out.println("Vou mandar uma empresa para subscrever! " + empresa);
-                            socket.send("sub@leilao::" + empresa + "::");
-                            socket.send("sub@emissao::" + empresa + "::");
+                            socket.send(headSub + "sub@leilao::" + empresa + "::");
+                            socket.send(headSub + "sub@emissao::" + empresa + "::");
                         }else{
                             System.out.println("ERRO: Empresa já se encontra subscrita ... Ação inválida!");
                         }
@@ -147,7 +148,7 @@ public class GerirSubscricoes{
                     case 1:
                         if(leiloesSubscritos == true){
                             System.out.println("Vou vetar todos os leilões");
-                            socket.send("unsub@leilao::");
+                            socket.send(headSub + "unsub@leilao::");
                             leiloesSubscritos = false;
                         }else{
                             System.out.println("ERRO: Leilões não se encontram subscritos ... Ação inválida!");
@@ -157,7 +158,7 @@ public class GerirSubscricoes{
                     case 2:
                         if(emissoesSubscritas == true){
                             System.out.println("Vou vetar todos as emissões");
-                            socket.send("unsub@emissao::");
+                            socket.send(headSub + "unsub@emissao::");
                             emissoesSubscritas = false;
                         }else{
                             System.out.println("ERRO: Emissões não se encontram subscritas ... Ação inválida!");
@@ -169,8 +170,8 @@ public class GerirSubscricoes{
                         String empresa = inP.readLine();
                         if(empresasSubscritas.contains(empresa)){
                             System.out.println("Vou mandar uma empresa para vetar! " + empresa);
-                            socket.send("unsub@leilao::" + empresa + "::");
-                            socket.send("unsub@emissao::" + empresa + "::");
+                            socket.send(headSub + "unsub@leilao::" + empresa + "::");
+                            socket.send(headSub + "unsub@emissao::" + empresa + "::");
                         }else{
                             System.out.println("ERRO: Empresa não se encontra subscrita ... Ação inválida!");
                         }
