@@ -16,6 +16,9 @@ public class Empresa{
 
     public Emprestimo criarLeilao(long montante, float taxa, LocalDateTime fim){
         //para criar um novo leilao
+        if(taxa < 0){
+            return null;
+        }
         if(emprestimoCurso == null){
             emprestimoCurso = new Leilao(idEmprestimo++,this.nome,montante,taxa,fim);
             return emprestimoCurso;

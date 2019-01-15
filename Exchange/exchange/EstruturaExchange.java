@@ -170,6 +170,7 @@ class EstruturaExchange{
         try{
             Empresa aux = empresas.get(empresa);
             if(aux == null){
+                //devia enviar resposta a dizer q empresa nao existe nao?
                 return false;
             }
             Emissao em = aux.licitaEmissao(investidor, montante);
