@@ -1,0 +1,13 @@
+{
+    "Utilizadores" : [
+        {"username" : "emp1" , "password" : "123456", "papel" : "empresa"},
+        {"username" : "emp2" , "password" : "123456", "papel" : "empresa"},
+        {"username" : "cli1" , "password" : "123456", "papel" : "cliente"},
+        {"username" : "cli2" , "password" : "123456", "papel" : "cliente"}
+        
+        
+        ], 
+    "Exchanges" : [
+        { "socket" : {"Push": "12345", "Pull" : "12345"} , "empresas" : ["emp1", "emp2"]}
+        ]
+}
