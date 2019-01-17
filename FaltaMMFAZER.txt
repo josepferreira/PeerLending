@@ -1,7 +1,6 @@
 Falta fazer:
 * ver a taxa na emissao e se pode realizar a mesma  -> penso que já está mas é preciso testar depois
-falta ver aquilo no front-end de n enviar!!!
-* ver o parse a partir de json (tanto em java com erlang)
+* ver o parse a partir de json (java)
 * ver melhor o proto das respostas
 * pedir os enderecos da exchange ao diretorio
 * por as propostas, montante e taxa no diretorio -> penso q ja esta, mas testar
