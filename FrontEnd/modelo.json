@@ -1,13 +1,13 @@
 {
     "Utilizadores" : [
-        {"username" : "emp1" , "password" : "123456", "papel" : "empresa"},
-        {"username" : "emp2" , "password" : "123456", "papel" : "empresa"},
-        {"username" : "cli1" , "password" : "123456", "papel" : "cliente"},
-        {"username" : "cli2" , "password" : "123456", "papel" : "cliente"}
+        {"username" : "emp1" , "password" : "123", "papel" : "empresa"},
+        {"username" : "emp2" , "password" : "123", "papel" : "empresa"},
+        {"username" : "cli1" , "password" : "123", "papel" : "licitador"},
+        {"username" : "cli2" , "password" : "123", "papel" : "licitador"}
         
         
         ], 
     "Exchanges" : [
-        { "socket" : {"Push": "12345", "Pull" : "12345"} , "empresas" : ["emp1", "emp2"]}
+        { "socket" : {"Push": "12351", "Pull" : "12350"} , "empresas" : ["emp1", "emp2"]}
         ]
 }
