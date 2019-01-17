@@ -19,7 +19,7 @@ mapaStateEmpresa(Map, [H | T]) ->
   ListaEmpresas = [binary_to_list(E) || E <- ListaEmpresasBin],
   io:format("~p~n", [ListaEmpresas]),
   {Push, Pull} = criaSocket(PortaPush, PortaPull),
-  PidStateA = frontend_state:start(Push, Pull),
+  PidStateA = frontend_state:start(Push, Pull, ListaEmpresas),
   Map2 = maps:put(PidStateA, ListaEmpresas, Map),
   mapaStateEmpresa(Map2, T)
 .

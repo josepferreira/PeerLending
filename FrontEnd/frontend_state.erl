@@ -1,5 +1,5 @@
 -module(frontend_state).
--export([start/2]).
+-export([start/3]).
 
 -include("ccs.hrl").
 
@@ -15,11 +15,22 @@ recebeExchange(Pull, Loop) ->
 .
 
 
-start(Push, Pull) ->
+geraMapa(M, []) ->
+    M
+;
+geraMapa(M , [H | T]) ->
+    M1 = maps:put(H, {false, false, []}, M),
+    geraMapa(M1,T)
+.
+
+start(Push, Pull, ListaEmpresas) ->
   io:format("State ja esta a correr!~n"),
 
+  Map = geraMapa(#{}, ListaEmpresas),
+  %#{"emp1" => {false, false, []}, "emp2" => {false, false, []}}
+
   % Colocar loop a correr, fica a receber mensagens vindas do frontend e do exchangeReceiver
-  MyPid = spawn (fun() -> loop (Push, Pull, #{"emp1" => {false, false, []}, "emp2" => {false, false, []}}) end),
+  MyPid = spawn (fun() -> loop (Push, Pull, Map) end),
   
   % Coloca o recebeExchange a correr, fica bloqueado a receber mensagens da exchange e envia-as para o loop
   _ = spawn( fun() -> recebeExchange(Pull, MyPid) end),
