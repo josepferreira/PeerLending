@@ -1,13 +1,23 @@
 {
     "Utilizadores" : [
-        {"username" : "emp1" , "password" : "123", "papel" : "empresa"},
+        {"username" : "emp1" , "password" : "111", "papel" : "empresa"},
         {"username" : "emp2" , "password" : "123", "papel" : "empresa"},
+        {"username" : "emp3" , "password" : "123", "papel" : "empresa"},
+        {"username" : "emp4" , "password" : "123", "papel" : "empresa"},
+        {"username" : "emp5" , "password" : "123", "papel" : "empresa"},
+        {"username" : "emp6" , "password" : "123", "papel" : "empresa"},
+        {"username" : "emp7" , "password" : "123", "papel" : "empresa"},
+        {"username" : "emp8" , "password" : "123", "papel" : "empresa"},
+        {"username" : "emp9" , "password" : "999", "papel" : "empresa"},
         {"username" : "cli1" , "password" : "123", "papel" : "licitador"},
-        {"username" : "cli2" , "password" : "123", "papel" : "licitador"}
-        
-        
+        {"username" : "cli2" , "password" : "123", "papel" : "licitador"},
+        {"username" : "cli3" , "password" : "123", "papel" : "licitador"},
+        {"username" : "cli4" , "password" : "123456", "papel" : "licitador"},
+        {"username" : "cli5" , "password" : "123456", "papel" : "licitador"}
         ], 
     "Exchanges" : [
-        { "socket" : {"Push": "12351", "Pull" : "12350"} , "empresas" : ["emp1", "emp2"]}
+        { "socket" : {"Push": "12351", "Pull" : "12350"} , "empresas" : ["emp1", "emp2", "emp3"]},
+        { "socket" : {"Push": "12361", "Pull" : "12360"} , "empresas" : ["emp4", "emp5", "emp6"]},
+        { "socket" : {"Push": "12371", "Pull" : "12370"} , "empresas" : ["emp7", "emp8", "emp9"]}
         ]
 }
