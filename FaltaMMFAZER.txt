@@ -9,4 +9,4 @@ pomos tbm a data de fim? fazia sentido nao?
 --MUITO IMPORTANTE--
 * por sucesso na resposta?
 * por sucesso no diretorio?
-* permitir a taxa como float
+* LIMITAR AS NOTIFICACAOES!!!!
