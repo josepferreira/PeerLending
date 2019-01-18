@@ -25,7 +25,6 @@ class RecebeMensagens implements Runnable{
 
     public RecebeMensagens(CodedInputStream cis){
         this.cis = cis;
-        System.out.println("Foi criada uma recebeMensagens");
     }
 
     public void run(){
@@ -35,8 +34,6 @@ class RecebeMensagens implements Runnable{
                 len = little2big(len);
                 byte[] bResposta = cis.readRawBytes(len);
                 RespostaExchange resposta = RespostaExchange.parseFrom(bResposta);
-                System.out.println("\n Recebi uma resposta!");
-                System.out.println("O tipo é " + resposta.getTipo());
 
                 if(resposta.getTipo() == TipoResposta.RESULTADO){
                     //Vou imprimir o resultado de um leilao
@@ -99,7 +96,7 @@ class Licitador{
         cos = CodedOutputStream.newInstance(s.getOutputStream());
         (new Thread(new RecebeMensagens(cis))).start();
         subscricoes = new GerirSubscricoes(context);
-        Notificacoes n = new Notificacoes(context, subscricoes,enderecos);
+        Notificacoes n = new Notificacoes(context, subscricoes,enderecos,username);
         (new Thread(n)).start();
     }
 
@@ -135,7 +132,7 @@ class Licitador{
         while(empresa == null);
         
         long montante = 0;
-        int taxa = 0;
+        float taxa = 0;
         boolean lido = false;
         do{
             System.out.print("Insira o Montante: ");
@@ -156,7 +153,7 @@ class Licitador{
         do{
             System.out.print("Insira a Taxa: ");
             try{
-                taxa = Integer.parseInt(inP.readLine());
+                taxa = Float.parseFloat(inP.readLine());
                 if(taxa > 0 && taxa < 101)
                     lido = true;
                 /**
@@ -167,12 +164,10 @@ class Licitador{
             }
         }while(!lido);
 
-        float taxaAux = (float) taxa;
-
         LicitacaoLeilao leilao = LicitacaoLeilao.newBuilder()
                                             .setEmpresa(empresa)
                                             .setMontante(montante)
-                                            .setTaxa(taxaAux)
+                                            .setTaxa(taxa)
                                             .build();
 
         MensagemInvestidor mensagemInvestidor = MensagemInvestidor.newBuilder()
@@ -188,27 +183,10 @@ class Licitador{
       
         byte[] ba = mensagem.toByteArray();
 
-        //System.out.println("Len: " + ba.length);
+        
         cos.writeSFixed32NoTag(little2big(ba.length));
         cos.writeRawBytes(ba);
-        //System.out.println("Wrote " + ba.length + " bytes");
         cos.flush();
-
-        // System.out.println("-----");
-        // System.out.println("A esperar resposta por parte do servidor ...");
-        // System.out.println("-----");
-
-        // // int len = cis.readRawLittleEndian32();
-        // len = little2big(len);
-        // System.out.println("Len: " + len);
-        // byte[] bResposta = cis.readRawBytes(len);
-        // System.out.println("Read " + len + " bytes");
-        // /**
-        //  * A partir daqui tenho de fazer decode da resposta que chegou e apresentar o texto com a mensagem de sucesso ou de erro ...
-        //  */
-        // Resultado resposta = Resultado.parseFrom(bResposta);
-        // System.out.println("O resultado da licitacao do leilao foi " + resposta.getTexto());
-
 
     }
 
@@ -219,7 +197,6 @@ class Licitador{
         do{
             System.out.println("Insira a empresa: ");
             empresa = inP.readLine();
-            System.out.println("EMP: " + empresa);
         }while(empresa == null);
 
         long montante = 0;
@@ -256,25 +233,9 @@ class Licitador{
       
         byte[] ba = mensagem.toByteArray();
 
-        //System.out.println("Len: " + ba.length);
         cos.writeSFixed32NoTag(little2big(ba.length));
         cos.writeRawBytes(ba);
-        //System.out.println("Wrote " + ba.length + " bytes");
         cos.flush();
-
-        // System.out.println("-----");
-        // System.out.println("A esperar resposta por parte do servidor ...");
-        // System.out.println("-----");
-
-        // int len = cis.readRawLittleEndian32();
-        // len = little2big(len);
-        // System.out.println("Len: " + len);
-        // byte[] bResposta = cis.readRawBytes(len);
-        // System.out.println("Read " + len + " bytes");
-        // /**
-        //  * A partir daqui tenho de fazer decode da resposta que chegou e apresentar o texto com a mensagem de sucesso ou de erro ...
-        //  */
-        // //RespostaAutenticacao resposta = RespostaAutenticacao.parseFrom(ba);
 
     }
 
@@ -333,7 +294,7 @@ class Licitador{
         cos = CodedOutputStream.newInstance(s.getOutputStream());
         (new Thread(new RecebeMensagens(cis))).start();
         subscricoes = new GerirSubscricoes(context);
-        Notificacoes n = new Notificacoes(context, subscricoes,enderecos);
+        Notificacoes n = new Notificacoes(context, subscricoes,enderecos, username);
         (new Thread(n)).start();
 
     }
@@ -362,7 +323,7 @@ class Licitador{
 
     public void apresentaCriacaoLeilao() throws Exception{
         long montante = 0;
-        int taxa = 0;
+        float taxa = 0;
         boolean lido = false;
         do{
             System.out.print("Insira o Montante: ");
@@ -383,7 +344,7 @@ class Licitador{
         do{
             System.out.print("Insira a Taxa: ");
             try{
-                taxa = Integer.parseInt(inP.readLine());
+                taxa = Float.parseFloat(inP.readLine());
                 if(taxa > 0 && taxa < 101)
                     lido = true;
                 /**
@@ -410,11 +371,9 @@ class Licitador{
             }
         }while(!lido);
 
-        float taxaAux = (float) taxa;
-
         CriacaoLeilao leilao = CriacaoLeilao.newBuilder()
                                             .setMontante(montante)
-                                            .setTaxa(taxaAux)
+                                            .setTaxa(taxa)
                                             .setTempo(tempo)
                                             .build();
 
@@ -430,31 +389,10 @@ class Licitador{
                                             .build();
       
         byte[] ba = mensagem.toByteArray();
-        //System.out.println(ba);
-        //System.out.println(new String(ba));
 
-        //System.out.println("Len: " + ba.length);
         cos.writeSFixed32NoTag(little2big(ba.length));
         cos.writeRawBytes(ba);
-        //System.out.println("Wrote " + ba.length + " bytes");
         cos.flush();
-
-        // System.out.println("-----");
-        // System.out.println("A esperar resposta por parte do servidor ...");
-        // System.out.println("-----");
-
-        // // int len = cis.readRawLittleEndian32();
-        // // len = little2big(len);
-        // // System.out.println("Len: " + len);
-        // // byte[] bResposta = cis.readRawBytes(len);
-        // // System.out.println("Read " + len + " bytes");
-        // // /**
-        // //  * A partir daqui tenho de fazer decode da resposta que chegou e apresentar o texto com a mensagem de sucesso ou de erro ...
-        // //  */
-        // // Resultado resposta = Resultado.parseFrom(bResposta);
-        // // System.out.println("O resultado da criacao do leilao foi " + resposta.getTexto());
-
-
     }
 
     public void apresentaEmissaoTaxaFixa() throws Exception{
@@ -511,25 +449,9 @@ class Licitador{
       
         byte[] ba = mensagem.toByteArray();
 
-        //System.out.println("Len: " + ba.length);
         cos.writeSFixed32NoTag(little2big(ba.length));
         cos.writeRawBytes(ba);
-        //System.out.println("Wrote " + ba.length + " bytes");
         cos.flush();
-
-        // System.out.println("-----");
-        // System.out.println("A esperar resposta por parte do servidor ...");
-        // System.out.println("-----");
-
-        // int len = cis.readRawLittleEndian32();
-        // len = little2big(len);
-        // System.out.println("Len: " + len);
-        // byte[] bResposta = cis.readRawBytes(len);
-        // System.out.println("Read " + len + " bytes");
-        // /**
-        //  * A partir daqui tenho de fazer decode da resposta que chegou e apresentar o texto com a mensagem de sucesso ou de erro ...
-        //  */
-        // //RespostaAutenticacao resposta = RespostaAutenticacao.parseFrom(ba);
 
     }
 
@@ -615,19 +537,15 @@ class Enderecos{
      * Devolve o papel "empresa" ou "cliente" consoante o papel do utilizador
      */
     public static String leMensagemInicial(CodedInputStream cis){
-        System.out.println("Ler mensagem inicial!");
         try{
             int len = cis.readRawLittleEndian32();
             len = little2big(len);
-            System.out.println("Len: " + len);
             byte[] ba = cis.readRawBytes(len);
-            System.out.println("Read " + len + " bytes");
             RespostaAutenticacao resposta = RespostaAutenticacao.parseFrom(ba);
             
             boolean sucesso = resposta.getSucesso();
             if( sucesso == true){
                 String papel = resposta.getPapel();
-                System.out.println("O papel deste utilizador é " + papel);
                 return papel;
             }else{
                 System.out.println("Utilizador nao valido!");
@@ -656,11 +574,8 @@ class Enderecos{
       
             byte[] ba = aut.toByteArray();
 
-            System.out.println("Len: " + ba.length);
             cos.writeSFixed32NoTag(little2big(ba.length));
-            System.out.println("Wrote Len");
             cos.writeRawBytes(ba);
-            System.out.println("Wrote " + ba.length + " bytes");
             cos.flush();
             
             return username;
@@ -696,20 +611,11 @@ class Enderecos{
     private static void leiloesAtivos(){
         try{
             URL url = new URL("http://" + enderecos.enderecoDiretorio + ":" + enderecos.portaDiretorio + "/leilao");
-            System.out.println("VOU EVNIAR UM EPDIDO!");
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
             con.setRequestMethod("GET");
-            //con.setDoOutput(true);
             con.setRequestProperty("Content-Type", "application/json");
-            //con.setInstanceFollowRedirects(false);
-            //con.setUseCaches(false);
 
             con.connect();
-            
-            //OutputStream out = con.getOutputStream();
-            //out.write(((Leilao)aux).getJSON().getBytes());
-            //out.flush();
-            //out.close();
 
             BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
 		    String inputLine;
@@ -718,10 +624,8 @@ class Enderecos{
 		    while ((inputLine = in.readLine()) != null) {
 			    response.append(inputLine);
 		    }
-		    in.close();
-
-		    //print result
-            System.out.println(response.toString());
+            in.close();
+            
             String resposta = response.toString();
             JSONArray jsonArray = new JSONArray(resposta);
             System.out.println("Os leilões ativos são: ");
@@ -755,9 +659,6 @@ class Enderecos{
 
             
             Socket s = new Socket(enderecos.enderecoFrontEnd,Integer.parseInt(enderecos.portaFrontEnd));
-
-            //BufferedReader in = new BufferedReader(new InputStreamReader( s.getInputStream() ) );
-            //PrintWriter out = new PrintWriter( s.getOutputStream() );
 
 
             /* ------------------------------ AUTENTICACAO/REGISTO -------------------------------- */
@@ -798,13 +699,11 @@ class Enderecos{
                 
                 if(user==null || papel==null){
                     autenticado = false;
-                    //System.out.println("bye!");
                 }
                 else{
-                    System.out.println("Papel definido!");
                     switch(papel){
-                        case "empresa": autenticado=true; System.out.println("É uma empresa"); (new Empresa(user, s, enderecos)).menuInicial(); System.out.println("bye!"); break; //mandar para a empresa
-                        case "licitador": autenticado=true; System.out.println("É um licitador"); (new Licitador(user, s, enderecos)).menuInicial(); System.out.println("bye!"); break; //mandar para o licitador
+                        case "empresa": autenticado=true; (new Empresa(user, s, enderecos)).menuInicial(); System.out.println("bye!"); break; //mandar para a empresa
+                        case "licitador": autenticado=true; (new Licitador(user, s, enderecos)).menuInicial(); System.out.println("bye!"); break; //mandar para o licitador
                         default: break;
                     }
                 }

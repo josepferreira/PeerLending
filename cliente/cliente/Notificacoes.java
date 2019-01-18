@@ -115,7 +115,6 @@ class ComunicaCliente{
 		    }
 		    in.close();
 
-		    //print result
             System.out.println(response.toString());
             JSONObject exchange = new JSONObject(response.toString());
             String endExchange = exchange.get("endereco").toString();
@@ -204,11 +203,13 @@ public class Notificacoes implements Runnable{
     ZMQ.Context context;
     Enderecos enderecos;
     ComunicaCliente cc;
+    String username;
 
-    public Notificacoes(ZMQ.Context context, GerirSubscricoes gb, Enderecos end){
+    public Notificacoes(ZMQ.Context context, GerirSubscricoes gb, Enderecos end, String username){
         this.context = context;
         this.sub = gb;
         enderecos = end;
+        this.username = username;
     }
 
     public void run(){
@@ -297,6 +298,9 @@ public class Notificacoes implements Runnable{
                     }
                     
                     System.out.println(msg);
+                    PrintWriter writer = new PrintWriter("notificacoes-" + this.username + ".txt", "UTF-8");
+                    writer.println(msg);
+                    writer.close();
                     
                 }catch(Exception e){
                     System.out.println("Deu problemas a receber mais!");
