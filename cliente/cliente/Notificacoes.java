@@ -298,9 +298,14 @@ public class Notificacoes implements Runnable{
                     }
                     
                     System.out.println(msg);
-                    PrintWriter writer = new PrintWriter("notificacoes-" + this.username + ".txt", "UTF-8");
-                    writer.println(msg);
-                    writer.close();
+                    try {
+                        FileWriter fw = new FileWriter("notificacoes-" + this.username + ".txt", true); //true para fazer append
+                        fw.write(msg + "\n");
+                        fw.close();
+                    } catch (Exception e) {
+                        System.out.println("Erro ao escrever as notificações no ficheiro! " + e.getMessage());
+                    }
+                    
                     
                 }catch(Exception e){
                     System.out.println("Deu problemas a receber mais!");
