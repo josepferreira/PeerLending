@@ -1,5 +1,6 @@
 #!/bin/bash
 # Starts server
+cp ../Proto/ccs.proto .
 ../../gpb/bin/protoc-erl -I. ccs.proto
 rebar3 compile
 erlc  -I ../../gpb/include ccs.erl

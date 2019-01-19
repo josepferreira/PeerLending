@@ -12,6 +12,9 @@ message Autenticacao{
 message RespostaAutenticacao{
     required bool sucesso = 1;
     optional string papel = 2;
+    optional boolean leilaoSubscrito = 3;
+    optional boolean emissaoSubscrita = 4;
+    repeated string empresasSubscritas = 5;
 }
 
 enum TipoMensagem {
@@ -105,6 +108,17 @@ message Resultado{
     required TipoMensagem tipo = 1 [default = LEILAO];
     required string empresa = 2;
     required string texto = 3;
+}
+
+enum TipoSubscricao{
+    LEILAO = 1;
+    EMISSAO = 2;
+    EMPRESA = 3;
+}
+message Subscricao{
+    required TipoSubscricao tipo = 1[default=LEILAO];
+    required boolean eSubscricao = 2;
+    optional string empresa = 3;
 }
 
 /*

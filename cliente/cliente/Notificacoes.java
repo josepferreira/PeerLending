@@ -297,7 +297,7 @@ public class Notificacoes implements Runnable{
                         }
                     }
                     
-                    System.out.println(msg);
+                    //System.out.println(msg);
                     try {
                         FileWriter fw = new FileWriter("notificacoes-" + this.username + ".txt", true); //true para fazer append
                         fw.write(msg + "\n");

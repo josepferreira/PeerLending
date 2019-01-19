@@ -1,12 +1,6 @@
-Falta fazer:
-* ver a taxa na emissao e se pode realizar a mesma  -> penso que já está mas é preciso testar depois
-* ver o parse a partir de json (java)
-* ver melhor o proto das respostas
-* pedir os enderecos da exchange ao diretorio
-* por as propostas, montante e taxa no diretorio -> penso q ja esta, mas testar
-pomos tbm a data de fim? fazia sentido nao?
-
 --MUITO IMPORTANTE--
 * por sucesso na resposta?
 * por sucesso no diretorio?
-* LIMITAR AS NOTIFICACAOES!!!!
+* ver melhor o proto das respostas
+
+

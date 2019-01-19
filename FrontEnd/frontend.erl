@@ -105,7 +105,7 @@ autenticaCliente(Sock, MapState) ->
               io:format("!\nPass: "),
               io:format(Pass),
               io:format("!\n"),
-              Resposta = login_manager:login(User,Pass),
+              {Resposta, E, L , List} = login_manager:login(User,Pass),
               io:format(Resposta),
               io:format("\n"),
               case Resposta of
@@ -113,7 +113,7 @@ autenticaCliente(Sock, MapState) ->
                     io:format("Vou pedir papel~n"),
                     Papel = Resposta,
                     io:format("Já recebi papel do State e papel : ~p~n",[Papel]),
-                    Bin = ccs:encode_msg(#'RespostaAutenticacao'{sucesso = true, papel = Papel}),
+                    Bin = ccs:encode_msg(#'RespostaAutenticacao'{sucesso = true, papel = Papel, leilaoSubscrito = L, emissaoSubscrita = E, empresasSubscritas = List }),
                     gen_tcp:send(Sock, Bin),
                     %%Agora vou iniciar o ator que vai tratar do cliente
                     Pid = spawn(frontend_client, start, [Sock, User, Papel, MapState]),
@@ -124,7 +124,7 @@ autenticaCliente(Sock, MapState) ->
                     io:format("Vou pedir papel~n"),
                     Papel = Resposta,
                     io:format("Já recebi papel do State e papel : ~p~n",[Papel]),
-                    Bin = ccs:encode_msg(#'RespostaAutenticacao'{sucesso = true, papel = Papel}),
+                    Bin = ccs:encode_msg(#'RespostaAutenticacao'{sucesso = true, papel = Papel, leilaoSubscrito = L, emissaoSubscrita = E, empresasSubscritas = List }),
                     gen_tcp:send(Sock, Bin),
                     %%Agora vou iniciar o ator que vai tratar da empresa
                     Pid = spawn(frontend_client, start, [Sock, User, Papel, MapState]),

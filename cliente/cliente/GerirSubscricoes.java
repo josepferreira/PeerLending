@@ -92,7 +92,7 @@ public class GerirSubscricoes{
                             socket.send(headSub + "sub@leilao::");
                             leiloesSubscritos = true;
                         }else{
-                            System.out.println("ERRO: Leilões já se encontram subscritas ... Ação inválida!");
+                            System.out.println("ERRO: Leilões já se encontram subscritos ... Ação inválida!");
                         }
                         break;
                     case 2:
@@ -105,6 +105,10 @@ public class GerirSubscricoes{
                         }
                         break;
                     case 3:
+                        if(empresasSubscritas.size() < 5){
+                            System.out.println("Já atingiu o limite de 5 empresas subscritas!");
+                            break;   
+                        }
                         System.out.print("Escreva o nome da empresa: ");
                         String empresa = inP.readLine();
                         if(!empresasSubscritas.contains(empresa)){

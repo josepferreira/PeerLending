@@ -1,5 +1,5 @@
 -module(login_manager).
--export([start/1,login/2,logout/1,online/0]).
+-export([start/1,login/2,logout/1,online/0,adicionaSubscricaoEmpresa/2,retiraSubscricaoEmpresa/2,alteraSubscricaoEmissao/2,alteraSubscricaoLeilao/2]).
 
 % interface functions
 
@@ -15,7 +15,7 @@ carregaMapa(M, [H | T]) ->
     Papel = binary_to_list (maps:get(<<"papel">>, H)),
     Password = binary_to_list (maps:get(<<"password">>, H)),
     Username = binary_to_list (maps:get(<<"username">>, H)),
-    M1 = maps:put (Username, {Password, false, Papel}, M),
+    M1 = maps:put (Username, {Password, false, Papel,false,false,[]}, M),
     carregaMapa(M1, T).
 
 
@@ -29,12 +29,24 @@ logout( User ) ->
 online() ->
     rpc( { online, self() } ).
 
+adicionaSubscricaoEmpresa( User,Emp ) ->
+    rpc( {adicionaSubscricaoEmpresa, User, Emp, self() } ).
+
+retiraSubscricaoEmpresa( User,Emp ) ->
+    rpc( {retiraSubscricaoEmpresa, User, Emp, self() } ).
+
+alteraSubscricaoEmissao( User,Emi ) ->
+    rpc( {alteraSubscricaoEmissao, User, Emi, self() } ).
+
+alteraSubscricaoLeilao( User,Lei ) ->
+    rpc( {alteraSubscricaoLeilao, User, Lei, self() } ).
+
 % para generalizar se quisermos podemos fazer com isto, pq são todas iguais!
 %logout( User ) -> rpc( { logout,U,self() } ).
 rpc( Req ) -> login_manager ! Req,
                 receive
-                    { login_manager, ok, Papel } -> 
-                       Papel;
+                    { login_manager, ok, Papel, E, L, List } -> 
+                       {Papel, E, L, List};
                     { login_manager, ok } -> 
                        ok;
                     {login_manager, invalid } ->
@@ -47,20 +59,56 @@ loop( Map ) ->
     receive
         { login, U, P, From } ->
             case maps:find( U,Map ) of
-                { ok,{ P,false, Papel } } ->
-                    From ! { login_manager, ok, Papel  },
-                    loop( maps:put( U,{ P,true, Papel },Map ) );
+                { ok,{ P,false, Papel,E,L,List } } ->
+                    From ! { login_manager, ok, Papel,E,L,List },
+                    loop( maps:put( U,{ P,true, Papel,E,L,List },Map ) );
                 _ -> 
                     From ! { login_manager,invalid },
                     loop( Map )
             end;
         { logout, U, From } ->
             case maps:find( U, Map ) of
-                { ok,{ P, true, Papel } } ->
+                { ok,{ P, true, Papel,E,L,List } } ->
                     From ! { login_manager, ok },
-                    loop( maps:put( U, { P, false, Papel }, Map ) );
+                    loop( maps:put( U, { P, false, Papel,E,L,List }, Map ) );
                 _ -> 
                     From ! { login_manager, invalid },
                     loop( Map )
+            end;
+        { adicionaSubscricaoEmpresa, U, Emp, From } ->
+            case maps:find(U, Map) of
+                {ok, {P, true, Papel, Emissao, Leilao, List}} ->
+                    From ! {login_manager, ok},
+                    loop (maps:put (U, {P, true, Papel, Emissao, Leilao, [Emp | List] }));
+                _ ->
+                    From ! {login_manager, invalid},
+                    loop(Map)
+            end;
+        { retiraSubscricaoEmpresa, U, Emp, From } ->
+            case maps:find(U, Map) of
+                {ok, {P, true, Papel, Emissao, Leilao, List}} ->
+                    From ! {login_manager, ok},
+                    loop (maps:put (U, {P, true, Papel, Emissao, Leilao, lists:delete(Emp,List) }));
+                _ ->
+                    From ! {login_manager, invalid},
+                    loop(Map)
+            end;
+        { alteraSubscricaoEmissao, U, Emi, From } ->
+            case maps:find(U, Map) of
+                {ok, {P, true, Papel, _, Leilao, List}} ->
+                    From ! {login_manager, ok},
+                    loop (maps:put (U, {P, true, Papel, Emi, Leilao, List }));
+                _ ->
+                    From ! {login_manager, invalid},
+                    loop(Map)
+            end;
+        { alteraSubscricaoLeilao, U, Lei, From } ->
+            case maps:find(U, Map) of
+                {ok, {P, true, Papel, Emissao, _, List}} ->
+                    From ! {login_manager, ok},
+                    loop (maps:put (U, {P, true, Papel, Emissao, Lei,  List }));
+                _ ->
+                    From ! {login_manager, invalid},
+                    loop(Map)
             end
     end.
