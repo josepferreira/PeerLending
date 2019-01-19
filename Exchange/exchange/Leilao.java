@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 import org.json.*;
 
 public class Leilao extends Emprestimo implements Comparable{
-    public  boolean sucesso;
     
     public Leilao(int id, String empresa, long montante, float taxa, LocalDateTime fim){
         super(id, empresa, montante, taxa, fim);
@@ -134,6 +133,7 @@ public class Leilao extends Emprestimo implements Comparable{
                 .map(p -> p.getJSON())
                 .collect(Collectors.toList()));
         jo.put("fim",fim.toString());
+        jo.put("sucesso",sucesso);
         
         System.out.println(jo.toString());
         return jo.toString();

@@ -13,6 +13,7 @@ public abstract class Emprestimo{
     TreeSet<Proposta> propostas = new TreeSet<>(); //pode estar ordenado ao contrário, ou seja a melhor proposta está no fim
     boolean terminado = false;
     LocalDateTime fim;
+    public boolean sucesso = false;
 
     public Emprestimo(int id, String empresa, long montante, float taxa, LocalDateTime fim){
         this.id = id;

@@ -124,7 +124,8 @@
 -record('Resultado',
         {tipo = 'LEILAO'        :: 'LEILAO' | 'EMISSAO' | 'SUBSCRICAO' | integer(), % = 1, enum TipoMensagem
          empresa                :: iolist(),        % = 2
-         texto                  :: iolist()         % = 3
+         texto                  :: iolist(),        % = 3
+         sucesso                :: boolean() | 0 | 1 % = 4
         }).
 -endif.
 

@@ -481,7 +481,7 @@ encode_msg_Resultado(Msg, TrUserData) ->
 
 
 encode_msg_Resultado(#'Resultado'{tipo = F1,
-				  empresa = F2, texto = F3},
+				  empresa = F2, texto = F3, sucesso = F4},
 		     Bin, TrUserData) ->
     B1 = begin
 	   TrF1 = id(F1, TrUserData),
@@ -491,9 +491,13 @@ encode_msg_Resultado(#'Resultado'{tipo = F1,
 	   TrF2 = id(F2, TrUserData),
 	   e_type_string(TrF2, <<B1/binary, 18>>, TrUserData)
 	 end,
+    B3 = begin
+	   TrF3 = id(F3, TrUserData),
+	   e_type_string(TrF3, <<B2/binary, 26>>, TrUserData)
+	 end,
     begin
-      TrF3 = id(F3, TrUserData),
-      e_type_string(TrF3, <<B2/binary, 26>>, TrUserData)
+      TrF4 = id(F4, TrUserData),
+      e_type_bool(TrF4, <<B3/binary, 32>>, TrUserData)
     end.
 
 encode_msg_Subscricao(Msg, TrUserData) ->
@@ -3183,76 +3187,86 @@ decode_msg_Resultado(Bin, TrUserData) ->
     dfp_read_field_def_Resultado(Bin, 0, 0,
 				 id(undefined, TrUserData),
 				 id(undefined, TrUserData),
+				 id(undefined, TrUserData),
 				 id(undefined, TrUserData), TrUserData).
 
 dfp_read_field_def_Resultado(<<8, Rest/binary>>, Z1, Z2,
-			     F@_1, F@_2, F@_3, TrUserData) ->
+			     F@_1, F@_2, F@_3, F@_4, TrUserData) ->
     d_field_Resultado_tipo(Rest, Z1, Z2, F@_1, F@_2, F@_3,
-			   TrUserData);
+			   F@_4, TrUserData);
 dfp_read_field_def_Resultado(<<18, Rest/binary>>, Z1,
-			     Z2, F@_1, F@_2, F@_3, TrUserData) ->
+			     Z2, F@_1, F@_2, F@_3, F@_4, TrUserData) ->
     d_field_Resultado_empresa(Rest, Z1, Z2, F@_1, F@_2,
-			      F@_3, TrUserData);
+			      F@_3, F@_4, TrUserData);
 dfp_read_field_def_Resultado(<<26, Rest/binary>>, Z1,
-			     Z2, F@_1, F@_2, F@_3, TrUserData) ->
+			     Z2, F@_1, F@_2, F@_3, F@_4, TrUserData) ->
     d_field_Resultado_texto(Rest, Z1, Z2, F@_1, F@_2, F@_3,
-			    TrUserData);
+			    F@_4, TrUserData);
+dfp_read_field_def_Resultado(<<32, Rest/binary>>, Z1,
+			     Z2, F@_1, F@_2, F@_3, F@_4, TrUserData) ->
+    d_field_Resultado_sucesso(Rest, Z1, Z2, F@_1, F@_2,
+			      F@_3, F@_4, TrUserData);
 dfp_read_field_def_Resultado(<<>>, 0, 0, F@_1, F@_2,
-			     F@_3, _) ->
-    #'Resultado'{tipo = F@_1, empresa = F@_2, texto = F@_3};
+			     F@_3, F@_4, _) ->
+    #'Resultado'{tipo = F@_1, empresa = F@_2, texto = F@_3,
+		 sucesso = F@_4};
 dfp_read_field_def_Resultado(Other, Z1, Z2, F@_1, F@_2,
-			     F@_3, TrUserData) ->
+			     F@_3, F@_4, TrUserData) ->
     dg_read_field_def_Resultado(Other, Z1, Z2, F@_1, F@_2,
-				F@_3, TrUserData).
+				F@_3, F@_4, TrUserData).
 
 dg_read_field_def_Resultado(<<1:1, X:7, Rest/binary>>,
-			    N, Acc, F@_1, F@_2, F@_3, TrUserData)
+			    N, Acc, F@_1, F@_2, F@_3, F@_4, TrUserData)
     when N < 32 - 7 ->
     dg_read_field_def_Resultado(Rest, N + 7, X bsl N + Acc,
-				F@_1, F@_2, F@_3, TrUserData);
+				F@_1, F@_2, F@_3, F@_4, TrUserData);
 dg_read_field_def_Resultado(<<0:1, X:7, Rest/binary>>,
-			    N, Acc, F@_1, F@_2, F@_3, TrUserData) ->
+			    N, Acc, F@_1, F@_2, F@_3, F@_4, TrUserData) ->
     Key = X bsl N + Acc,
     case Key of
       8 ->
 	  d_field_Resultado_tipo(Rest, 0, 0, F@_1, F@_2, F@_3,
-				 TrUserData);
+				 F@_4, TrUserData);
       18 ->
 	  d_field_Resultado_empresa(Rest, 0, 0, F@_1, F@_2, F@_3,
-				    TrUserData);
+				    F@_4, TrUserData);
       26 ->
 	  d_field_Resultado_texto(Rest, 0, 0, F@_1, F@_2, F@_3,
-				  TrUserData);
+				  F@_4, TrUserData);
+      32 ->
+	  d_field_Resultado_sucesso(Rest, 0, 0, F@_1, F@_2, F@_3,
+				    F@_4, TrUserData);
       _ ->
 	  case Key band 7 of
 	    0 ->
 		skip_varint_Resultado(Rest, 0, 0, F@_1, F@_2, F@_3,
-				      TrUserData);
+				      F@_4, TrUserData);
 	    1 ->
-		skip_64_Resultado(Rest, 0, 0, F@_1, F@_2, F@_3,
+		skip_64_Resultado(Rest, 0, 0, F@_1, F@_2, F@_3, F@_4,
 				  TrUserData);
 	    2 ->
 		skip_length_delimited_Resultado(Rest, 0, 0, F@_1, F@_2,
-						F@_3, TrUserData);
+						F@_3, F@_4, TrUserData);
 	    3 ->
 		skip_group_Resultado(Rest, Key bsr 3, 0, F@_1, F@_2,
-				     F@_3, TrUserData);
+				     F@_3, F@_4, TrUserData);
 	    5 ->
-		skip_32_Resultado(Rest, 0, 0, F@_1, F@_2, F@_3,
+		skip_32_Resultado(Rest, 0, 0, F@_1, F@_2, F@_3, F@_4,
 				  TrUserData)
 	  end
     end;
 dg_read_field_def_Resultado(<<>>, 0, 0, F@_1, F@_2,
-			    F@_3, _) ->
-    #'Resultado'{tipo = F@_1, empresa = F@_2, texto = F@_3}.
+			    F@_3, F@_4, _) ->
+    #'Resultado'{tipo = F@_1, empresa = F@_2, texto = F@_3,
+		 sucesso = F@_4}.
 
 d_field_Resultado_tipo(<<1:1, X:7, Rest/binary>>, N,
-		       Acc, F@_1, F@_2, F@_3, TrUserData)
+		       Acc, F@_1, F@_2, F@_3, F@_4, TrUserData)
     when N < 57 ->
     d_field_Resultado_tipo(Rest, N + 7, X bsl N + Acc, F@_1,
-			   F@_2, F@_3, TrUserData);
+			   F@_2, F@_3, F@_4, TrUserData);
 d_field_Resultado_tipo(<<0:1, X:7, Rest/binary>>, N,
-		       Acc, _, F@_2, F@_3, TrUserData) ->
+		       Acc, _, F@_2, F@_3, F@_4, TrUserData) ->
     {NewFValue, RestF} = {id(d_enum_TipoMensagem(begin
 						   <<Res:32/signed-native>> =
 						       <<(X bsl N +
@@ -3262,15 +3276,15 @@ d_field_Resultado_tipo(<<0:1, X:7, Rest/binary>>, N,
 			     TrUserData),
 			  Rest},
     dfp_read_field_def_Resultado(RestF, 0, 0, NewFValue,
-				 F@_2, F@_3, TrUserData).
+				 F@_2, F@_3, F@_4, TrUserData).
 
 d_field_Resultado_empresa(<<1:1, X:7, Rest/binary>>, N,
-			  Acc, F@_1, F@_2, F@_3, TrUserData)
+			  Acc, F@_1, F@_2, F@_3, F@_4, TrUserData)
     when N < 57 ->
     d_field_Resultado_empresa(Rest, N + 7, X bsl N + Acc,
-			      F@_1, F@_2, F@_3, TrUserData);
+			      F@_1, F@_2, F@_3, F@_4, TrUserData);
 d_field_Resultado_empresa(<<0:1, X:7, Rest/binary>>, N,
-			  Acc, F@_1, _, F@_3, TrUserData) ->
+			  Acc, F@_1, _, F@_3, F@_4, TrUserData) ->
     {NewFValue, RestF} = begin
 			   Len = X bsl N + Acc,
 			   <<Utf8:Len/binary, Rest2/binary>> = Rest,
@@ -3279,15 +3293,15 @@ d_field_Resultado_empresa(<<0:1, X:7, Rest/binary>>, N,
 			    Rest2}
 			 end,
     dfp_read_field_def_Resultado(RestF, 0, 0, F@_1,
-				 NewFValue, F@_3, TrUserData).
+				 NewFValue, F@_3, F@_4, TrUserData).
 
 d_field_Resultado_texto(<<1:1, X:7, Rest/binary>>, N,
-			Acc, F@_1, F@_2, F@_3, TrUserData)
+			Acc, F@_1, F@_2, F@_3, F@_4, TrUserData)
     when N < 57 ->
     d_field_Resultado_texto(Rest, N + 7, X bsl N + Acc,
-			    F@_1, F@_2, F@_3, TrUserData);
+			    F@_1, F@_2, F@_3, F@_4, TrUserData);
 d_field_Resultado_texto(<<0:1, X:7, Rest/binary>>, N,
-			Acc, F@_1, F@_2, _, TrUserData) ->
+			Acc, F@_1, F@_2, _, F@_4, TrUserData) ->
     {NewFValue, RestF} = begin
 			   Len = X bsl N + Acc,
 			   <<Utf8:Len/binary, Rest2/binary>> = Rest,
@@ -3296,47 +3310,60 @@ d_field_Resultado_texto(<<0:1, X:7, Rest/binary>>, N,
 			    Rest2}
 			 end,
     dfp_read_field_def_Resultado(RestF, 0, 0, F@_1, F@_2,
-				 NewFValue, TrUserData).
+				 NewFValue, F@_4, TrUserData).
+
+d_field_Resultado_sucesso(<<1:1, X:7, Rest/binary>>, N,
+			  Acc, F@_1, F@_2, F@_3, F@_4, TrUserData)
+    when N < 57 ->
+    d_field_Resultado_sucesso(Rest, N + 7, X bsl N + Acc,
+			      F@_1, F@_2, F@_3, F@_4, TrUserData);
+d_field_Resultado_sucesso(<<0:1, X:7, Rest/binary>>, N,
+			  Acc, F@_1, F@_2, F@_3, _, TrUserData) ->
+    {NewFValue, RestF} = {id(X bsl N + Acc =/= 0,
+			     TrUserData),
+			  Rest},
+    dfp_read_field_def_Resultado(RestF, 0, 0, F@_1, F@_2,
+				 F@_3, NewFValue, TrUserData).
 
 skip_varint_Resultado(<<1:1, _:7, Rest/binary>>, Z1, Z2,
-		      F@_1, F@_2, F@_3, TrUserData) ->
+		      F@_1, F@_2, F@_3, F@_4, TrUserData) ->
     skip_varint_Resultado(Rest, Z1, Z2, F@_1, F@_2, F@_3,
-			  TrUserData);
+			  F@_4, TrUserData);
 skip_varint_Resultado(<<0:1, _:7, Rest/binary>>, Z1, Z2,
-		      F@_1, F@_2, F@_3, TrUserData) ->
+		      F@_1, F@_2, F@_3, F@_4, TrUserData) ->
     dfp_read_field_def_Resultado(Rest, Z1, Z2, F@_1, F@_2,
-				 F@_3, TrUserData).
+				 F@_3, F@_4, TrUserData).
 
 skip_length_delimited_Resultado(<<1:1, X:7,
 				  Rest/binary>>,
-				N, Acc, F@_1, F@_2, F@_3, TrUserData)
+				N, Acc, F@_1, F@_2, F@_3, F@_4, TrUserData)
     when N < 57 ->
     skip_length_delimited_Resultado(Rest, N + 7,
-				    X bsl N + Acc, F@_1, F@_2, F@_3,
+				    X bsl N + Acc, F@_1, F@_2, F@_3, F@_4,
 				    TrUserData);
 skip_length_delimited_Resultado(<<0:1, X:7,
 				  Rest/binary>>,
-				N, Acc, F@_1, F@_2, F@_3, TrUserData) ->
+				N, Acc, F@_1, F@_2, F@_3, F@_4, TrUserData) ->
     Length = X bsl N + Acc,
     <<_:Length/binary, Rest2/binary>> = Rest,
     dfp_read_field_def_Resultado(Rest2, 0, 0, F@_1, F@_2,
-				 F@_3, TrUserData).
+				 F@_3, F@_4, TrUserData).
 
 skip_group_Resultado(Bin, FNum, Z2, F@_1, F@_2, F@_3,
-		     TrUserData) ->
+		     F@_4, TrUserData) ->
     {_, Rest} = read_group(Bin, FNum),
     dfp_read_field_def_Resultado(Rest, 0, Z2, F@_1, F@_2,
-				 F@_3, TrUserData).
+				 F@_3, F@_4, TrUserData).
 
 skip_32_Resultado(<<_:32, Rest/binary>>, Z1, Z2, F@_1,
-		  F@_2, F@_3, TrUserData) ->
+		  F@_2, F@_3, F@_4, TrUserData) ->
     dfp_read_field_def_Resultado(Rest, Z1, Z2, F@_1, F@_2,
-				 F@_3, TrUserData).
+				 F@_3, F@_4, TrUserData).
 
 skip_64_Resultado(<<_:64, Rest/binary>>, Z1, Z2, F@_1,
-		  F@_2, F@_3, TrUserData) ->
+		  F@_2, F@_3, F@_4, TrUserData) ->
     dfp_read_field_def_Resultado(Rest, Z1, Z2, F@_1, F@_2,
-				 F@_3, TrUserData).
+				 F@_3, F@_4, TrUserData).
 
 decode_msg_Subscricao(Bin, TrUserData) ->
     dfp_read_field_def_Subscricao(Bin, 0, 0,
@@ -3872,10 +3899,10 @@ merge_msg_NotificacaoUltrapassado(#'NotificacaoUltrapassado'{taxa
 -compile({nowarn_unused_function,merge_msg_Resultado/3}).
 merge_msg_Resultado(#'Resultado'{},
 		    #'Resultado'{tipo = NFtipo, empresa = NFempresa,
-				 texto = NFtexto},
+				 texto = NFtexto, sucesso = NFsucesso},
 		    _) ->
     #'Resultado'{tipo = NFtipo, empresa = NFempresa,
-		 texto = NFtexto}.
+		 texto = NFtexto, sucesso = NFsucesso}.
 
 -compile({nowarn_unused_function,merge_msg_Subscricao/3}).
 merge_msg_Subscricao(#'Subscricao'{empresa = PFempresa},
@@ -4169,11 +4196,12 @@ v_msg_NotificacaoUltrapassado(X, Path, _TrUserData) ->
 -compile({nowarn_unused_function,v_msg_Resultado/3}).
 -dialyzer({nowarn_function,v_msg_Resultado/3}).
 v_msg_Resultado(#'Resultado'{tipo = F1, empresa = F2,
-			     texto = F3},
+			     texto = F3, sucesso = F4},
 		Path, TrUserData) ->
     v_enum_TipoMensagem(F1, [tipo | Path], TrUserData),
     v_type_string(F2, [empresa | Path], TrUserData),
     v_type_string(F3, [texto | Path], TrUserData),
+    v_type_bool(F4, [sucesso | Path], TrUserData),
     ok;
 v_msg_Resultado(X, Path, _TrUserData) ->
     mk_type_error({expected_msg, 'Resultado'}, X, Path).
@@ -4479,6 +4507,8 @@ get_msg_defs() ->
        #field{name = empresa, fnum = 2, rnum = 3,
 	      type = string, occurrence = required, opts = []},
        #field{name = texto, fnum = 3, rnum = 4, type = string,
+	      occurrence = required, opts = []},
+       #field{name = sucesso, fnum = 4, rnum = 5, type = bool,
 	      occurrence = required, opts = []}]},
      {{msg, 'Subscricao'},
       [#field{name = tipo, fnum = 1, rnum = 2,
@@ -4643,6 +4673,8 @@ find_msg_def('Resultado') ->
      #field{name = empresa, fnum = 2, rnum = 3,
 	    type = string, occurrence = required, opts = []},
      #field{name = texto, fnum = 3, rnum = 4, type = string,
+	    occurrence = required, opts = []},
+     #field{name = sucesso, fnum = 4, rnum = 5, type = bool,
 	    occurrence = required, opts = []}];
 find_msg_def('Subscricao') ->
     [#field{name = tipo, fnum = 1, rnum = 2,

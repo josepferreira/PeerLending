@@ -19,7 +19,7 @@ import java.net.*;
 
 import org.zeromq.ZMQ;
 
-import exchange.Ccs.*;
+import exchange.CcsEx.*;
 
 class TerminaEmprestimo implements Runnable{
     LocalDateTime fim;

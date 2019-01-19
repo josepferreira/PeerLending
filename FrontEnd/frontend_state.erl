@@ -107,7 +107,7 @@ loop (Push, Pull, MapEstado) ->
             case Tipo of
                 'RESULTADO' ->
                     io:format("É do tipo RESULTADO ~n"),
-                    {_, _,Empresa, _} = Resultado,
+                    {_, _,Empresa, _,_} = Resultado,
                     case maps:find(Empresa, MapEstado) of 
                         {ok, {_, _,  ListaUsers}} ->
                             [UserPid ! {self(), RespostaExchange} || {_, UserPid} <- ListaUsers ],

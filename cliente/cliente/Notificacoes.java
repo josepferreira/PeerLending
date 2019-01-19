@@ -3,6 +3,7 @@ package cliente;
 import java.io.*;
 import java.util.*;
 import java.net.*;
+import java.time.LocalDateTime;
 
 import com.google.protobuf.CodedInputStream;
 import com.google.protobuf.CodedOutputStream;
@@ -304,6 +305,7 @@ public class Notificacoes implements Runnable{
                                 }
                                 msg = msg + "da empresa " + no.getEmpresa() + "!";
                                 ResultadoAcao aux = no.getResultado();
+                                msg = " O resultado obtido foi " + (aux.getSucesso() ? " sucesso! " : " insucesso!");
                                 if(aux.hasTexto())
                                     msg = msg + aux.getTexto();
                             }
@@ -315,7 +317,7 @@ public class Notificacoes implements Runnable{
                     //System.out.println(msg);
                     try {
                         FileWriter fw = new FileWriter("notificacoes-" + this.username + ".txt", true); //true para fazer append
-                        fw.write(msg + "\n");
+                        fw.write((LocalDateTime.now()) + " :: " + msg + "\n");
                         fw.close();
                     } catch (Exception e) {
                         System.out.println("Erro ao escrever as notificações no ficheiro! " + e.getMessage());

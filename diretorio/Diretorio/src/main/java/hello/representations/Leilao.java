@@ -16,11 +16,12 @@ public class Leilao {
     public ArrayList<Proposta> propostas;// = new TreeSet<>(); //pode estar ordenado ao contrário, ou seja a melhor proposta está no fim
     public boolean terminado = false;
     public String fim;
+    public boolean sucesso = false;
     @JsonCreator
     public Leilao (@JsonProperty("id") int id, @JsonProperty("empresa") String empresa,
                    @JsonProperty("propostas") ArrayList<Proposta> p,
                    @JsonProperty("montante") long montante, @JsonProperty("taxa") float taxa,
-                   @JsonProperty("fim") String fim) {
+                   @JsonProperty("fim") String fim, @JsonProperty("sucesso") boolean sucesso) {
         System.out.println("Cheguei ao contrutor com 3 no leilao");
         System.out.println("Propotas");
         System.out.println(p);
@@ -30,6 +31,7 @@ public class Leilao {
         this.montante = montante;
         this.taxa = taxa;
         this.fim =fim;
+        this.sucesso = sucesso;
     }
 
     /*@JsonCreator

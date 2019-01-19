@@ -108,6 +108,7 @@ message Resultado{
     required TipoMensagem tipo = 1 [default = LEILAO];
     required string empresa = 2;
     required string texto = 3;
+    required bool sucesso = 4;
 }
 
 enum TipoSubscricao {

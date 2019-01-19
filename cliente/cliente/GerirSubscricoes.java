@@ -38,7 +38,9 @@ public class GerirSubscricoes{
         this.cos = cos;
         this.username = username;
         this.papel = papel;
+    }
 
+    public void ativaSubscricoes(){
         if(this.leiloesSubscritos){
             socket.send(headSub + "sub@emissao::");   
         }

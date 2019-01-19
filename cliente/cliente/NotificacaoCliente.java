@@ -1504,6 +1504,15 @@ public final class NotificacaoCliente {
     cliente.NotificacaoCliente.TipoAcao getTipo();
 
     /**
+     * <code>required bool sucesso = 2;</code>
+     */
+    boolean hasSucesso();
+    /**
+     * <code>required bool sucesso = 2;</code>
+     */
+    boolean getSucesso();
+
+    /**
      * <code>required string texto = 3;</code>
      */
     boolean hasTexto();
@@ -1531,6 +1540,7 @@ public final class NotificacaoCliente {
     }
     private ResultadoAcao() {
       tipo_ = 1;
+      sucesso_ = false;
       texto_ = "";
     }
 
@@ -1570,9 +1580,14 @@ public final class NotificacaoCliente {
               }
               break;
             }
+            case 16: {
+              bitField0_ |= 0x00000002;
+              sucesso_ = input.readBool();
+              break;
+            }
             case 26: {
               com.google.protobuf.ByteString bs = input.readBytes();
-              bitField0_ |= 0x00000002;
+              bitField0_ |= 0x00000004;
               texto_ = bs;
               break;
             }
@@ -1626,13 +1641,28 @@ public final class NotificacaoCliente {
       return result == null ? cliente.NotificacaoCliente.TipoAcao.LEILAO : result;
     }
 
+    public static final int SUCESSO_FIELD_NUMBER = 2;
+    private boolean sucesso_;
+    /**
+     * <code>required bool sucesso = 2;</code>
+     */
+    public boolean hasSucesso() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>required bool sucesso = 2;</code>
+     */
+    public boolean getSucesso() {
+      return sucesso_;
+    }
+
     public static final int TEXTO_FIELD_NUMBER = 3;
     private volatile java.lang.Object texto_;
     /**
      * <code>required string texto = 3;</code>
      */
     public boolean hasTexto() {
-      return ((bitField0_ & 0x00000002) == 0x00000002);
+      return ((bitField0_ & 0x00000004) == 0x00000004);
     }
     /**
      * <code>required string texto = 3;</code>
@@ -1679,6 +1709,10 @@ public final class NotificacaoCliente {
         memoizedIsInitialized = 0;
         return false;
       }
+      if (!hasSucesso()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
       if (!hasTexto()) {
         memoizedIsInitialized = 0;
         return false;
@@ -1694,6 +1728,9 @@ public final class NotificacaoCliente {
         output.writeEnum(1, tipo_);
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeBool(2, sucesso_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 3, texto_);
       }
       unknownFields.writeTo(output);
@@ -1710,6 +1747,10 @@ public final class NotificacaoCliente {
           .computeEnumSize(1, tipo_);
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(2, sucesso_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, texto_);
       }
       size += unknownFields.getSerializedSize();
@@ -1732,6 +1773,11 @@ public final class NotificacaoCliente {
       if (hasTipo()) {
         result = result && tipo_ == other.tipo_;
       }
+      result = result && (hasSucesso() == other.hasSucesso());
+      if (hasSucesso()) {
+        result = result && (getSucesso()
+            == other.getSucesso());
+      }
       result = result && (hasTexto() == other.hasTexto());
       if (hasTexto()) {
         result = result && getTexto()
@@ -1751,6 +1797,11 @@ public final class NotificacaoCliente {
       if (hasTipo()) {
         hash = (37 * hash) + TIPO_FIELD_NUMBER;
         hash = (53 * hash) + tipo_;
+      }
+      if (hasSucesso()) {
+        hash = (37 * hash) + SUCESSO_FIELD_NUMBER;
+        hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+            getSucesso());
       }
       if (hasTexto()) {
         hash = (37 * hash) + TEXTO_FIELD_NUMBER;
@@ -1891,8 +1942,10 @@ public final class NotificacaoCliente {
         super.clear();
         tipo_ = 1;
         bitField0_ = (bitField0_ & ~0x00000001);
-        texto_ = "";
+        sucesso_ = false;
         bitField0_ = (bitField0_ & ~0x00000002);
+        texto_ = "";
+        bitField0_ = (bitField0_ & ~0x00000004);
         return this;
       }
 
@@ -1927,6 +1980,10 @@ public final class NotificacaoCliente {
         result.tipo_ = tipo_;
         if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
           to_bitField0_ |= 0x00000002;
+        }
+        result.sucesso_ = sucesso_;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
         }
         result.texto_ = texto_;
         result.bitField0_ = to_bitField0_;
@@ -1981,8 +2038,11 @@ public final class NotificacaoCliente {
         if (other.hasTipo()) {
           setTipo(other.getTipo());
         }
+        if (other.hasSucesso()) {
+          setSucesso(other.getSucesso());
+        }
         if (other.hasTexto()) {
-          bitField0_ |= 0x00000002;
+          bitField0_ |= 0x00000004;
           texto_ = other.texto_;
           onChanged();
         }
@@ -1994,6 +2054,9 @@ public final class NotificacaoCliente {
       @java.lang.Override
       public final boolean isInitialized() {
         if (!hasTipo()) {
+          return false;
+        }
+        if (!hasSucesso()) {
           return false;
         }
         if (!hasTexto()) {
@@ -2059,12 +2122,44 @@ public final class NotificacaoCliente {
         return this;
       }
 
+      private boolean sucesso_ ;
+      /**
+       * <code>required bool sucesso = 2;</code>
+       */
+      public boolean hasSucesso() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <code>required bool sucesso = 2;</code>
+       */
+      public boolean getSucesso() {
+        return sucesso_;
+      }
+      /**
+       * <code>required bool sucesso = 2;</code>
+       */
+      public Builder setSucesso(boolean value) {
+        bitField0_ |= 0x00000002;
+        sucesso_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required bool sucesso = 2;</code>
+       */
+      public Builder clearSucesso() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        sucesso_ = false;
+        onChanged();
+        return this;
+      }
+
       private java.lang.Object texto_ = "";
       /**
        * <code>required string texto = 3;</code>
        */
       public boolean hasTexto() {
-        return ((bitField0_ & 0x00000002) == 0x00000002);
+        return ((bitField0_ & 0x00000004) == 0x00000004);
       }
       /**
        * <code>required string texto = 3;</code>
@@ -2107,7 +2202,7 @@ public final class NotificacaoCliente {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000002;
+  bitField0_ |= 0x00000004;
         texto_ = value;
         onChanged();
         return this;
@@ -2116,7 +2211,7 @@ public final class NotificacaoCliente {
        * <code>required string texto = 3;</code>
        */
       public Builder clearTexto() {
-        bitField0_ = (bitField0_ & ~0x00000002);
+        bitField0_ = (bitField0_ & ~0x00000004);
         texto_ = getDefaultInstance().getTexto();
         onChanged();
         return this;
@@ -2129,7 +2224,7 @@ public final class NotificacaoCliente {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000002;
+  bitField0_ |= 0x00000004;
         texto_ = value;
         onChanged();
         return this;
@@ -2212,11 +2307,11 @@ public final class NotificacaoCliente {
       "(\0162\021.cliente.TipoAcao:\006LEILAO\022\017\n\007empresa" +
       "\030\003 \002(\t\022\020\n\010montante\030\004 \002(\003\022\014\n\004taxa\030\005 \001(\002\022\r" +
       "\n\005tempo\030\006 \001(\003\022)\n\tresultado\030\007 \001(\0132\026.clien" +
-      "te.ResultadoAcao\"G\n\rResultadoAcao\022\'\n\004tip" +
-      "o\030\001 \002(\0162\021.cliente.TipoAcao:\006LEILAO\022\r\n\005te" +
-      "xto\030\003 \002(\t*6\n\017TipoNotificacao\022\013\n\007CRIACAO\020" +
-      "\001\022\r\n\tLICITACAO\020\002\022\007\n\003FIM\020\003*#\n\010TipoAcao\022\n\n" +
-      "\006LEILAO\020\001\022\013\n\007EMISSAO\020\002"
+      "te.ResultadoAcao\"X\n\rResultadoAcao\022\'\n\004tip" +
+      "o\030\001 \002(\0162\021.cliente.TipoAcao:\006LEILAO\022\017\n\007su" +
+      "cesso\030\002 \002(\010\022\r\n\005texto\030\003 \002(\t*6\n\017TipoNotifi" +
+      "cacao\022\013\n\007CRIACAO\020\001\022\r\n\tLICITACAO\020\002\022\007\n\003FIM" +
+      "\020\003*#\n\010TipoAcao\022\n\n\006LEILAO\020\001\022\013\n\007EMISSAO\020\002"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -2241,7 +2336,7 @@ public final class NotificacaoCliente {
     internal_static_cliente_ResultadoAcao_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_cliente_ResultadoAcao_descriptor,
-        new java.lang.String[] { "Tipo", "Texto", });
+        new java.lang.String[] { "Tipo", "Sucesso", "Texto", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)

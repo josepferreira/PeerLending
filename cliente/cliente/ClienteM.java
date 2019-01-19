@@ -41,6 +41,7 @@ class RecebeMensagens implements Runnable{
                     System.out.println("\n -----");
                     String resultadoMsg = resultado.hasTexto() ? resultado.getTexto() : "Impossivel apresentar";
                     System.out.println("O resultado do leilão da empresa " + resultado.getEmpresa() + " é: " + (resultadoMsg.equals("[]") ? "sem qualquer proposta apresentada!" : resultadoMsg));
+                    System.out.println(" O resultado obtido foi " + (resultado.getSucesso() ? " sucesso! " : " insucesso!"));
                     System.out.println(" -----");
                 }else{
                     if(resposta.getTipo() == TipoResposta.RESPOSTA){
@@ -98,6 +99,8 @@ class Licitador{
         subscricoes = new GerirSubscricoes(context, leilao, emissao, emps, cos, username, "licitador");
         Notificacoes n = new Notificacoes(context, subscricoes,enderecos,username);
         (new Thread(n)).start();
+        subscricoes.ativaSubscricoes();
+        
     }
 
     public static int little2big(int i) {

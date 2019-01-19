@@ -11369,6 +11369,15 @@ public final class CcsCliente {
      */
     com.google.protobuf.ByteString
         getTextoBytes();
+
+    /**
+     * <code>required bool sucesso = 4;</code>
+     */
+    boolean hasSucesso();
+    /**
+     * <code>required bool sucesso = 4;</code>
+     */
+    boolean getSucesso();
   }
   /**
    * <pre>
@@ -11392,6 +11401,7 @@ public final class CcsCliente {
       tipo_ = 1;
       empresa_ = "";
       texto_ = "";
+      sucesso_ = false;
     }
 
     @java.lang.Override
@@ -11440,6 +11450,11 @@ public final class CcsCliente {
               com.google.protobuf.ByteString bs = input.readBytes();
               bitField0_ |= 0x00000004;
               texto_ = bs;
+              break;
+            }
+            case 32: {
+              bitField0_ |= 0x00000008;
+              sucesso_ = input.readBool();
               break;
             }
             default: {
@@ -11576,6 +11591,21 @@ public final class CcsCliente {
       }
     }
 
+    public static final int SUCESSO_FIELD_NUMBER = 4;
+    private boolean sucesso_;
+    /**
+     * <code>required bool sucesso = 4;</code>
+     */
+    public boolean hasSucesso() {
+      return ((bitField0_ & 0x00000008) == 0x00000008);
+    }
+    /**
+     * <code>required bool sucesso = 4;</code>
+     */
+    public boolean getSucesso() {
+      return sucesso_;
+    }
+
     private byte memoizedIsInitialized = -1;
     @java.lang.Override
     public final boolean isInitialized() {
@@ -11595,6 +11625,10 @@ public final class CcsCliente {
         memoizedIsInitialized = 0;
         return false;
       }
+      if (!hasSucesso()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
       memoizedIsInitialized = 1;
       return true;
     }
@@ -11610,6 +11644,9 @@ public final class CcsCliente {
       }
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 3, texto_);
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        output.writeBool(4, sucesso_);
       }
       unknownFields.writeTo(output);
     }
@@ -11629,6 +11666,10 @@ public final class CcsCliente {
       }
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, texto_);
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(4, sucesso_);
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -11660,6 +11701,11 @@ public final class CcsCliente {
         result = result && getTexto()
             .equals(other.getTexto());
       }
+      result = result && (hasSucesso() == other.hasSucesso());
+      if (hasSucesso()) {
+        result = result && (getSucesso()
+            == other.getSucesso());
+      }
       result = result && unknownFields.equals(other.unknownFields);
       return result;
     }
@@ -11682,6 +11728,11 @@ public final class CcsCliente {
       if (hasTexto()) {
         hash = (37 * hash) + TEXTO_FIELD_NUMBER;
         hash = (53 * hash) + getTexto().hashCode();
+      }
+      if (hasSucesso()) {
+        hash = (37 * hash) + SUCESSO_FIELD_NUMBER;
+        hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+            getSucesso());
       }
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
@@ -11828,6 +11879,8 @@ public final class CcsCliente {
         bitField0_ = (bitField0_ & ~0x00000002);
         texto_ = "";
         bitField0_ = (bitField0_ & ~0x00000004);
+        sucesso_ = false;
+        bitField0_ = (bitField0_ & ~0x00000008);
         return this;
       }
 
@@ -11868,6 +11921,10 @@ public final class CcsCliente {
           to_bitField0_ |= 0x00000004;
         }
         result.texto_ = texto_;
+        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+          to_bitField0_ |= 0x00000008;
+        }
+        result.sucesso_ = sucesso_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -11930,6 +11987,9 @@ public final class CcsCliente {
           texto_ = other.texto_;
           onChanged();
         }
+        if (other.hasSucesso()) {
+          setSucesso(other.getSucesso());
+        }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
         return this;
@@ -11944,6 +12004,9 @@ public final class CcsCliente {
           return false;
         }
         if (!hasTexto()) {
+          return false;
+        }
+        if (!hasSucesso()) {
           return false;
         }
         return true;
@@ -12154,6 +12217,38 @@ public final class CcsCliente {
   }
   bitField0_ |= 0x00000004;
         texto_ = value;
+        onChanged();
+        return this;
+      }
+
+      private boolean sucesso_ ;
+      /**
+       * <code>required bool sucesso = 4;</code>
+       */
+      public boolean hasSucesso() {
+        return ((bitField0_ & 0x00000008) == 0x00000008);
+      }
+      /**
+       * <code>required bool sucesso = 4;</code>
+       */
+      public boolean getSucesso() {
+        return sucesso_;
+      }
+      /**
+       * <code>required bool sucesso = 4;</code>
+       */
+      public Builder setSucesso(boolean value) {
+        bitField0_ |= 0x00000008;
+        sucesso_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required bool sucesso = 4;</code>
+       */
+      public Builder clearSucesso() {
+        bitField0_ = (bitField0_ & ~0x00000008);
+        sucesso_ = false;
         onChanged();
         return this;
       }
@@ -13108,17 +13203,18 @@ public final class CcsCliente {
       "\010\022\020\n\010mensagem\030\004 \001(\t\"j\n\027NotificacaoUltrap" +
       "assado\022\017\n\007empresa\030\001 \002(\t\022\022\n\nutilizador\030\002 " +
       "\002(\t\022\014\n\004taxa\030\003 \001(\002\022\r\n\005valor\030\004 \002(\003\022\r\n\005text" +
-      "o\030\005 \001(\t\"X\n\tResultado\022+\n\004tipo\030\001 \002(\0162\025.cli" +
+      "o\030\005 \001(\t\"i\n\tResultado\022+\n\004tipo\030\001 \002(\0162\025.cli" +
       "ente.TipoMensagem:\006LEILAO\022\017\n\007empresa\030\002 \002" +
-      "(\t\022\r\n\005texto\030\003 \002(\t\"d\n\nSubscricao\0220\n\004tipo\030" +
-      "\001 \002(\0162\027.cliente.TipoSubscricao:\tLEILAOSU" +
-      "B\022\023\n\013eSubscricao\030\002 \002(\010\022\017\n\007empresa\030\003 \001(\t*" +
-      "7\n\014TipoMensagem\022\n\n\006LEILAO\020\001\022\013\n\007EMISSAO\020\002" +
-      "\022\016\n\nSUBSCRICAO\020\003*-\n\016TipoUtilizador\022\013\n\007EM" +
-      "PRESA\020\001\022\016\n\nINVESTIDOR\020\002*<\n\014TipoResposta\022" +
-      "\r\n\tRESULTADO\020\001\022\017\n\013NOTIFICACAO\020\002\022\014\n\010RESPO" +
-      "STA\020\003*?\n\016TipoSubscricao\022\r\n\tLEILAOSUB\020\001\022\016" +
-      "\n\nEMISSAOSUB\020\002\022\016\n\nEMPRESASUB\020\003"
+      "(\t\022\r\n\005texto\030\003 \002(\t\022\017\n\007sucesso\030\004 \002(\010\"d\n\nSu" +
+      "bscricao\0220\n\004tipo\030\001 \002(\0162\027.cliente.TipoSub" +
+      "scricao:\tLEILAOSUB\022\023\n\013eSubscricao\030\002 \002(\010\022" +
+      "\017\n\007empresa\030\003 \001(\t*7\n\014TipoMensagem\022\n\n\006LEIL" +
+      "AO\020\001\022\013\n\007EMISSAO\020\002\022\016\n\nSUBSCRICAO\020\003*-\n\016Tip" +
+      "oUtilizador\022\013\n\007EMPRESA\020\001\022\016\n\nINVESTIDOR\020\002" +
+      "*<\n\014TipoResposta\022\r\n\tRESULTADO\020\001\022\017\n\013NOTIF" +
+      "ICACAO\020\002\022\014\n\010RESPOSTA\020\003*?\n\016TipoSubscricao" +
+      "\022\r\n\tLEILAOSUB\020\001\022\016\n\nEMISSAOSUB\020\002\022\016\n\nEMPRE" +
+      "SASUB\020\003"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -13209,7 +13305,7 @@ public final class CcsCliente {
     internal_static_cliente_Resultado_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_cliente_Resultado_descriptor,
-        new java.lang.String[] { "Tipo", "Empresa", "Texto", });
+        new java.lang.String[] { "Tipo", "Empresa", "Texto", "Sucesso", });
     internal_static_cliente_Subscricao_descriptor =
       getDescriptor().getMessageTypes().get(13);
     internal_static_cliente_Subscricao_fieldAccessorTable = new

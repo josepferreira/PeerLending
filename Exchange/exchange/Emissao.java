@@ -45,6 +45,7 @@ public class Emissao extends Emprestimo implements Comparable{
         if(!propostas.isEmpty()){
             propostas.first().montante -= (diferenca > 0 ? diferenca : 0);
         }
+        sucesso = (montanteAmealhado >= montante);
         return true;
         //termina o respetivo Emissao
     }
@@ -94,7 +95,8 @@ public class Emissao extends Emprestimo implements Comparable{
                 .map(p -> p.getJSON())
                 .collect(Collectors.toList()));
         
- 
+        jo.put("sucesso",sucesso);
+
         return jo.toString();
         }
         catch(Exception e){

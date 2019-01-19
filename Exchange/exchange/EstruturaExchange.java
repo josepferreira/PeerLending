@@ -20,8 +20,8 @@ import com.google.protobuf.CodedOutputStream;
 
 import org.zeromq.ZMQ;
 
-import exchange.Ccs.*;
-import exchange.NotificacaoOuterClass.*;
+import exchange.CcsEx.*;
+import exchange.NotificacaoEx.*;
 
 
 class EstruturaExchange{
@@ -182,6 +182,7 @@ class EstruturaExchange{
                                                 .setTipo(TipoMensagem.EMISSAO)
                                                 .setEmpresa(em.empresa)
                                                 .setTexto(em.propostas.toString())
+                                                .setSucesso(em.sucesso)
                                                 .build();
                 RespostaExchange resultadoFinal = RespostaExchange.newBuilder()
                                                 .setTipo(TipoResposta.RESULTADO)
@@ -192,6 +193,7 @@ class EstruturaExchange{
                 ResultadoAcao resultadoA = ResultadoAcao.newBuilder()
                                                 .setTipo(TipoAcao.EMISSAO)
                                                 .setTexto(em.toString())
+                                                .setSucesso(em.sucesso)
                                                 .build();
 
                 Notificacao notificacao = Notificacao.newBuilder()
@@ -481,6 +483,7 @@ class EstruturaExchange{
                                         .setTipo(TipoMensagem.LEILAO)
                                         .setEmpresa(emp.empresa)
                                         .setTexto(emp.propostas.toString())
+                                        .setSucesso(emp.sucesso)
                                         .build();
                         RespostaExchange resultadoFinal = RespostaExchange.newBuilder()
                                         .setTipo(TipoResposta.RESULTADO)
@@ -491,6 +494,7 @@ class EstruturaExchange{
                         ResultadoAcao resultadoA = ResultadoAcao.newBuilder()
                                         .setTipo(TipoAcao.LEILAO)
                                         .setTexto(emp.toString())
+                                        .setSucesso(emp.sucesso)
                                         .build();
 
                         Notificacao notificacao = Notificacao.newBuilder()
@@ -540,6 +544,7 @@ class EstruturaExchange{
                                                         .setTipo(TipoMensagem.EMISSAO)
                                                         .setEmpresa(emp.empresa)
                                                         .setTexto(emp.propostas.toString())
+                                                        .setSucesso(emp.sucesso)
                                                         .build();
                         RespostaExchange resultadoFinal = RespostaExchange.newBuilder()
                                                         .setTipo(TipoResposta.RESULTADO)
@@ -550,6 +555,7 @@ class EstruturaExchange{
                         ResultadoAcao resultadoA = ResultadoAcao.newBuilder()
                                                         .setTipo(TipoAcao.EMISSAO)
                                                         .setTexto(emp.toString())
+                                                        .setSucesso(emp.sucesso)
                                                         .build();
 
                         Notificacao notificacao = Notificacao.newBuilder()
