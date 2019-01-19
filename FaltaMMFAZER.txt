@@ -1,6 +1,5 @@
 --MUITO IMPORTANTE--
-* por sucesso na resposta?
-* por sucesso no diretorio?
 * ver melhor o proto das respostas
+* Adicionar o SUCESSO no diretorio
 
 

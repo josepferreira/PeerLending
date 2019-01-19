@@ -53,7 +53,6 @@ class ComunicaCliente{
         try{
             URL url = new URL("http://" + end.enderecoDiretorio + 
                                         ":" + end.portaDiretorio + "/exchange/todas");
-            System.out.println("VOU EVNIAR UM EPDIDO!");
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
             con.setRequestMethod("GET");
             con.setRequestProperty("Content-Type", "application/json");
@@ -85,12 +84,10 @@ class ComunicaCliente{
 
                 enderecos.put(endExchange, empresas);
                 System.out.println(endExchange);
-                this.sub.connect("tcp://*:"+endExchange); //e preciso ver isto do asteristo
-                // MUITO PRECISO MESMO
-                // QUASE TANTE COMO O JJ BOCE
-                //88 - oitchenta e otcho
+                this.sub.connect("tcp://*:"+endExchange);
             }
             temTodos = true;
+            con.disconnect();
 
         }catch(Exception exc){
             System.out.println(exc);
@@ -130,10 +127,8 @@ class ComunicaCliente{
             }
 
             enderecos.put(endExchange, empresas);
-            this.sub.connect("tcp://*:"+endExchange); //e preciso ver isto do asteristo
-            // MUITO PRECISO MESMO
-            // QUASE TANTE COMO O JJ BOCE
-            //88 - oitchenta e otcho
+            this.sub.connect("tcp://*:"+endExchange);
+            con.disconnect();
 
         }catch(Exception exc){
             System.out.println(exc);
@@ -235,8 +230,8 @@ public class Notificacoes implements Runnable{
         
         
         cc = new ComunicaCliente(context, socket, sub, enderecos);
-        
-        while(!Thread.interrupted()){
+
+        while(!Thread.currentThread().isInterrupted()){
             /**
              * Aqui recebe os bytes de subscrição
              */
@@ -332,5 +327,6 @@ public class Notificacoes implements Runnable{
                 
             }
         }
+        socket.close();
     }
 }

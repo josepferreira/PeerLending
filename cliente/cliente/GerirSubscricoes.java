@@ -40,6 +40,10 @@ public class GerirSubscricoes{
         this.papel = papel;
     }
 
+    public void fechaSocket(){
+        this.socket.close();
+    }
+
     public void ativaSubscricoes(){
         if(this.leiloesSubscritos){
             socket.send(headSub + "sub@emissao::");   

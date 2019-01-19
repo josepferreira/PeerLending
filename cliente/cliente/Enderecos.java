@@ -38,6 +38,7 @@ public class Enderecos{
                 System.out.println("Empresa: " + objetoJSON.get("empresa"));
                 System.out.println(objetoJSON.toString());
             }
+            con.disconnect();
 
         }catch(Exception exc){
             System.out.println(exc);
@@ -70,10 +71,12 @@ public class Enderecos{
                 System.out.println("Empresa: " + objetoJSON.get("empresa"));
                 System.out.println(objetoJSON.toString());
             }
+            con.disconnect();
 
         }catch(Exception exc){
             System.out.println(exc);
         }
+        
     }
 
     public void leiloesFinalizados(){
@@ -102,6 +105,7 @@ public class Enderecos{
                 System.out.println("Empresa: " + objetoJSON.get("empresa"));
                 System.out.println(objetoJSON.toString());
             }
+            con.disconnect();
 
         }catch(Exception exc){
             System.out.println(exc);
@@ -134,6 +138,7 @@ public class Enderecos{
                 System.out.println("Empresa: " + objetoJSON.get("empresa"));
                 System.out.println(objetoJSON.toString());
             }
+            con.disconnect();
 
         }catch(Exception exc){
             System.out.println(exc);
@@ -166,6 +171,7 @@ public class Enderecos{
                 System.out.println("Empresa: " + objetoJSON.get("empresa"));
                 System.out.println(objetoJSON.toString());
             }
+            con.disconnect();
 
         }catch(Exception exc){
             System.out.println(exc);
@@ -198,6 +204,7 @@ public class Enderecos{
                 System.out.println("Empresa: " + objetoJSON.get("empresa"));
                 System.out.println(objetoJSON.toString());
             }
+            con.disconnect();
 
         }catch(Exception exc){
             System.out.println(exc);
@@ -230,6 +237,7 @@ public class Enderecos{
                 System.out.println("Empresa: " + objetoJSON.get("empresa"));
                 System.out.println(objetoJSON.toString());
             }
+            con.disconnect();
 
         }catch(Exception exc){
             System.out.println(exc);
@@ -262,6 +270,7 @@ public class Enderecos{
                 System.out.println("Empresa: " + objetoJSON.get("empresa"));
                 System.out.println(objetoJSON.toString());
             }
+            con.disconnect();
 
         }catch(Exception exc){
             System.out.println(exc);

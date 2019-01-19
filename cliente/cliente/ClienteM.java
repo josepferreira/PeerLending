@@ -146,7 +146,7 @@ class RecebeMensagens implements Runnable{
     }
 
     public void run(){
-        while(!Thread.interrupted()){
+        while(!Thread.currentThread().isInterrupted()){
             try{
                 int len = cis.readRawLittleEndian32();
                 len = little2big(len);
@@ -207,6 +207,8 @@ class Licitador{
     ZMQ.Context context = ZMQ.context(1);
     //Enderecos enderecos;
     Informacoes informacoes;
+    Thread recebeMensagensThread;
+    Thread notificacoesThread;
 
     public Licitador(String username, Socket s, Enderecos enderecos, boolean leilao, boolean emissao, List<String> emps) throws Exception{
         this.username = username;
@@ -214,10 +216,12 @@ class Licitador{
         inP = new BufferedReader(new InputStreamReader(System.in));
         cis = CodedInputStream.newInstance(s.getInputStream());
         cos = CodedOutputStream.newInstance(s.getOutputStream());
-        (new Thread(new RecebeMensagens(cis))).start();
+        recebeMensagensThread = (new Thread(new RecebeMensagens(cis)));
+        recebeMensagensThread.start();
         subscricoes = new GerirSubscricoes(context, leilao, emissao, emps, cos, username, "licitador");
         Notificacoes n = new Notificacoes(context, subscricoes,enderecos,username);
-        (new Thread(n)).start();
+        notificacoesThread = new Thread(n);
+        notificacoesThread.start();
         subscricoes.ativaSubscricoes();
         informacoes = new Informacoes(enderecos);
     }
@@ -391,7 +395,11 @@ class Licitador{
                 case 2: apresentaSubscricaoTaxaFixa(); break;
                 case 3: subscricoes.menuInicial(); break;
                 case 4: informacoes.menuInicial(); break;
-                default: continua = false;
+                default:
+                    subscricoes.fechaSocket(); 
+                    recebeMensagensThread.interrupt();
+                    notificacoesThread.interrupt();
+                    continua = false;
             }
         }
 
@@ -410,6 +418,8 @@ class Licitador{
     GerirSubscricoes subscricoes;
     ZMQ.Context context = ZMQ.context(1);
     Informacoes informacoes;
+    Thread recebeMensagensThread;
+    Thread notificacoesThread;
 
     public Empresa(String username, Socket s, Enderecos enderecos, boolean leilao, boolean emissao, List<String> emps) throws Exception{
         this.username = username;
@@ -417,10 +427,12 @@ class Licitador{
         inP = new BufferedReader(new InputStreamReader(System.in));
         cis = CodedInputStream.newInstance(s.getInputStream());
         cos = CodedOutputStream.newInstance(s.getOutputStream());
-        (new Thread(new RecebeMensagens(cis))).start();
+        recebeMensagensThread = (new Thread(new RecebeMensagens(cis)));
+        recebeMensagensThread.start();
         subscricoes = new GerirSubscricoes(context, leilao, emissao, emps, cos, username, "empresa");
         Notificacoes n = new Notificacoes(context, subscricoes,enderecos, username);
-        (new Thread(n)).start();
+        notificacoesThread = new Thread(n);
+        notificacoesThread.start();
         subscricoes.ativaSubscricoes();
         informacoes = new Informacoes(enderecos);
 
@@ -612,7 +624,11 @@ class Licitador{
                 case 2: apresentaEmissaoTaxaFixa(); break;
                 case 3: subscricoes.menuInicial(); break;
                 case 4: informacoes.menuInicial(); break;
-                default: continua = false;
+                default:
+                    subscricoes.fechaSocket(); 
+                    recebeMensagensThread.interrupt();
+                    notificacoesThread.interrupt();
+                    continua = false;
             }
         }
 
@@ -784,7 +800,7 @@ class Licitador{
                     //Se calhar só vamos buscar o resposta se o user nao for nulo (poed acontecer se der uma exceçao)
                     case 1: user = autenticaCliente(inP,cos); resposta = leMensagemInicial(cis); break;
                     case 2: enderecos.leiloesAtivos(); break;
-                    default: sair = true; System.out.println("bye!"); break;
+                    default: sair = true; System.out.println("bye!"); inP.close(); break;
                 }
                 
                 autenticado = true;
