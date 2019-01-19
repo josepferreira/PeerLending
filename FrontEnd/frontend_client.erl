@@ -24,6 +24,7 @@ pidEmpresa(MapState, Empresa) ->
 . 
 
 start(Sock, User, Papel, MapState) ->
+    io:format("Cheguei ao start"),
     io:format("Foi aceite a conexao para um cliente: ~p~n", [Papel]),
     case Papel of
         "empresa" -> 
@@ -43,7 +44,7 @@ loopEmpresa(Sock, User, PidState) ->
         {tcp, _, MensagemEmpresa} ->
             io:format("Recebi uma mensagem do utilizador via TCP e agora vou tratar dela~n"),
             io:format(MensagemEmpresa),
-            {'MensagemUtilizador', Tipo, _, Utilizador, _, _} = ccs:decode_msg(MensagemEmpresa, 'MensagemUtilizador'),
+            {'MensagemUtilizador', Tipo, _, Utilizador, _, _,_} = ccs:decode_msg(MensagemEmpresa, 'MensagemUtilizador'),
             %{'MensagemEmpresa', Tipo, _, _, Utilizador} = ccs:decode_msg(MensagemEmpresa,'MensagemEmpresa'),
             case Tipo of
                 'LEILAO' -> 
@@ -59,7 +60,7 @@ loopEmpresa(Sock, User, PidState) ->
                     %{iniciaEmissao, Empresa, From, ProtoBufBin}
                     PidState ! {iniciaEmissao, Utilizador, self(), MensagemEmpresa},
                     loopEmpresa(Sock, User, PidState)
-                ;    
+                ;  
                 _ -> 
                     io:format("Não recebemos uma Emissao nem Leilao, algo aqui correu mesmo muito mal"),
                     Binario = ccs:encode_msg(#'Resultado'{tipo='EMISSAO',empresa=Utilizador,texto="INSUCESSO"}),
@@ -68,6 +69,7 @@ loopEmpresa(Sock, User, PidState) ->
                     loopEmpresa(Sock, User, PidState)
             end
         ;
+        
         {tcp_closed, _} ->
             Res = login_manager:logout(User),
             case Res of
@@ -97,8 +99,9 @@ loopLicitador(Sock, User, MapState) ->
     receive
         {tcp, _ , MensagemLicitador} ->
             io:format("Recebi uma mensagem do utilizador e agora vou tratar dela~n"),
-            {'MensagemUtilizador', Tipo, _, Utilizador, _, Investidor} = ccs:decode_msg(MensagemLicitador, 'MensagemUtilizador'),
+            {'MensagemUtilizador', Tipo, _, Utilizador, _, Investidor, Subscricao} = ccs:decode_msg(MensagemLicitador, 'MensagemUtilizador'),
             %{'MensagemLicitador', Tipo, Leilao, Emissao, Utilizador} = ccs:decode_msg(MensagemLicitador,'MensagemLicitador'),
+            io:format("~p~n",[Tipo]),
             case Tipo of
                 'LEILAO' -> 
                     %Vou ter de mandar a mensagem para o frontend_state
@@ -125,6 +128,28 @@ loopLicitador(Sock, User, MapState) ->
                     end
                     
                 ;
+                'SUBSCRICAO' ->
+                    {'Subscricao', TipoSub, ESubscricao, Empresa  } = Subscricao,
+
+                    case TipoSub of
+                        'LEILAOSUB' ->
+                            login_manager:alteraSubscricaoLeilao(User, ESubscricao),
+                            loopLicitador(Sock, User, MapState)
+                        ;
+                        'EMISSAOSUB' ->
+                            login_manager:alteraSubscricaoEmissao(User, ESubscricao),
+                            loopLicitador(Sock, User, MapState)
+                        ;
+                        'EMPRESASUB' when ESubscricao == true ->
+                            login_manager:adicionaSubscricaoEmpresa(User, Empresa),
+                            loopLicitador(Sock, User, MapState)
+                        ;
+                        'EMPRESASUB' when ESubscricao == false ->
+                            login_manager:retiraSubscricaoEmpresa(User, Empresa),
+                            loopLicitador(Sock, User, MapState)
+                    end
+                ;                            
+                    
                     % receive
                     %     {PidState, RespostaBinaria} ->
                     %         gen_tcp:send(Sock, RespostaBinaria),
@@ -173,11 +198,11 @@ loopLicitador(Sock, User, MapState) ->
                     % end;
                 ;
                 _ -> 
-                    io:format("Não recebemos uma Emissao nem Leilao, algo aqui correu mesmo muito mal"),
-                    Binario = ccs:encode_msg(#'Resultado'{tipo='EMISSAO',empresa=Utilizador,texto="INSUCESSO"}),
-                    gen_tcp:send(Sock, Binario),
+                    io:format("Não recebemos uma Emissao nem Leilao, algo aqui correu mesmo muito mal")
+                    %Binario = ccs:encode_msg(#'Resultado'{tipo='EMISSAO',empresa=Utilizador,texto="INSUCESSO"}),
+                    %gen_tcp:send(Sock, Binario),
                     %PidFront ! {self(), ok},
-                    loopLicitador(Sock, User, MapState)
+                    %loopLicitador(Sock, User, MapState)
             end
         ;
         {tcp_closed, _} ->

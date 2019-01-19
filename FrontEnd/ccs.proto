@@ -19,6 +19,7 @@ message RespostaAutenticacao{
 enum TipoMensagem {
     LEILAO = 1;
     EMISSAO = 2;
+    SUBSCRICAO = 3;
 }
 
 enum TipoUtilizador {
@@ -33,6 +34,7 @@ message MensagemUtilizador{
     required string utilizador = 3;
     optional MensagemEmpresa empresa = 4;
     optional MensagemInvestidor investidor = 5;
+    optional Subscricao subscricao = 6;
     
 }
 
@@ -109,13 +111,14 @@ message Resultado{
     required string texto = 3;
 }
 
-enum TipoSubscricao{
-    LEILAO = 1;
-    EMISSAO = 2;
-    EMPRESA = 3;
+enum TipoSubscricao {
+    LEILAOSUB = 1;
+    EMISSAOSUB = 2;
+    EMPRESASUB = 3;
 }
+
 message Subscricao{
-    required TipoSubscricao tipo = 1[default=LEILAO];
+    required TipoSubscricao tipo = 1[default=LEILAOSUB];
     required bool eSubscricao = 2;
     optional string empresa = 3;
 }

@@ -121,6 +121,7 @@ class EstruturaExchange{
                                             .build();
 
             String topic = "emissao::" + empresa + "::";
+            System.out.println("Enviando notificacao!");
             socketNotificacoes.send(topic.getBytes(), ZMQ.SNDMORE);
             socketNotificacoes.send(notificacao.toByteArray());
 
@@ -304,6 +305,7 @@ class EstruturaExchange{
                                             .build();
 
             String topic = "leilao::" + empresa + "::";
+            System.out.println("Enviando notificacao!");
             socketNotificacoes.send(topic.getBytes(), ZMQ.SNDMORE);
             socketNotificacoes.send(notificacao.toByteArray());
 

@@ -10,8 +10,9 @@ import com.google.protobuf.CodedOutputStream;
 import org.zeromq.ZMQ;
 import org.json.*;
 
-import cliente.Ccs.*;
-import cliente.NotificacaoOuterClass.*;
+import cliente.CcsCliente.*;
+import cliente.NotificacaoCliente.*;
+import java.awt.Desktop;
 
 /**
  * Vou ter de ter duas threads:
@@ -82,6 +83,7 @@ class ComunicaCliente{
                 }
 
                 enderecos.put(endExchange, empresas);
+                System.out.println(endExchange);
                 this.sub.connect("tcp://*:"+endExchange); //e preciso ver isto do asteristo
                 // MUITO PRECISO MESMO
                 // QUASE TANTE COMO O JJ BOCE
@@ -214,6 +216,16 @@ public class Notificacoes implements Runnable{
 
     public void run(){
         //Vou ter de me associar às exchanges
+        try{
+            FileWriter fw = new FileWriter("notificacoes-" + this.username + ".txt", true); //true para fazer append
+            fw.write("\n:::::::::::::::::::::::::::::::Novo início de sessão!:::::::::::::::::::::::\n\n");
+            fw.close();
+            File file = new File("notificacoes-" + this.username + ".txt");
+            Desktop.getDesktop().open(file);
+        }
+        catch(Exception exce){
+            System.out.println(exce);
+        }
         ZMQ.Socket socket = context.socket(ZMQ.SUB);
         socket.connect("inproc://notificacoes");
         socket.subscribe("comuSub");
@@ -224,8 +236,10 @@ public class Notificacoes implements Runnable{
             /**
              * Aqui recebe os bytes de subscrição
              */
+            
             byte[] b = socket.recv(0);
             String recebi = new String(b);
+            System.out.println("Recebi: " + recebi);
 
             if(recebi.startsWith("comuSub")){
                 cc.atoSub(recebi.substring(7));

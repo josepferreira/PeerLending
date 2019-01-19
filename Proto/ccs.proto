@@ -112,13 +112,13 @@ message Resultado{
 }
 
 enum TipoSubscricao {
-    LEILAO = 1;
-    EMISSAO = 2;
-    EMPRESA = 3;
+    LEILAOSUB = 1;
+    EMISSAOSUB = 2;
+    EMPRESASUB = 3;
 }
 
 message Subscricao{
-    required TipoSubscricao tipo = 1[default=LEILAO];
+    required TipoSubscricao tipo = 1[default=LEILAOSUB];
     required bool eSubscricao = 2;
     optional string empresa = 3;
 }

@@ -29,11 +29,12 @@
 -ifndef('MENSAGEMUTILIZADOR_PB_H').
 -define('MENSAGEMUTILIZADOR_PB_H', true).
 -record('MensagemUtilizador',
-        {tipo = 'LEILAO'        :: 'LEILAO' | 'EMISSAO' | integer(), % = 1, enum TipoMensagem
+        {tipo = 'LEILAO'        :: 'LEILAO' | 'EMISSAO' | 'SUBSCRICAO' | integer(), % = 1, enum TipoMensagem
          tipoUtilizador = 'EMPRESA' :: 'EMPRESA' | 'INVESTIDOR' | integer(), % = 2, enum TipoUtilizador
          utilizador             :: iolist(),        % = 3
          empresa                :: ccs:'MensagemEmpresa'() | undefined, % = 4
-         investidor             :: ccs:'MensagemInvestidor'() | undefined % = 5
+         investidor             :: ccs:'MensagemInvestidor'() | undefined, % = 5
+         subscricao             :: ccs:'Subscricao'() | undefined % = 6
         }).
 -endif.
 
@@ -100,7 +101,7 @@
 -ifndef('RESPOSTA_PB_H').
 -define('RESPOSTA_PB_H', true).
 -record('Resposta',
-        {tipo = 'LEILAO'        :: 'LEILAO' | 'EMISSAO' | integer(), % = 1, enum TipoMensagem
+        {tipo = 'LEILAO'        :: 'LEILAO' | 'EMISSAO' | 'SUBSCRICAO' | integer(), % = 1, enum TipoMensagem
          utilizador             :: iolist(),        % = 2
          sucesso                :: boolean() | 0 | 1, % = 3
          mensagem               :: iolist() | undefined % = 4
@@ -121,7 +122,7 @@
 -ifndef('RESULTADO_PB_H').
 -define('RESULTADO_PB_H', true).
 -record('Resultado',
-        {tipo = 'LEILAO'        :: 'LEILAO' | 'EMISSAO' | integer(), % = 1, enum TipoMensagem
+        {tipo = 'LEILAO'        :: 'LEILAO' | 'EMISSAO' | 'SUBSCRICAO' | integer(), % = 1, enum TipoMensagem
          empresa                :: iolist(),        % = 2
          texto                  :: iolist()         % = 3
         }).
@@ -130,7 +131,7 @@
 -ifndef('SUBSCRICAO_PB_H').
 -define('SUBSCRICAO_PB_H', true).
 -record('Subscricao',
-        {tipo = 'LEILAO'        :: 'LEILAO' | 'EMISSAO' | 'EMPRESA' | integer(), % = 1, enum TipoSubscricao
+        {tipo = 'LEILAOSUB'     :: 'LEILAOSUB' | 'EMISSAOSUB' | 'EMPRESASUB' | integer(), % = 1, enum TipoSubscricao
          eSubscricao            :: boolean() | 0 | 1, % = 2
          empresa                :: iolist() | undefined % = 3
         }).

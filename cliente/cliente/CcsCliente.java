@@ -27,6 +27,10 @@ public final class CcsCliente {
      * <code>EMISSAO = 2;</code>
      */
     EMISSAO(2),
+    /**
+     * <code>SUBSCRICAO = 3;</code>
+     */
+    SUBSCRICAO(3),
     ;
 
     /**
@@ -37,6 +41,10 @@ public final class CcsCliente {
      * <code>EMISSAO = 2;</code>
      */
     public static final int EMISSAO_VALUE = 2;
+    /**
+     * <code>SUBSCRICAO = 3;</code>
+     */
+    public static final int SUBSCRICAO_VALUE = 3;
 
 
     public final int getNumber() {
@@ -55,6 +63,7 @@ public final class CcsCliente {
       switch (value) {
         case 1: return LEILAO;
         case 2: return EMISSAO;
+        case 3: return SUBSCRICAO;
         default: return null;
       }
     }
@@ -291,6 +300,105 @@ public final class CcsCliente {
     }
 
     // @@protoc_insertion_point(enum_scope:cliente.TipoResposta)
+  }
+
+  /**
+   * Protobuf enum {@code cliente.TipoSubscricao}
+   */
+  public enum TipoSubscricao
+      implements com.google.protobuf.ProtocolMessageEnum {
+    /**
+     * <code>LEILAOSUB = 1;</code>
+     */
+    LEILAOSUB(1),
+    /**
+     * <code>EMISSAOSUB = 2;</code>
+     */
+    EMISSAOSUB(2),
+    /**
+     * <code>EMPRESASUB = 3;</code>
+     */
+    EMPRESASUB(3),
+    ;
+
+    /**
+     * <code>LEILAOSUB = 1;</code>
+     */
+    public static final int LEILAOSUB_VALUE = 1;
+    /**
+     * <code>EMISSAOSUB = 2;</code>
+     */
+    public static final int EMISSAOSUB_VALUE = 2;
+    /**
+     * <code>EMPRESASUB = 3;</code>
+     */
+    public static final int EMPRESASUB_VALUE = 3;
+
+
+    public final int getNumber() {
+      return value;
+    }
+
+    /**
+     * @deprecated Use {@link #forNumber(int)} instead.
+     */
+    @java.lang.Deprecated
+    public static TipoSubscricao valueOf(int value) {
+      return forNumber(value);
+    }
+
+    public static TipoSubscricao forNumber(int value) {
+      switch (value) {
+        case 1: return LEILAOSUB;
+        case 2: return EMISSAOSUB;
+        case 3: return EMPRESASUB;
+        default: return null;
+      }
+    }
+
+    public static com.google.protobuf.Internal.EnumLiteMap<TipoSubscricao>
+        internalGetValueMap() {
+      return internalValueMap;
+    }
+    private static final com.google.protobuf.Internal.EnumLiteMap<
+        TipoSubscricao> internalValueMap =
+          new com.google.protobuf.Internal.EnumLiteMap<TipoSubscricao>() {
+            public TipoSubscricao findValueByNumber(int number) {
+              return TipoSubscricao.forNumber(number);
+            }
+          };
+
+    public final com.google.protobuf.Descriptors.EnumValueDescriptor
+        getValueDescriptor() {
+      return getDescriptor().getValues().get(ordinal());
+    }
+    public final com.google.protobuf.Descriptors.EnumDescriptor
+        getDescriptorForType() {
+      return getDescriptor();
+    }
+    public static final com.google.protobuf.Descriptors.EnumDescriptor
+        getDescriptor() {
+      return cliente.CcsCliente.getDescriptor().getEnumTypes().get(3);
+    }
+
+    private static final TipoSubscricao[] VALUES = values();
+
+    public static TipoSubscricao valueOf(
+        com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
+      if (desc.getType() != getDescriptor()) {
+        throw new java.lang.IllegalArgumentException(
+          "EnumValueDescriptor is not for this type.");
+      }
+      return VALUES[desc.getIndex()];
+    }
+
+    private final int value;
+
+    private TipoSubscricao(int value) {
+      this.value = value;
+    }
+
+    // @@protoc_insertion_point(enum_scope:cliente.TipoSubscricao)
   }
 
   public interface AutenticacaoOrBuilder extends
@@ -1081,6 +1189,43 @@ public final class CcsCliente {
      */
     com.google.protobuf.ByteString
         getPapelBytes();
+
+    /**
+     * <code>optional bool leilaoSubscrito = 3;</code>
+     */
+    boolean hasLeilaoSubscrito();
+    /**
+     * <code>optional bool leilaoSubscrito = 3;</code>
+     */
+    boolean getLeilaoSubscrito();
+
+    /**
+     * <code>optional bool emissaoSubscrita = 4;</code>
+     */
+    boolean hasEmissaoSubscrita();
+    /**
+     * <code>optional bool emissaoSubscrita = 4;</code>
+     */
+    boolean getEmissaoSubscrita();
+
+    /**
+     * <code>repeated string empresasSubscritas = 5;</code>
+     */
+    java.util.List<java.lang.String>
+        getEmpresasSubscritasList();
+    /**
+     * <code>repeated string empresasSubscritas = 5;</code>
+     */
+    int getEmpresasSubscritasCount();
+    /**
+     * <code>repeated string empresasSubscritas = 5;</code>
+     */
+    java.lang.String getEmpresasSubscritas(int index);
+    /**
+     * <code>repeated string empresasSubscritas = 5;</code>
+     */
+    com.google.protobuf.ByteString
+        getEmpresasSubscritasBytes(int index);
   }
   /**
    * Protobuf type {@code cliente.RespostaAutenticacao}
@@ -1097,6 +1242,9 @@ public final class CcsCliente {
     private RespostaAutenticacao() {
       sucesso_ = false;
       papel_ = "";
+      leilaoSubscrito_ = false;
+      emissaoSubscrita_ = false;
+      empresasSubscritas_ = com.google.protobuf.LazyStringArrayList.EMPTY;
     }
 
     @java.lang.Override
@@ -1134,6 +1282,25 @@ public final class CcsCliente {
               papel_ = bs;
               break;
             }
+            case 24: {
+              bitField0_ |= 0x00000004;
+              leilaoSubscrito_ = input.readBool();
+              break;
+            }
+            case 32: {
+              bitField0_ |= 0x00000008;
+              emissaoSubscrita_ = input.readBool();
+              break;
+            }
+            case 42: {
+              com.google.protobuf.ByteString bs = input.readBytes();
+              if (!((mutable_bitField0_ & 0x00000010) == 0x00000010)) {
+                empresasSubscritas_ = new com.google.protobuf.LazyStringArrayList();
+                mutable_bitField0_ |= 0x00000010;
+              }
+              empresasSubscritas_.add(bs);
+              break;
+            }
             default: {
               if (!parseUnknownField(
                   input, unknownFields, extensionRegistry, tag)) {
@@ -1149,6 +1316,9 @@ public final class CcsCliente {
         throw new com.google.protobuf.InvalidProtocolBufferException(
             e).setUnfinishedMessage(this);
       } finally {
+        if (((mutable_bitField0_ & 0x00000010) == 0x00000010)) {
+          empresasSubscritas_ = empresasSubscritas_.getUnmodifiableView();
+        }
         this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
       }
@@ -1224,6 +1394,65 @@ public final class CcsCliente {
       }
     }
 
+    public static final int LEILAOSUBSCRITO_FIELD_NUMBER = 3;
+    private boolean leilaoSubscrito_;
+    /**
+     * <code>optional bool leilaoSubscrito = 3;</code>
+     */
+    public boolean hasLeilaoSubscrito() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    /**
+     * <code>optional bool leilaoSubscrito = 3;</code>
+     */
+    public boolean getLeilaoSubscrito() {
+      return leilaoSubscrito_;
+    }
+
+    public static final int EMISSAOSUBSCRITA_FIELD_NUMBER = 4;
+    private boolean emissaoSubscrita_;
+    /**
+     * <code>optional bool emissaoSubscrita = 4;</code>
+     */
+    public boolean hasEmissaoSubscrita() {
+      return ((bitField0_ & 0x00000008) == 0x00000008);
+    }
+    /**
+     * <code>optional bool emissaoSubscrita = 4;</code>
+     */
+    public boolean getEmissaoSubscrita() {
+      return emissaoSubscrita_;
+    }
+
+    public static final int EMPRESASSUBSCRITAS_FIELD_NUMBER = 5;
+    private com.google.protobuf.LazyStringList empresasSubscritas_;
+    /**
+     * <code>repeated string empresasSubscritas = 5;</code>
+     */
+    public com.google.protobuf.ProtocolStringList
+        getEmpresasSubscritasList() {
+      return empresasSubscritas_;
+    }
+    /**
+     * <code>repeated string empresasSubscritas = 5;</code>
+     */
+    public int getEmpresasSubscritasCount() {
+      return empresasSubscritas_.size();
+    }
+    /**
+     * <code>repeated string empresasSubscritas = 5;</code>
+     */
+    public java.lang.String getEmpresasSubscritas(int index) {
+      return empresasSubscritas_.get(index);
+    }
+    /**
+     * <code>repeated string empresasSubscritas = 5;</code>
+     */
+    public com.google.protobuf.ByteString
+        getEmpresasSubscritasBytes(int index) {
+      return empresasSubscritas_.getByteString(index);
+    }
+
     private byte memoizedIsInitialized = -1;
     @java.lang.Override
     public final boolean isInitialized() {
@@ -1248,6 +1477,15 @@ public final class CcsCliente {
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 2, papel_);
       }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeBool(3, leilaoSubscrito_);
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        output.writeBool(4, emissaoSubscrita_);
+      }
+      for (int i = 0; i < empresasSubscritas_.size(); i++) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 5, empresasSubscritas_.getRaw(i));
+      }
       unknownFields.writeTo(output);
     }
 
@@ -1263,6 +1501,22 @@ public final class CcsCliente {
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, papel_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(3, leilaoSubscrito_);
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(4, emissaoSubscrita_);
+      }
+      {
+        int dataSize = 0;
+        for (int i = 0; i < empresasSubscritas_.size(); i++) {
+          dataSize += computeStringSizeNoTag(empresasSubscritas_.getRaw(i));
+        }
+        size += dataSize;
+        size += 1 * getEmpresasSubscritasList().size();
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -1290,6 +1544,18 @@ public final class CcsCliente {
         result = result && getPapel()
             .equals(other.getPapel());
       }
+      result = result && (hasLeilaoSubscrito() == other.hasLeilaoSubscrito());
+      if (hasLeilaoSubscrito()) {
+        result = result && (getLeilaoSubscrito()
+            == other.getLeilaoSubscrito());
+      }
+      result = result && (hasEmissaoSubscrita() == other.hasEmissaoSubscrita());
+      if (hasEmissaoSubscrita()) {
+        result = result && (getEmissaoSubscrita()
+            == other.getEmissaoSubscrita());
+      }
+      result = result && getEmpresasSubscritasList()
+          .equals(other.getEmpresasSubscritasList());
       result = result && unknownFields.equals(other.unknownFields);
       return result;
     }
@@ -1309,6 +1575,20 @@ public final class CcsCliente {
       if (hasPapel()) {
         hash = (37 * hash) + PAPEL_FIELD_NUMBER;
         hash = (53 * hash) + getPapel().hashCode();
+      }
+      if (hasLeilaoSubscrito()) {
+        hash = (37 * hash) + LEILAOSUBSCRITO_FIELD_NUMBER;
+        hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+            getLeilaoSubscrito());
+      }
+      if (hasEmissaoSubscrita()) {
+        hash = (37 * hash) + EMISSAOSUBSCRITA_FIELD_NUMBER;
+        hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+            getEmissaoSubscrita());
+      }
+      if (getEmpresasSubscritasCount() > 0) {
+        hash = (37 * hash) + EMPRESASSUBSCRITAS_FIELD_NUMBER;
+        hash = (53 * hash) + getEmpresasSubscritasList().hashCode();
       }
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
@@ -1447,6 +1727,12 @@ public final class CcsCliente {
         bitField0_ = (bitField0_ & ~0x00000001);
         papel_ = "";
         bitField0_ = (bitField0_ & ~0x00000002);
+        leilaoSubscrito_ = false;
+        bitField0_ = (bitField0_ & ~0x00000004);
+        emissaoSubscrita_ = false;
+        bitField0_ = (bitField0_ & ~0x00000008);
+        empresasSubscritas_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000010);
         return this;
       }
 
@@ -1483,6 +1769,19 @@ public final class CcsCliente {
           to_bitField0_ |= 0x00000002;
         }
         result.papel_ = papel_;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        result.leilaoSubscrito_ = leilaoSubscrito_;
+        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+          to_bitField0_ |= 0x00000008;
+        }
+        result.emissaoSubscrita_ = emissaoSubscrita_;
+        if (((bitField0_ & 0x00000010) == 0x00000010)) {
+          empresasSubscritas_ = empresasSubscritas_.getUnmodifiableView();
+          bitField0_ = (bitField0_ & ~0x00000010);
+        }
+        result.empresasSubscritas_ = empresasSubscritas_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -1538,6 +1837,22 @@ public final class CcsCliente {
         if (other.hasPapel()) {
           bitField0_ |= 0x00000002;
           papel_ = other.papel_;
+          onChanged();
+        }
+        if (other.hasLeilaoSubscrito()) {
+          setLeilaoSubscrito(other.getLeilaoSubscrito());
+        }
+        if (other.hasEmissaoSubscrita()) {
+          setEmissaoSubscrita(other.getEmissaoSubscrita());
+        }
+        if (!other.empresasSubscritas_.isEmpty()) {
+          if (empresasSubscritas_.isEmpty()) {
+            empresasSubscritas_ = other.empresasSubscritas_;
+            bitField0_ = (bitField0_ & ~0x00000010);
+          } else {
+            ensureEmpresasSubscritasIsMutable();
+            empresasSubscritas_.addAll(other.empresasSubscritas_);
+          }
           onChanged();
         }
         this.mergeUnknownFields(other.unknownFields);
@@ -1680,6 +1995,163 @@ public final class CcsCliente {
         onChanged();
         return this;
       }
+
+      private boolean leilaoSubscrito_ ;
+      /**
+       * <code>optional bool leilaoSubscrito = 3;</code>
+       */
+      public boolean hasLeilaoSubscrito() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      /**
+       * <code>optional bool leilaoSubscrito = 3;</code>
+       */
+      public boolean getLeilaoSubscrito() {
+        return leilaoSubscrito_;
+      }
+      /**
+       * <code>optional bool leilaoSubscrito = 3;</code>
+       */
+      public Builder setLeilaoSubscrito(boolean value) {
+        bitField0_ |= 0x00000004;
+        leilaoSubscrito_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional bool leilaoSubscrito = 3;</code>
+       */
+      public Builder clearLeilaoSubscrito() {
+        bitField0_ = (bitField0_ & ~0x00000004);
+        leilaoSubscrito_ = false;
+        onChanged();
+        return this;
+      }
+
+      private boolean emissaoSubscrita_ ;
+      /**
+       * <code>optional bool emissaoSubscrita = 4;</code>
+       */
+      public boolean hasEmissaoSubscrita() {
+        return ((bitField0_ & 0x00000008) == 0x00000008);
+      }
+      /**
+       * <code>optional bool emissaoSubscrita = 4;</code>
+       */
+      public boolean getEmissaoSubscrita() {
+        return emissaoSubscrita_;
+      }
+      /**
+       * <code>optional bool emissaoSubscrita = 4;</code>
+       */
+      public Builder setEmissaoSubscrita(boolean value) {
+        bitField0_ |= 0x00000008;
+        emissaoSubscrita_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional bool emissaoSubscrita = 4;</code>
+       */
+      public Builder clearEmissaoSubscrita() {
+        bitField0_ = (bitField0_ & ~0x00000008);
+        emissaoSubscrita_ = false;
+        onChanged();
+        return this;
+      }
+
+      private com.google.protobuf.LazyStringList empresasSubscritas_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      private void ensureEmpresasSubscritasIsMutable() {
+        if (!((bitField0_ & 0x00000010) == 0x00000010)) {
+          empresasSubscritas_ = new com.google.protobuf.LazyStringArrayList(empresasSubscritas_);
+          bitField0_ |= 0x00000010;
+         }
+      }
+      /**
+       * <code>repeated string empresasSubscritas = 5;</code>
+       */
+      public com.google.protobuf.ProtocolStringList
+          getEmpresasSubscritasList() {
+        return empresasSubscritas_.getUnmodifiableView();
+      }
+      /**
+       * <code>repeated string empresasSubscritas = 5;</code>
+       */
+      public int getEmpresasSubscritasCount() {
+        return empresasSubscritas_.size();
+      }
+      /**
+       * <code>repeated string empresasSubscritas = 5;</code>
+       */
+      public java.lang.String getEmpresasSubscritas(int index) {
+        return empresasSubscritas_.get(index);
+      }
+      /**
+       * <code>repeated string empresasSubscritas = 5;</code>
+       */
+      public com.google.protobuf.ByteString
+          getEmpresasSubscritasBytes(int index) {
+        return empresasSubscritas_.getByteString(index);
+      }
+      /**
+       * <code>repeated string empresasSubscritas = 5;</code>
+       */
+      public Builder setEmpresasSubscritas(
+          int index, java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureEmpresasSubscritasIsMutable();
+        empresasSubscritas_.set(index, value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated string empresasSubscritas = 5;</code>
+       */
+      public Builder addEmpresasSubscritas(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureEmpresasSubscritasIsMutable();
+        empresasSubscritas_.add(value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated string empresasSubscritas = 5;</code>
+       */
+      public Builder addAllEmpresasSubscritas(
+          java.lang.Iterable<java.lang.String> values) {
+        ensureEmpresasSubscritasIsMutable();
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(
+            values, empresasSubscritas_);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated string empresasSubscritas = 5;</code>
+       */
+      public Builder clearEmpresasSubscritas() {
+        empresasSubscritas_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000010);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated string empresasSubscritas = 5;</code>
+       */
+      public Builder addEmpresasSubscritasBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureEmpresasSubscritasIsMutable();
+        empresasSubscritas_.add(value);
+        onChanged();
+        return this;
+      }
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
@@ -1794,6 +2266,19 @@ public final class CcsCliente {
      * <code>optional .cliente.MensagemInvestidor investidor = 5;</code>
      */
     cliente.CcsCliente.MensagemInvestidorOrBuilder getInvestidorOrBuilder();
+
+    /**
+     * <code>optional .cliente.Subscricao subscricao = 6;</code>
+     */
+    boolean hasSubscricao();
+    /**
+     * <code>optional .cliente.Subscricao subscricao = 6;</code>
+     */
+    cliente.CcsCliente.Subscricao getSubscricao();
+    /**
+     * <code>optional .cliente.Subscricao subscricao = 6;</code>
+     */
+    cliente.CcsCliente.SubscricaoOrBuilder getSubscricaoOrBuilder();
   }
   /**
    * Protobuf type {@code cliente.MensagemUtilizador}
@@ -1891,6 +2376,19 @@ public final class CcsCliente {
                 investidor_ = subBuilder.buildPartial();
               }
               bitField0_ |= 0x00000010;
+              break;
+            }
+            case 50: {
+              cliente.CcsCliente.Subscricao.Builder subBuilder = null;
+              if (((bitField0_ & 0x00000020) == 0x00000020)) {
+                subBuilder = subscricao_.toBuilder();
+              }
+              subscricao_ = input.readMessage(cliente.CcsCliente.Subscricao.PARSER, extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(subscricao_);
+                subscricao_ = subBuilder.buildPartial();
+              }
+              bitField0_ |= 0x00000020;
               break;
             }
             default: {
@@ -2044,6 +2542,27 @@ public final class CcsCliente {
       return investidor_ == null ? cliente.CcsCliente.MensagemInvestidor.getDefaultInstance() : investidor_;
     }
 
+    public static final int SUBSCRICAO_FIELD_NUMBER = 6;
+    private cliente.CcsCliente.Subscricao subscricao_;
+    /**
+     * <code>optional .cliente.Subscricao subscricao = 6;</code>
+     */
+    public boolean hasSubscricao() {
+      return ((bitField0_ & 0x00000020) == 0x00000020);
+    }
+    /**
+     * <code>optional .cliente.Subscricao subscricao = 6;</code>
+     */
+    public cliente.CcsCliente.Subscricao getSubscricao() {
+      return subscricao_ == null ? cliente.CcsCliente.Subscricao.getDefaultInstance() : subscricao_;
+    }
+    /**
+     * <code>optional .cliente.Subscricao subscricao = 6;</code>
+     */
+    public cliente.CcsCliente.SubscricaoOrBuilder getSubscricaoOrBuilder() {
+      return subscricao_ == null ? cliente.CcsCliente.Subscricao.getDefaultInstance() : subscricao_;
+    }
+
     private byte memoizedIsInitialized = -1;
     @java.lang.Override
     public final boolean isInitialized() {
@@ -2075,6 +2594,12 @@ public final class CcsCliente {
           return false;
         }
       }
+      if (hasSubscricao()) {
+        if (!getSubscricao().isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
       memoizedIsInitialized = 1;
       return true;
     }
@@ -2096,6 +2621,9 @@ public final class CcsCliente {
       }
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
         output.writeMessage(5, getInvestidor());
+      }
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+        output.writeMessage(6, getSubscricao());
       }
       unknownFields.writeTo(output);
     }
@@ -2124,6 +2652,10 @@ public final class CcsCliente {
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(5, getInvestidor());
+      }
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(6, getSubscricao());
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -2164,6 +2696,11 @@ public final class CcsCliente {
         result = result && getInvestidor()
             .equals(other.getInvestidor());
       }
+      result = result && (hasSubscricao() == other.hasSubscricao());
+      if (hasSubscricao()) {
+        result = result && getSubscricao()
+            .equals(other.getSubscricao());
+      }
       result = result && unknownFields.equals(other.unknownFields);
       return result;
     }
@@ -2194,6 +2731,10 @@ public final class CcsCliente {
       if (hasInvestidor()) {
         hash = (37 * hash) + INVESTIDOR_FIELD_NUMBER;
         hash = (53 * hash) + getInvestidor().hashCode();
+      }
+      if (hasSubscricao()) {
+        hash = (37 * hash) + SUBSCRICAO_FIELD_NUMBER;
+        hash = (53 * hash) + getSubscricao().hashCode();
       }
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
@@ -2325,6 +2866,7 @@ public final class CcsCliente {
                 .alwaysUseFieldBuilders) {
           getEmpresaFieldBuilder();
           getInvestidorFieldBuilder();
+          getSubscricaoFieldBuilder();
         }
       }
       @java.lang.Override
@@ -2348,6 +2890,12 @@ public final class CcsCliente {
           investidorBuilder_.clear();
         }
         bitField0_ = (bitField0_ & ~0x00000010);
+        if (subscricaoBuilder_ == null) {
+          subscricao_ = null;
+        } else {
+          subscricaoBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000020);
         return this;
       }
 
@@ -2403,6 +2951,14 @@ public final class CcsCliente {
           result.investidor_ = investidor_;
         } else {
           result.investidor_ = investidorBuilder_.build();
+        }
+        if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
+          to_bitField0_ |= 0x00000020;
+        }
+        if (subscricaoBuilder_ == null) {
+          result.subscricao_ = subscricao_;
+        } else {
+          result.subscricao_ = subscricaoBuilder_.build();
         }
         result.bitField0_ = to_bitField0_;
         onBuilt();
@@ -2470,6 +3026,9 @@ public final class CcsCliente {
         if (other.hasInvestidor()) {
           mergeInvestidor(other.getInvestidor());
         }
+        if (other.hasSubscricao()) {
+          mergeSubscricao(other.getSubscricao());
+        }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
         return this;
@@ -2493,6 +3052,11 @@ public final class CcsCliente {
         }
         if (hasInvestidor()) {
           if (!getInvestidor().isInitialized()) {
+            return false;
+          }
+        }
+        if (hasSubscricao()) {
+          if (!getSubscricao().isInitialized()) {
             return false;
           }
         }
@@ -2903,6 +3467,124 @@ public final class CcsCliente {
           investidor_ = null;
         }
         return investidorBuilder_;
+      }
+
+      private cliente.CcsCliente.Subscricao subscricao_ = null;
+      private com.google.protobuf.SingleFieldBuilderV3<
+          cliente.CcsCliente.Subscricao, cliente.CcsCliente.Subscricao.Builder, cliente.CcsCliente.SubscricaoOrBuilder> subscricaoBuilder_;
+      /**
+       * <code>optional .cliente.Subscricao subscricao = 6;</code>
+       */
+      public boolean hasSubscricao() {
+        return ((bitField0_ & 0x00000020) == 0x00000020);
+      }
+      /**
+       * <code>optional .cliente.Subscricao subscricao = 6;</code>
+       */
+      public cliente.CcsCliente.Subscricao getSubscricao() {
+        if (subscricaoBuilder_ == null) {
+          return subscricao_ == null ? cliente.CcsCliente.Subscricao.getDefaultInstance() : subscricao_;
+        } else {
+          return subscricaoBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>optional .cliente.Subscricao subscricao = 6;</code>
+       */
+      public Builder setSubscricao(cliente.CcsCliente.Subscricao value) {
+        if (subscricaoBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          subscricao_ = value;
+          onChanged();
+        } else {
+          subscricaoBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00000020;
+        return this;
+      }
+      /**
+       * <code>optional .cliente.Subscricao subscricao = 6;</code>
+       */
+      public Builder setSubscricao(
+          cliente.CcsCliente.Subscricao.Builder builderForValue) {
+        if (subscricaoBuilder_ == null) {
+          subscricao_ = builderForValue.build();
+          onChanged();
+        } else {
+          subscricaoBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000020;
+        return this;
+      }
+      /**
+       * <code>optional .cliente.Subscricao subscricao = 6;</code>
+       */
+      public Builder mergeSubscricao(cliente.CcsCliente.Subscricao value) {
+        if (subscricaoBuilder_ == null) {
+          if (((bitField0_ & 0x00000020) == 0x00000020) &&
+              subscricao_ != null &&
+              subscricao_ != cliente.CcsCliente.Subscricao.getDefaultInstance()) {
+            subscricao_ =
+              cliente.CcsCliente.Subscricao.newBuilder(subscricao_).mergeFrom(value).buildPartial();
+          } else {
+            subscricao_ = value;
+          }
+          onChanged();
+        } else {
+          subscricaoBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00000020;
+        return this;
+      }
+      /**
+       * <code>optional .cliente.Subscricao subscricao = 6;</code>
+       */
+      public Builder clearSubscricao() {
+        if (subscricaoBuilder_ == null) {
+          subscricao_ = null;
+          onChanged();
+        } else {
+          subscricaoBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000020);
+        return this;
+      }
+      /**
+       * <code>optional .cliente.Subscricao subscricao = 6;</code>
+       */
+      public cliente.CcsCliente.Subscricao.Builder getSubscricaoBuilder() {
+        bitField0_ |= 0x00000020;
+        onChanged();
+        return getSubscricaoFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>optional .cliente.Subscricao subscricao = 6;</code>
+       */
+      public cliente.CcsCliente.SubscricaoOrBuilder getSubscricaoOrBuilder() {
+        if (subscricaoBuilder_ != null) {
+          return subscricaoBuilder_.getMessageOrBuilder();
+        } else {
+          return subscricao_ == null ?
+              cliente.CcsCliente.Subscricao.getDefaultInstance() : subscricao_;
+        }
+      }
+      /**
+       * <code>optional .cliente.Subscricao subscricao = 6;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          cliente.CcsCliente.Subscricao, cliente.CcsCliente.Subscricao.Builder, cliente.CcsCliente.SubscricaoOrBuilder> 
+          getSubscricaoFieldBuilder() {
+        if (subscricaoBuilder_ == null) {
+          subscricaoBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              cliente.CcsCliente.Subscricao, cliente.CcsCliente.Subscricao.Builder, cliente.CcsCliente.SubscricaoOrBuilder>(
+                  getSubscricao(),
+                  getParentForChildren(),
+                  isClean());
+          subscricao_ = null;
+        }
+        return subscricaoBuilder_;
       }
       @java.lang.Override
       public final Builder setUnknownFields(
@@ -11528,6 +12210,791 @@ public final class CcsCliente {
 
   }
 
+  public interface SubscricaoOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:cliente.Subscricao)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>required .cliente.TipoSubscricao tipo = 1 [default = LEILAOSUB];</code>
+     */
+    boolean hasTipo();
+    /**
+     * <code>required .cliente.TipoSubscricao tipo = 1 [default = LEILAOSUB];</code>
+     */
+    cliente.CcsCliente.TipoSubscricao getTipo();
+
+    /**
+     * <code>required bool eSubscricao = 2;</code>
+     */
+    boolean hasESubscricao();
+    /**
+     * <code>required bool eSubscricao = 2;</code>
+     */
+    boolean getESubscricao();
+
+    /**
+     * <code>optional string empresa = 3;</code>
+     */
+    boolean hasEmpresa();
+    /**
+     * <code>optional string empresa = 3;</code>
+     */
+    java.lang.String getEmpresa();
+    /**
+     * <code>optional string empresa = 3;</code>
+     */
+    com.google.protobuf.ByteString
+        getEmpresaBytes();
+  }
+  /**
+   * Protobuf type {@code cliente.Subscricao}
+   */
+  public  static final class Subscricao extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:cliente.Subscricao)
+      SubscricaoOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use Subscricao.newBuilder() to construct.
+    private Subscricao(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private Subscricao() {
+      tipo_ = 1;
+      eSubscricao_ = false;
+      empresa_ = "";
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private Subscricao(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            case 8: {
+              int rawValue = input.readEnum();
+                @SuppressWarnings("deprecation")
+              cliente.CcsCliente.TipoSubscricao value = cliente.CcsCliente.TipoSubscricao.valueOf(rawValue);
+              if (value == null) {
+                unknownFields.mergeVarintField(1, rawValue);
+              } else {
+                bitField0_ |= 0x00000001;
+                tipo_ = rawValue;
+              }
+              break;
+            }
+            case 16: {
+              bitField0_ |= 0x00000002;
+              eSubscricao_ = input.readBool();
+              break;
+            }
+            case 26: {
+              com.google.protobuf.ByteString bs = input.readBytes();
+              bitField0_ |= 0x00000004;
+              empresa_ = bs;
+              break;
+            }
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return cliente.CcsCliente.internal_static_cliente_Subscricao_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return cliente.CcsCliente.internal_static_cliente_Subscricao_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              cliente.CcsCliente.Subscricao.class, cliente.CcsCliente.Subscricao.Builder.class);
+    }
+
+    private int bitField0_;
+    public static final int TIPO_FIELD_NUMBER = 1;
+    private int tipo_;
+    /**
+     * <code>required .cliente.TipoSubscricao tipo = 1 [default = LEILAOSUB];</code>
+     */
+    public boolean hasTipo() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    /**
+     * <code>required .cliente.TipoSubscricao tipo = 1 [default = LEILAOSUB];</code>
+     */
+    public cliente.CcsCliente.TipoSubscricao getTipo() {
+      @SuppressWarnings("deprecation")
+      cliente.CcsCliente.TipoSubscricao result = cliente.CcsCliente.TipoSubscricao.valueOf(tipo_);
+      return result == null ? cliente.CcsCliente.TipoSubscricao.LEILAOSUB : result;
+    }
+
+    public static final int ESUBSCRICAO_FIELD_NUMBER = 2;
+    private boolean eSubscricao_;
+    /**
+     * <code>required bool eSubscricao = 2;</code>
+     */
+    public boolean hasESubscricao() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>required bool eSubscricao = 2;</code>
+     */
+    public boolean getESubscricao() {
+      return eSubscricao_;
+    }
+
+    public static final int EMPRESA_FIELD_NUMBER = 3;
+    private volatile java.lang.Object empresa_;
+    /**
+     * <code>optional string empresa = 3;</code>
+     */
+    public boolean hasEmpresa() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    /**
+     * <code>optional string empresa = 3;</code>
+     */
+    public java.lang.String getEmpresa() {
+      java.lang.Object ref = empresa_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          empresa_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>optional string empresa = 3;</code>
+     */
+    public com.google.protobuf.ByteString
+        getEmpresaBytes() {
+      java.lang.Object ref = empresa_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        empresa_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      if (!hasTipo()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasESubscricao()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeEnum(1, tipo_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeBool(2, eSubscricao_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 3, empresa_);
+      }
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeEnumSize(1, tipo_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(2, eSubscricao_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, empresa_);
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof cliente.CcsCliente.Subscricao)) {
+        return super.equals(obj);
+      }
+      cliente.CcsCliente.Subscricao other = (cliente.CcsCliente.Subscricao) obj;
+
+      boolean result = true;
+      result = result && (hasTipo() == other.hasTipo());
+      if (hasTipo()) {
+        result = result && tipo_ == other.tipo_;
+      }
+      result = result && (hasESubscricao() == other.hasESubscricao());
+      if (hasESubscricao()) {
+        result = result && (getESubscricao()
+            == other.getESubscricao());
+      }
+      result = result && (hasEmpresa() == other.hasEmpresa());
+      if (hasEmpresa()) {
+        result = result && getEmpresa()
+            .equals(other.getEmpresa());
+      }
+      result = result && unknownFields.equals(other.unknownFields);
+      return result;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      if (hasTipo()) {
+        hash = (37 * hash) + TIPO_FIELD_NUMBER;
+        hash = (53 * hash) + tipo_;
+      }
+      if (hasESubscricao()) {
+        hash = (37 * hash) + ESUBSCRICAO_FIELD_NUMBER;
+        hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+            getESubscricao());
+      }
+      if (hasEmpresa()) {
+        hash = (37 * hash) + EMPRESA_FIELD_NUMBER;
+        hash = (53 * hash) + getEmpresa().hashCode();
+      }
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static cliente.CcsCliente.Subscricao parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static cliente.CcsCliente.Subscricao parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static cliente.CcsCliente.Subscricao parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static cliente.CcsCliente.Subscricao parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static cliente.CcsCliente.Subscricao parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static cliente.CcsCliente.Subscricao parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static cliente.CcsCliente.Subscricao parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static cliente.CcsCliente.Subscricao parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static cliente.CcsCliente.Subscricao parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static cliente.CcsCliente.Subscricao parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static cliente.CcsCliente.Subscricao parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static cliente.CcsCliente.Subscricao parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(cliente.CcsCliente.Subscricao prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code cliente.Subscricao}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:cliente.Subscricao)
+        cliente.CcsCliente.SubscricaoOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return cliente.CcsCliente.internal_static_cliente_Subscricao_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return cliente.CcsCliente.internal_static_cliente_Subscricao_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                cliente.CcsCliente.Subscricao.class, cliente.CcsCliente.Subscricao.Builder.class);
+      }
+
+      // Construct using cliente.CcsCliente.Subscricao.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        tipo_ = 1;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        eSubscricao_ = false;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        empresa_ = "";
+        bitField0_ = (bitField0_ & ~0x00000004);
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return cliente.CcsCliente.internal_static_cliente_Subscricao_descriptor;
+      }
+
+      @java.lang.Override
+      public cliente.CcsCliente.Subscricao getDefaultInstanceForType() {
+        return cliente.CcsCliente.Subscricao.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public cliente.CcsCliente.Subscricao build() {
+        cliente.CcsCliente.Subscricao result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public cliente.CcsCliente.Subscricao buildPartial() {
+        cliente.CcsCliente.Subscricao result = new cliente.CcsCliente.Subscricao(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.tipo_ = tipo_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.eSubscricao_ = eSubscricao_;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        result.empresa_ = empresa_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return (Builder) super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return (Builder) super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return (Builder) super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return (Builder) super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof cliente.CcsCliente.Subscricao) {
+          return mergeFrom((cliente.CcsCliente.Subscricao)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(cliente.CcsCliente.Subscricao other) {
+        if (other == cliente.CcsCliente.Subscricao.getDefaultInstance()) return this;
+        if (other.hasTipo()) {
+          setTipo(other.getTipo());
+        }
+        if (other.hasESubscricao()) {
+          setESubscricao(other.getESubscricao());
+        }
+        if (other.hasEmpresa()) {
+          bitField0_ |= 0x00000004;
+          empresa_ = other.empresa_;
+          onChanged();
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        if (!hasTipo()) {
+          return false;
+        }
+        if (!hasESubscricao()) {
+          return false;
+        }
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        cliente.CcsCliente.Subscricao parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (cliente.CcsCliente.Subscricao) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      private int tipo_ = 1;
+      /**
+       * <code>required .cliente.TipoSubscricao tipo = 1 [default = LEILAOSUB];</code>
+       */
+      public boolean hasTipo() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      /**
+       * <code>required .cliente.TipoSubscricao tipo = 1 [default = LEILAOSUB];</code>
+       */
+      public cliente.CcsCliente.TipoSubscricao getTipo() {
+        @SuppressWarnings("deprecation")
+        cliente.CcsCliente.TipoSubscricao result = cliente.CcsCliente.TipoSubscricao.valueOf(tipo_);
+        return result == null ? cliente.CcsCliente.TipoSubscricao.LEILAOSUB : result;
+      }
+      /**
+       * <code>required .cliente.TipoSubscricao tipo = 1 [default = LEILAOSUB];</code>
+       */
+      public Builder setTipo(cliente.CcsCliente.TipoSubscricao value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        bitField0_ |= 0x00000001;
+        tipo_ = value.getNumber();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required .cliente.TipoSubscricao tipo = 1 [default = LEILAOSUB];</code>
+       */
+      public Builder clearTipo() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        tipo_ = 1;
+        onChanged();
+        return this;
+      }
+
+      private boolean eSubscricao_ ;
+      /**
+       * <code>required bool eSubscricao = 2;</code>
+       */
+      public boolean hasESubscricao() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <code>required bool eSubscricao = 2;</code>
+       */
+      public boolean getESubscricao() {
+        return eSubscricao_;
+      }
+      /**
+       * <code>required bool eSubscricao = 2;</code>
+       */
+      public Builder setESubscricao(boolean value) {
+        bitField0_ |= 0x00000002;
+        eSubscricao_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required bool eSubscricao = 2;</code>
+       */
+      public Builder clearESubscricao() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        eSubscricao_ = false;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object empresa_ = "";
+      /**
+       * <code>optional string empresa = 3;</code>
+       */
+      public boolean hasEmpresa() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      /**
+       * <code>optional string empresa = 3;</code>
+       */
+      public java.lang.String getEmpresa() {
+        java.lang.Object ref = empresa_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            empresa_ = s;
+          }
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>optional string empresa = 3;</code>
+       */
+      public com.google.protobuf.ByteString
+          getEmpresaBytes() {
+        java.lang.Object ref = empresa_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          empresa_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string empresa = 3;</code>
+       */
+      public Builder setEmpresa(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000004;
+        empresa_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string empresa = 3;</code>
+       */
+      public Builder clearEmpresa() {
+        bitField0_ = (bitField0_ & ~0x00000004);
+        empresa_ = getDefaultInstance().getEmpresa();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string empresa = 3;</code>
+       */
+      public Builder setEmpresaBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000004;
+        empresa_ = value;
+        onChanged();
+        return this;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:cliente.Subscricao)
+    }
+
+    // @@protoc_insertion_point(class_scope:cliente.Subscricao)
+    private static final cliente.CcsCliente.Subscricao DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new cliente.CcsCliente.Subscricao();
+    }
+
+    public static cliente.CcsCliente.Subscricao getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    @java.lang.Deprecated public static final com.google.protobuf.Parser<Subscricao>
+        PARSER = new com.google.protobuf.AbstractParser<Subscricao>() {
+      @java.lang.Override
+      public Subscricao parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new Subscricao(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<Subscricao> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<Subscricao> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public cliente.CcsCliente.Subscricao getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
   private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_cliente_Autenticacao_descriptor;
   private static final 
@@ -11593,6 +13060,11 @@ public final class CcsCliente {
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_cliente_Resultado_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_cliente_Subscricao_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_cliente_Subscricao_fieldAccessorTable;
 
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -11604,42 +13076,49 @@ public final class CcsCliente {
     java.lang.String[] descriptorData = {
       "\n\020CcsCliente.proto\022\007cliente\"2\n\014Autentica" +
       "cao\022\020\n\010username\030\001 \002(\t\022\020\n\010password\030\002 \002(\t\"" +
-      "6\n\024RespostaAutenticacao\022\017\n\007sucesso\030\001 \002(\010" +
-      "\022\r\n\005papel\030\002 \001(\t\"\353\001\n\022MensagemUtilizador\022+" +
+      "\205\001\n\024RespostaAutenticacao\022\017\n\007sucesso\030\001 \002(" +
+      "\010\022\r\n\005papel\030\002 \001(\t\022\027\n\017leilaoSubscrito\030\003 \001(" +
+      "\010\022\030\n\020emissaoSubscrita\030\004 \001(\010\022\032\n\022empresasS" +
+      "ubscritas\030\005 \003(\t\"\224\002\n\022MensagemUtilizador\022+" +
       "\n\004tipo\030\001 \002(\0162\025.cliente.TipoMensagem:\006LEI" +
       "LAO\0228\n\016tipoUtilizador\030\002 \002(\0162\027.cliente.Ti" +
       "poUtilizador:\007EMPRESA\022\022\n\nutilizador\030\003 \002(" +
       "\t\022)\n\007empresa\030\004 \001(\0132\030.cliente.MensagemEmp" +
       "resa\022/\n\ninvestidor\030\005 \001(\0132\033.cliente.Mensa" +
-      "gemInvestidor\"d\n\017MensagemEmpresa\022&\n\006leil" +
-      "ao\030\002 \001(\0132\026.cliente.CriacaoLeilao\022)\n\007emis" +
-      "sao\030\003 \001(\0132\030.cliente.EmissaoTaxaFixa\">\n\rC" +
-      "riacaoLeilao\022\020\n\010montante\030\001 \002(\003\022\014\n\004taxa\030\002" +
-      " \002(\002\022\r\n\005tempo\030\003 \002(\003\"2\n\017EmissaoTaxaFixa\022\020" +
-      "\n\010montante\030\001 \002(\003\022\r\n\005tempo\030\002 \002(\003\"l\n\022Mensa" +
-      "gemInvestidor\022(\n\006leilao\030\002 \001(\0132\030.cliente." +
-      "LicitacaoLeilao\022,\n\007emissao\030\003 \001(\0132\033.clien" +
-      "te.SubscricaoTaxaFixa\"B\n\017LicitacaoLeilao" +
-      "\022\017\n\007empresa\030\001 \002(\t\022\020\n\010montante\030\002 \002(\003\022\014\n\004t" +
-      "axa\030\003 \002(\002\"7\n\022SubscricaoTaxaFixa\022\017\n\007empre" +
-      "sa\030\001 \002(\t\022\020\n\010montante\030\002 \002(\003\"\305\001\n\020RespostaE" +
-      "xchange\022.\n\004tipo\030\001 \002(\0162\025.cliente.TipoResp" +
-      "osta:\tRESULTADO\0225\n\013notificacao\030\002 \001(\0132 .c" +
-      "liente.NotificacaoUltrapassado\022%\n\tresult" +
-      "ado\030\003 \001(\0132\022.cliente.Resultado\022#\n\010respost" +
-      "a\030\004 \001(\0132\021.cliente.Resposta\"n\n\010Resposta\022+" +
-      "\n\004tipo\030\001 \002(\0162\025.cliente.TipoMensagem:\006LEI" +
-      "LAO\022\022\n\nutilizador\030\002 \002(\t\022\017\n\007sucesso\030\003 \002(\010" +
-      "\022\020\n\010mensagem\030\004 \001(\t\"j\n\027NotificacaoUltrapa" +
-      "ssado\022\017\n\007empresa\030\001 \002(\t\022\022\n\nutilizador\030\002 \002" +
-      "(\t\022\014\n\004taxa\030\003 \001(\002\022\r\n\005valor\030\004 \002(\003\022\r\n\005texto" +
-      "\030\005 \001(\t\"X\n\tResultado\022+\n\004tipo\030\001 \002(\0162\025.clie" +
-      "nte.TipoMensagem:\006LEILAO\022\017\n\007empresa\030\002 \002(" +
-      "\t\022\r\n\005texto\030\003 \002(\t*\'\n\014TipoMensagem\022\n\n\006LEIL" +
-      "AO\020\001\022\013\n\007EMISSAO\020\002*-\n\016TipoUtilizador\022\013\n\007E" +
-      "MPRESA\020\001\022\016\n\nINVESTIDOR\020\002*<\n\014TipoResposta" +
-      "\022\r\n\tRESULTADO\020\001\022\017\n\013NOTIFICACAO\020\002\022\014\n\010RESP" +
-      "OSTA\020\003"
+      "gemInvestidor\022\'\n\nsubscricao\030\006 \001(\0132\023.clie" +
+      "nte.Subscricao\"d\n\017MensagemEmpresa\022&\n\006lei" +
+      "lao\030\002 \001(\0132\026.cliente.CriacaoLeilao\022)\n\007emi" +
+      "ssao\030\003 \001(\0132\030.cliente.EmissaoTaxaFixa\">\n\r" +
+      "CriacaoLeilao\022\020\n\010montante\030\001 \002(\003\022\014\n\004taxa\030" +
+      "\002 \002(\002\022\r\n\005tempo\030\003 \002(\003\"2\n\017EmissaoTaxaFixa\022" +
+      "\020\n\010montante\030\001 \002(\003\022\r\n\005tempo\030\002 \002(\003\"l\n\022Mens" +
+      "agemInvestidor\022(\n\006leilao\030\002 \001(\0132\030.cliente" +
+      ".LicitacaoLeilao\022,\n\007emissao\030\003 \001(\0132\033.clie" +
+      "nte.SubscricaoTaxaFixa\"B\n\017LicitacaoLeila" +
+      "o\022\017\n\007empresa\030\001 \002(\t\022\020\n\010montante\030\002 \002(\003\022\014\n\004" +
+      "taxa\030\003 \002(\002\"7\n\022SubscricaoTaxaFixa\022\017\n\007empr" +
+      "esa\030\001 \002(\t\022\020\n\010montante\030\002 \002(\003\"\305\001\n\020Resposta" +
+      "Exchange\022.\n\004tipo\030\001 \002(\0162\025.cliente.TipoRes" +
+      "posta:\tRESULTADO\0225\n\013notificacao\030\002 \001(\0132 ." +
+      "cliente.NotificacaoUltrapassado\022%\n\tresul" +
+      "tado\030\003 \001(\0132\022.cliente.Resultado\022#\n\010respos" +
+      "ta\030\004 \001(\0132\021.cliente.Resposta\"n\n\010Resposta\022" +
+      "+\n\004tipo\030\001 \002(\0162\025.cliente.TipoMensagem:\006LE" +
+      "ILAO\022\022\n\nutilizador\030\002 \002(\t\022\017\n\007sucesso\030\003 \002(" +
+      "\010\022\020\n\010mensagem\030\004 \001(\t\"j\n\027NotificacaoUltrap" +
+      "assado\022\017\n\007empresa\030\001 \002(\t\022\022\n\nutilizador\030\002 " +
+      "\002(\t\022\014\n\004taxa\030\003 \001(\002\022\r\n\005valor\030\004 \002(\003\022\r\n\005text" +
+      "o\030\005 \001(\t\"X\n\tResultado\022+\n\004tipo\030\001 \002(\0162\025.cli" +
+      "ente.TipoMensagem:\006LEILAO\022\017\n\007empresa\030\002 \002" +
+      "(\t\022\r\n\005texto\030\003 \002(\t\"d\n\nSubscricao\0220\n\004tipo\030" +
+      "\001 \002(\0162\027.cliente.TipoSubscricao:\tLEILAOSU" +
+      "B\022\023\n\013eSubscricao\030\002 \002(\010\022\017\n\007empresa\030\003 \001(\t*" +
+      "7\n\014TipoMensagem\022\n\n\006LEILAO\020\001\022\013\n\007EMISSAO\020\002" +
+      "\022\016\n\nSUBSCRICAO\020\003*-\n\016TipoUtilizador\022\013\n\007EM" +
+      "PRESA\020\001\022\016\n\nINVESTIDOR\020\002*<\n\014TipoResposta\022" +
+      "\r\n\tRESULTADO\020\001\022\017\n\013NOTIFICACAO\020\002\022\014\n\010RESPO" +
+      "STA\020\003*?\n\016TipoSubscricao\022\r\n\tLEILAOSUB\020\001\022\016" +
+      "\n\nEMISSAOSUB\020\002\022\016\n\nEMPRESASUB\020\003"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -11664,13 +13143,13 @@ public final class CcsCliente {
     internal_static_cliente_RespostaAutenticacao_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_cliente_RespostaAutenticacao_descriptor,
-        new java.lang.String[] { "Sucesso", "Papel", });
+        new java.lang.String[] { "Sucesso", "Papel", "LeilaoSubscrito", "EmissaoSubscrita", "EmpresasSubscritas", });
     internal_static_cliente_MensagemUtilizador_descriptor =
       getDescriptor().getMessageTypes().get(2);
     internal_static_cliente_MensagemUtilizador_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_cliente_MensagemUtilizador_descriptor,
-        new java.lang.String[] { "Tipo", "TipoUtilizador", "Utilizador", "Empresa", "Investidor", });
+        new java.lang.String[] { "Tipo", "TipoUtilizador", "Utilizador", "Empresa", "Investidor", "Subscricao", });
     internal_static_cliente_MensagemEmpresa_descriptor =
       getDescriptor().getMessageTypes().get(3);
     internal_static_cliente_MensagemEmpresa_fieldAccessorTable = new
@@ -11731,6 +13210,12 @@ public final class CcsCliente {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_cliente_Resultado_descriptor,
         new java.lang.String[] { "Tipo", "Empresa", "Texto", });
+    internal_static_cliente_Subscricao_descriptor =
+      getDescriptor().getMessageTypes().get(13);
+    internal_static_cliente_Subscricao_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_cliente_Subscricao_descriptor,
+        new java.lang.String[] { "Tipo", "ESubscricao", "Empresa", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)

@@ -9,6 +9,7 @@ start(ListaUsers) ->
 
 
 carregaMapa(M, []) ->
+    io:format("~p~n", [M]),
     M
     ;
 carregaMapa(M, [H | T]) ->
@@ -79,7 +80,7 @@ loop( Map ) ->
             case maps:find(U, Map) of
                 {ok, {P, true, Papel, Emissao, Leilao, List}} ->
                     From ! {login_manager, ok},
-                    loop (maps:put (U, {P, true, Papel, Emissao, Leilao, [Emp | List] }));
+                    loop (maps:put (U, {P, true, Papel, Emissao, Leilao, [Emp | List] },Map));
                 _ ->
                     From ! {login_manager, invalid},
                     loop(Map)
@@ -88,7 +89,7 @@ loop( Map ) ->
             case maps:find(U, Map) of
                 {ok, {P, true, Papel, Emissao, Leilao, List}} ->
                     From ! {login_manager, ok},
-                    loop (maps:put (U, {P, true, Papel, Emissao, Leilao, lists:delete(Emp,List) }));
+                    loop (maps:put (U, {P, true, Papel, Emissao, Leilao, lists:delete(Emp,List) },Map));
                 _ ->
                     From ! {login_manager, invalid},
                     loop(Map)
@@ -97,7 +98,7 @@ loop( Map ) ->
             case maps:find(U, Map) of
                 {ok, {P, true, Papel, _, Leilao, List}} ->
                     From ! {login_manager, ok},
-                    loop (maps:put (U, {P, true, Papel, Emi, Leilao, List }));
+                    loop (maps:put (U, {P, true, Papel, Emi, Leilao, List },Map));
                 _ ->
                     From ! {login_manager, invalid},
                     loop(Map)
@@ -106,7 +107,7 @@ loop( Map ) ->
             case maps:find(U, Map) of
                 {ok, {P, true, Papel, Emissao, _, List}} ->
                     From ! {login_manager, ok},
-                    loop (maps:put (U, {P, true, Papel, Emissao, Lei,  List }));
+                    loop (maps:put (U, {P, true, Papel, Emissao, Lei,  List },Map));
                 _ ->
                     From ! {login_manager, invalid},
                     loop(Map)

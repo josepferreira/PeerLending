@@ -6,23 +6,49 @@ import java.net.*;
 import org.json.*;
 
 import org.zeromq.ZMQ;
+import com.google.protobuf.CodedOutputStream;
+
+import cliente.CcsCliente.*;
 
 /**
  * Ira apresentar o menu das subscricoes e será responsável em comunicar com a classe Notificacaoes
  */
 public class GerirSubscricoes{
     
-    boolean leiloesSubscritos = false;
-    boolean emissoesSubscritas = false;
-    HashSet<String> empresasSubscritas = new HashSet<>();
+    boolean leiloesSubscritos;
+    boolean emissoesSubscritas;
+    HashSet<String> empresasSubscritas;
     BufferedReader inP = new BufferedReader(new InputStreamReader(System.in));
     ZMQ.Socket socket;
     String headSub = "comuSub";
+    CodedOutputStream cos;
+    String username;
+    String papel;
 
 
-    public GerirSubscricoes(ZMQ.Context context){
+    public GerirSubscricoes(ZMQ.Context context, boolean leilao, boolean emissao, List<String> emps, CodedOutputStream cos, String username, String papel){
         this.socket = context.socket(ZMQ.PUB);
         this.socket.bind("inproc://notificacoes");
+        this.leiloesSubscritos = leilao;
+        this.emissoesSubscritas = emissao;
+        this.empresasSubscritas = new HashSet<>();
+        if(emps != null)
+        for(String s: emps)
+            this.empresasSubscritas.add(s);
+        this.cos = cos;
+        this.username = username;
+        this.papel = papel;
+
+        if(this.leiloesSubscritos){
+            socket.send(headSub + "sub@emissao::");   
+        }
+        if(this.emissoesSubscritas){
+            socket.send(headSub + "sub@emissao::");
+        }
+        for(String emp: empresasSubscritas){
+            socket.send(headSub + "sub@leilao::" + emp + "::");
+            socket.send(headSub + "sub@emissao::" + emp + "::");
+        }
     }
 
     public static int little2big(int i) {
@@ -49,10 +75,60 @@ public class GerirSubscricoes{
 
     public void adicionaEmpresa(String empresa){
         empresasSubscritas.add(empresa);
+        
+        System.out.println("\n\nVou enviar mensagem para sibscrever 1 empresa\n\n");
+        
+        Subscricao leilao = Subscricao.newBuilder()
+                                            .setTipo(TipoSubscricao.EMPRESASUB)
+                                            .setESubscricao(true)
+                                            .setEmpresa(empresa)
+                                            .build();
+
+        MensagemUtilizador mensagem = MensagemUtilizador.newBuilder()
+                                            .setTipo(TipoMensagem.SUBSCRICAO)
+                                            .setTipoUtilizador(this.papel.equals("empresa") ? TipoUtilizador.EMPRESA : TipoUtilizador.INVESTIDOR)
+                                            .setUtilizador(this.username)
+                                            .setSubscricao(leilao)
+                                            .build();
+      
+        byte[] ba = mensagem.toByteArray();
+
+        try{
+            cos.writeSFixed32NoTag(little2big(ba.length));
+            cos.writeRawBytes(ba);
+            cos.flush();
+        }
+        catch(Exception exc){
+            System.out.println(exc);
+        }
     }
 
     public void removeEmpresa(String empresa){
         empresasSubscritas.remove(empresa);
+
+        Subscricao leilao = Subscricao.newBuilder()
+                                            .setTipo(TipoSubscricao.EMPRESASUB)
+                                            .setESubscricao(false)
+                                            .setEmpresa(empresa)
+                                            .build();
+
+        MensagemUtilizador mensagem = MensagemUtilizador.newBuilder()
+                                            .setTipo(TipoMensagem.SUBSCRICAO)
+                                            .setTipoUtilizador(this.papel.equals("empresa") ? TipoUtilizador.EMPRESA : TipoUtilizador.INVESTIDOR)
+                                            .setUtilizador(this.username)
+                                            .setSubscricao(leilao)
+                                            .build();
+      
+        byte[] ba = mensagem.toByteArray();
+
+        try{
+            cos.writeSFixed32NoTag(little2big(ba.length));
+            cos.writeRawBytes(ba);
+            cos.flush();
+        }
+        catch(Exception exc){
+            System.out.println(exc);
+        }
     }
 
     private void apresentaListaSubscricao(){
@@ -91,6 +167,31 @@ public class GerirSubscricoes{
                             System.out.println("Vou subscrever todos os leilões");
                             socket.send(headSub + "sub@leilao::");
                             leiloesSubscritos = true;
+                            
+                            Subscricao leilao = Subscricao.newBuilder()
+                                            .setTipo(TipoSubscricao.LEILAOSUB)
+                                            .setESubscricao(true)
+                                            .build();
+
+                            MensagemUtilizador mensagem = MensagemUtilizador.newBuilder()
+                                                                .setTipo(TipoMensagem.SUBSCRICAO)
+                                                                .setTipoUtilizador(this.papel.equals("empresa") ? TipoUtilizador.EMPRESA : TipoUtilizador.INVESTIDOR)
+                                                                .setUtilizador(this.username)
+                                                                .setSubscricao(leilao)
+                                                                .build();
+                        
+                            byte[] ba = mensagem.toByteArray();
+
+                            try{
+                                cos.writeSFixed32NoTag(little2big(ba.length));
+                                cos.writeRawBytes(ba);
+                                cos.flush();
+                            }
+                            catch(Exception exc){
+                                System.out.println(exc);
+                            }
+
+
                         }else{
                             System.out.println("ERRO: Leilões já se encontram subscritos ... Ação inválida!");
                         }
@@ -100,12 +201,35 @@ public class GerirSubscricoes{
                             System.out.println("Vou subscrever todos as emissões");
                             socket.send(headSub + "sub@emissao::");
                             emissoesSubscritas = true;
+
+                            Subscricao leilao = Subscricao.newBuilder()
+                                            .setTipo(TipoSubscricao.EMISSAOSUB)
+                                            .setESubscricao(true)
+                                            .build();
+
+                            MensagemUtilizador mensagem = MensagemUtilizador.newBuilder()
+                                                                .setTipo(TipoMensagem.SUBSCRICAO)
+                                                                .setTipoUtilizador(this.papel.equals("empresa") ? TipoUtilizador.EMPRESA : TipoUtilizador.INVESTIDOR)
+                                                                .setUtilizador(this.username)
+                                                                .setSubscricao(leilao)
+                                                                .build();
+                        
+                            byte[] ba = mensagem.toByteArray();
+
+                            try{
+                                cos.writeSFixed32NoTag(little2big(ba.length));
+                                cos.writeRawBytes(ba);
+                                cos.flush();
+                            }
+                            catch(Exception exc){
+                                System.out.println(exc);
+                            }
                         }else{
                             System.out.println("ERRO: Emissões já se encontram subscritas ... Ação inválida!");
                         }
                         break;
                     case 3:
-                        if(empresasSubscritas.size() < 5){
+                        if(empresasSubscritas.size() > 5){
                             System.out.println("Já atingiu o limite de 5 empresas subscritas!");
                             break;   
                         }
@@ -115,6 +239,7 @@ public class GerirSubscricoes{
                             System.out.println("Vou mandar uma empresa para subscrever! " + empresa);
                             socket.send(headSub + "sub@leilao::" + empresa + "::");
                             socket.send(headSub + "sub@emissao::" + empresa + "::");
+                            adicionaEmpresa(empresa);
                         }else{
                             System.out.println("ERRO: Empresa já se encontra subscrita ... Ação inválida!");
                         }
@@ -154,6 +279,30 @@ public class GerirSubscricoes{
                             System.out.println("Vou vetar todos os leilões");
                             socket.send(headSub + "unsub@leilao::");
                             leiloesSubscritos = false;
+
+                            Subscricao leilao = Subscricao.newBuilder()
+                                            .setTipo(TipoSubscricao.LEILAOSUB)
+                                            .setESubscricao(false)
+                                            .build();
+
+                            MensagemUtilizador mensagem = MensagemUtilizador.newBuilder()
+                                                                .setTipo(TipoMensagem.SUBSCRICAO)
+                                                                .setTipoUtilizador(this.papel.equals("empresa") ? TipoUtilizador.EMPRESA : TipoUtilizador.INVESTIDOR)
+                                                                .setUtilizador(this.username)
+                                                                .setSubscricao(leilao)
+                                                                .build();
+                        
+                            byte[] ba = mensagem.toByteArray();
+
+                            try{
+                                cos.writeSFixed32NoTag(little2big(ba.length));
+                                cos.writeRawBytes(ba);
+                                cos.flush();
+                            }
+                            catch(Exception exc){
+                                System.out.println(exc);
+                            }
+
                         }else{
                             System.out.println("ERRO: Leilões não se encontram subscritos ... Ação inválida!");
                         }
@@ -164,6 +313,30 @@ public class GerirSubscricoes{
                             System.out.println("Vou vetar todos as emissões");
                             socket.send(headSub + "unsub@emissao::");
                             emissoesSubscritas = false;
+
+                            Subscricao leilao = Subscricao.newBuilder()
+                                            .setTipo(TipoSubscricao.EMISSAOSUB)
+                                            .setESubscricao(false)
+                                            .build();
+
+                            MensagemUtilizador mensagem = MensagemUtilizador.newBuilder()
+                                                                .setTipo(TipoMensagem.SUBSCRICAO)
+                                                                .setTipoUtilizador(this.papel.equals("empresa") ? TipoUtilizador.EMPRESA : TipoUtilizador.INVESTIDOR)
+                                                                .setUtilizador(this.username)
+                                                                .setSubscricao(leilao)
+                                                                .build();
+                        
+                            byte[] ba = mensagem.toByteArray();
+
+                            try{
+                                cos.writeSFixed32NoTag(little2big(ba.length));
+                                cos.writeRawBytes(ba);
+                                cos.flush();
+                            }
+                            catch(Exception exc){
+                                System.out.println(exc);
+                            }
+
                         }else{
                             System.out.println("ERRO: Emissões não se encontram subscritas ... Ação inválida!");
                         }
@@ -176,6 +349,7 @@ public class GerirSubscricoes{
                             System.out.println("Vou mandar uma empresa para vetar! " + empresa);
                             socket.send(headSub + "unsub@leilao::" + empresa + "::");
                             socket.send(headSub + "unsub@emissao::" + empresa + "::");
+                            removeEmpresa(empresa);
                         }else{
                             System.out.println("ERRO: Empresa não se encontra subscrita ... Ação inválida!");
                         }

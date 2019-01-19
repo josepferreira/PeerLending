@@ -105,39 +105,46 @@ autenticaCliente(Sock, MapState) ->
               io:format("!\nPass: "),
               io:format(Pass),
               io:format("!\n"),
-              {Resposta, E, L , List} = login_manager:login(User,Pass),
-              io:format(Resposta),
-              io:format("\n"),
-              case Resposta of
-                "licitador" -> 
-                    io:format("Vou pedir papel~n"),
-                    Papel = Resposta,
-                    io:format("Já recebi papel do State e papel : ~p~n",[Papel]),
-                    Bin = ccs:encode_msg(#'RespostaAutenticacao'{sucesso = true, papel = Papel, leilaoSubscrito = L, emissaoSubscrita = E, empresasSubscritas = List }),
-                    gen_tcp:send(Sock, Bin),
-                    %%Agora vou iniciar o ator que vai tratar do cliente
-                    Pid = spawn(frontend_client, start, [Sock, User, Papel, MapState]),
-                    gen_tcp:controlling_process(Sock, Pid),
-                    io:format("O PID do processo criado é: ~p~n", [Pid]);
 
-                "empresa" -> 
-                    io:format("Vou pedir papel~n"),
-                    Papel = Resposta,
-                    io:format("Já recebi papel do State e papel : ~p~n",[Papel]),
-                    Bin = ccs:encode_msg(#'RespostaAutenticacao'{sucesso = true, papel = Papel, leilaoSubscrito = L, emissaoSubscrita = E, empresasSubscritas = List }),
-                    gen_tcp:send(Sock, Bin),
-                    %%Agora vou iniciar o ator que vai tratar da empresa
-                    Pid = spawn(frontend_client, start, [Sock, User, Papel, MapState]),
-                    gen_tcp:controlling_process(Sock, Pid),
-                    io:format("O PID do processo criado é: ~p~n", [Pid])
-                  ;
-
-
+              
+              Res = login_manager:login(User,Pass),
+              case Res of  
                 invalid -> Bin = ccs:encode_msg(#'RespostaAutenticacao'{sucesso = false}),
                     gen_tcp:send(Sock, Bin),
-                    autenticaCliente(Sock, MapState)
-              end
-            ;
+                    autenticaCliente(Sock, MapState);
+
+                {Resposta, E, L , List} ->
+                io:format(Resposta),
+                io:format("\n"),
+                case Resposta of
+                    "licitador" -> 
+                        io:format("Vou pedir papel~n"),
+                        Papel = Resposta,
+                        io:format("Já recebi papel do State e papel : ~p~n",[Papel]),
+                        Bin = ccs:encode_msg(#'RespostaAutenticacao'{sucesso = true, papel = Papel, leilaoSubscrito = L, emissaoSubscrita = E, empresasSubscritas = List }),
+                        gen_tcp:send(Sock, Bin),
+                        %%Agora vou iniciar o ator que vai tratar do cliente
+                        Pid = spawn(frontend_client, start, [Sock, User, Papel, MapState]),
+                        gen_tcp:controlling_process(Sock, Pid),
+                        io:format("O PID do processo criado é: ~p~n", [Pid]);
+
+                    "empresa" -> 
+                        io:format("Vou pedir papel~n"),
+                        Papel = Resposta,
+                        io:format("Já recebi papel do State e papel : ~p~n",[Papel]),
+                        Bin = ccs:encode_msg(#'RespostaAutenticacao'{sucesso = true, papel = Papel, leilaoSubscrito = L, emissaoSubscrita = E, empresasSubscritas = List }),
+                        gen_tcp:send(Sock, Bin),
+                        io:format("~p~n",[Sock]),
+                        io:format("~p~n",[User]),
+                        io:format("~p~n",[Papel]),
+                        io:format("~p~n",[MapState]),
+                        %%Agora vou iniciar o ator que vai tratar da empresa
+                        Pid = spawn(frontend_client, start, [Sock, User, Papel, MapState]),
+                        gen_tcp:controlling_process(Sock, Pid),
+                        io:format("O PID do processo criado é: ~p~n", [Pid])
+                    end
+                end
+                ;
       {tcp_closed,_} ->
             io:format("utilizador nao se autenticou nem registou e saiu~n",[]),
             true

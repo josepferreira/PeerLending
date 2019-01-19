@@ -13,7 +13,7 @@ import org.json.*;
 
 
 
-import cliente.Ccs.*;
+import cliente.CcsCliente.*;
 
 class RecebeMensagens implements Runnable{
 
@@ -88,14 +88,14 @@ class Licitador{
     ZMQ.Context context = ZMQ.context(1);
     //Enderecos enderecos;
 
-    public Licitador(String username, Socket s, Enderecos enderecos) throws Exception{
+    public Licitador(String username, Socket s, Enderecos enderecos, boolean leilao, boolean emissao, List<String> emps) throws Exception{
         this.username = username;
         this.s = s;
         inP = new BufferedReader(new InputStreamReader(System.in));
         cis = CodedInputStream.newInstance(s.getInputStream());
         cos = CodedOutputStream.newInstance(s.getOutputStream());
         (new Thread(new RecebeMensagens(cis))).start();
-        subscricoes = new GerirSubscricoes(context);
+        subscricoes = new GerirSubscricoes(context, leilao, emissao, emps, cos, username, "licitador");
         Notificacoes n = new Notificacoes(context, subscricoes,enderecos,username);
         (new Thread(n)).start();
     }
@@ -286,14 +286,14 @@ class Licitador{
     GerirSubscricoes subscricoes;
     ZMQ.Context context = ZMQ.context(1);
 
-    public Empresa(String username, Socket s, Enderecos enderecos) throws Exception{
+    public Empresa(String username, Socket s, Enderecos enderecos, boolean leilao, boolean emissao, List<String> emps) throws Exception{
         this.username = username;
         this.s = s;
         inP = new BufferedReader(new InputStreamReader(System.in));
         cis = CodedInputStream.newInstance(s.getInputStream());
         cos = CodedOutputStream.newInstance(s.getOutputStream());
         (new Thread(new RecebeMensagens(cis))).start();
-        subscricoes = new GerirSubscricoes(context);
+        subscricoes = new GerirSubscricoes(context, leilao, emissao, emps, cos, username, "empresa");
         Notificacoes n = new Notificacoes(context, subscricoes,enderecos, username);
         (new Thread(n)).start();
 
@@ -491,13 +491,6 @@ class Licitador{
 
 }
 
-class Enderecos{
-    public String enderecoFrontEnd;
-    public String portaFrontEnd;
-    public String enderecoDiretorio;
-    public String portaDiretorio;
-}
-
  class ClienteM{
 
     public static Enderecos enderecos;
@@ -536,7 +529,7 @@ class Enderecos{
      * Devolve null senao estiver autenticado
      * Devolve o papel "empresa" ou "cliente" consoante o papel do utilizador
      */
-    public static String leMensagemInicial(CodedInputStream cis){
+    public static RespostaAutenticacao leMensagemInicial(CodedInputStream cis){
         try{
             int len = cis.readRawLittleEndian32();
             len = little2big(len);
@@ -545,8 +538,9 @@ class Enderecos{
             
             boolean sucesso = resposta.getSucesso();
             if( sucesso == true){
-                String papel = resposta.getPapel();
-                return papel;
+                return resposta;
+                // String papel = resposta.getPapel();
+                // return papel;
             }else{
                 System.out.println("Utilizador nao valido!");
                 return null;
@@ -685,25 +679,29 @@ class Enderecos{
                 }
                 
                 String user = null;
-                String papel = null;
+                RespostaAutenticacao resposta = null;
 
                 
                 switch(opcao){
-                    //Se calhar só vamos buscar o papel se o user nao for nulo (poed acontecer se der uma exceçao)
-                    case 1: user = autenticaCliente(inP,cos); papel = leMensagemInicial(cis); break;
+                    //Se calhar só vamos buscar o resposta se o user nao for nulo (poed acontecer se der uma exceçao)
+                    case 1: user = autenticaCliente(inP,cos); resposta = leMensagemInicial(cis); break;
                     case 2: leiloesAtivos(); break;
                     default: sair = true; System.out.println("bye!"); break;
                 }
                 
                 autenticado = true;
                 
-                if(user==null || papel==null){
+                if(user==null || resposta==null){
                     autenticado = false;
                 }
                 else{
+                    String papel = resposta.getPapel();
+                    boolean leilao = resposta.hasLeilaoSubscrito() ? resposta.getLeilaoSubscrito() : false;
+                    boolean emissao = resposta.hasEmissaoSubscrita() ? resposta.getEmissaoSubscrita() : false;
+                    List<String> emps = resposta.getEmpresasSubscritasList();
                     switch(papel){
-                        case "empresa": autenticado=true; (new Empresa(user, s, enderecos)).menuInicial(); System.out.println("bye!"); break; //mandar para a empresa
-                        case "licitador": autenticado=true; (new Licitador(user, s, enderecos)).menuInicial(); System.out.println("bye!"); break; //mandar para o licitador
+                        case "empresa": autenticado=true; (new Empresa(user, s, enderecos, leilao, emissao, emps)).menuInicial(); System.out.println("bye!"); break; //mandar para a empresa
+                        case "licitador": autenticado=true; (new Licitador(user, s, enderecos, leilao, emissao, emps)).menuInicial(); System.out.println("bye!"); break; //mandar para o licitador
                         default: break;
                     }
                 }

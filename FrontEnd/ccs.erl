@@ -30,10 +30,10 @@
 -include("gpb.hrl").
 
 %% enumerated types
--type 'TipoMensagem'() :: 'LEILAO' | 'EMISSAO'.
+-type 'TipoMensagem'() :: 'LEILAO' | 'EMISSAO' | 'SUBSCRICAO'.
 -type 'TipoUtilizador'() :: 'EMPRESA' | 'INVESTIDOR'.
 -type 'TipoResposta'() :: 'RESULTADO' | 'NOTIFICACAO' | 'RESPOSTA'.
--type 'TipoSubscricao'() :: 'LEILAO' | 'EMISSAO' | 'EMPRESA'.
+-type 'TipoSubscricao'() :: 'LEILAOSUB' | 'EMISSAOSUB' | 'EMPRESASUB'.
 -export_type(['TipoMensagem'/0, 'TipoUtilizador'/0, 'TipoResposta'/0, 'TipoSubscricao'/0]).
 
 %% message types
@@ -199,7 +199,8 @@ encode_msg_MensagemUtilizador(#'MensagemUtilizador'{tipo
 						    tipoUtilizador = F2,
 						    utilizador = F3,
 						    empresa = F4,
-						    investidor = F5},
+						    investidor = F5,
+						    subscricao = F6},
 			      Bin, TrUserData) ->
     B1 = begin
 	   TrF1 = id(F1, TrUserData),
@@ -223,12 +224,21 @@ encode_msg_MensagemUtilizador(#'MensagemUtilizador'{tipo
 						      TrUserData)
 		end
 	 end,
-    if F5 == undefined -> B4;
+    B5 = if F5 == undefined -> B4;
+	    true ->
+		begin
+		  TrF5 = id(F5, TrUserData),
+		  e_mfield_MensagemUtilizador_investidor(TrF5,
+							 <<B4/binary, 42>>,
+							 TrUserData)
+		end
+	 end,
+    if F6 == undefined -> B5;
        true ->
 	   begin
-	     TrF5 = id(F5, TrUserData),
-	     e_mfield_MensagemUtilizador_investidor(TrF5,
-						    <<B4/binary, 42>>,
+	     TrF6 = id(F6, TrUserData),
+	     e_mfield_MensagemUtilizador_subscricao(TrF6,
+						    <<B5/binary, 50>>,
 						    TrUserData)
 	   end
     end.
@@ -536,6 +546,12 @@ e_mfield_MensagemUtilizador_investidor(Msg, Bin,
     Bin2 = e_varint(byte_size(SubBin), Bin),
     <<Bin2/binary, SubBin/binary>>.
 
+e_mfield_MensagemUtilizador_subscricao(Msg, Bin,
+				       TrUserData) ->
+    SubBin = encode_msg_Subscricao(Msg, <<>>, TrUserData),
+    Bin2 = e_varint(byte_size(SubBin), Bin),
+    <<Bin2/binary, SubBin/binary>>.
+
 e_mfield_MensagemEmpresa_leilao(Msg, Bin, TrUserData) ->
     SubBin = encode_msg_CriacaoLeilao(Msg, <<>>,
 				      TrUserData),
@@ -586,6 +602,8 @@ e_enum_TipoMensagem('LEILAO', Bin, _TrUserData) ->
     <<Bin/binary, 1>>;
 e_enum_TipoMensagem('EMISSAO', Bin, _TrUserData) ->
     <<Bin/binary, 2>>;
+e_enum_TipoMensagem('SUBSCRICAO', Bin, _TrUserData) ->
+    <<Bin/binary, 3>>;
 e_enum_TipoMensagem(V, Bin, _TrUserData) ->
     e_varint(V, Bin).
 
@@ -605,11 +623,11 @@ e_enum_TipoResposta('RESPOSTA', Bin, _TrUserData) ->
 e_enum_TipoResposta(V, Bin, _TrUserData) ->
     e_varint(V, Bin).
 
-e_enum_TipoSubscricao('LEILAO', Bin, _TrUserData) ->
+e_enum_TipoSubscricao('LEILAOSUB', Bin, _TrUserData) ->
     <<Bin/binary, 1>>;
-e_enum_TipoSubscricao('EMISSAO', Bin, _TrUserData) ->
+e_enum_TipoSubscricao('EMISSAOSUB', Bin, _TrUserData) ->
     <<Bin/binary, 2>>;
-e_enum_TipoSubscricao('EMPRESA', Bin, _TrUserData) ->
+e_enum_TipoSubscricao('EMPRESASUB', Bin, _TrUserData) ->
     <<Bin/binary, 3>>;
 e_enum_TipoSubscricao(V, Bin, _TrUserData) ->
     e_varint(V, Bin).
@@ -1191,124 +1209,139 @@ decode_msg_MensagemUtilizador(Bin, TrUserData) ->
 					  id(undefined, TrUserData),
 					  id(undefined, TrUserData),
 					  id(undefined, TrUserData),
+					  id(undefined, TrUserData),
 					  TrUserData).
 
 dfp_read_field_def_MensagemUtilizador(<<8,
 					Rest/binary>>,
 				      Z1, Z2, F@_1, F@_2, F@_3, F@_4, F@_5,
-				      TrUserData) ->
+				      F@_6, TrUserData) ->
     d_field_MensagemUtilizador_tipo(Rest, Z1, Z2, F@_1,
-				    F@_2, F@_3, F@_4, F@_5, TrUserData);
+				    F@_2, F@_3, F@_4, F@_5, F@_6, TrUserData);
 dfp_read_field_def_MensagemUtilizador(<<16,
 					Rest/binary>>,
 				      Z1, Z2, F@_1, F@_2, F@_3, F@_4, F@_5,
-				      TrUserData) ->
+				      F@_6, TrUserData) ->
     d_field_MensagemUtilizador_tipoUtilizador(Rest, Z1, Z2,
 					      F@_1, F@_2, F@_3, F@_4, F@_5,
-					      TrUserData);
+					      F@_6, TrUserData);
 dfp_read_field_def_MensagemUtilizador(<<26,
 					Rest/binary>>,
 				      Z1, Z2, F@_1, F@_2, F@_3, F@_4, F@_5,
-				      TrUserData) ->
+				      F@_6, TrUserData) ->
     d_field_MensagemUtilizador_utilizador(Rest, Z1, Z2,
-					  F@_1, F@_2, F@_3, F@_4, F@_5,
+					  F@_1, F@_2, F@_3, F@_4, F@_5, F@_6,
 					  TrUserData);
 dfp_read_field_def_MensagemUtilizador(<<34,
 					Rest/binary>>,
 				      Z1, Z2, F@_1, F@_2, F@_3, F@_4, F@_5,
-				      TrUserData) ->
+				      F@_6, TrUserData) ->
     d_field_MensagemUtilizador_empresa(Rest, Z1, Z2, F@_1,
-				       F@_2, F@_3, F@_4, F@_5, TrUserData);
+				       F@_2, F@_3, F@_4, F@_5, F@_6,
+				       TrUserData);
 dfp_read_field_def_MensagemUtilizador(<<42,
 					Rest/binary>>,
 				      Z1, Z2, F@_1, F@_2, F@_3, F@_4, F@_5,
-				      TrUserData) ->
+				      F@_6, TrUserData) ->
     d_field_MensagemUtilizador_investidor(Rest, Z1, Z2,
-					  F@_1, F@_2, F@_3, F@_4, F@_5,
+					  F@_1, F@_2, F@_3, F@_4, F@_5, F@_6,
+					  TrUserData);
+dfp_read_field_def_MensagemUtilizador(<<50,
+					Rest/binary>>,
+				      Z1, Z2, F@_1, F@_2, F@_3, F@_4, F@_5,
+				      F@_6, TrUserData) ->
+    d_field_MensagemUtilizador_subscricao(Rest, Z1, Z2,
+					  F@_1, F@_2, F@_3, F@_4, F@_5, F@_6,
 					  TrUserData);
 dfp_read_field_def_MensagemUtilizador(<<>>, 0, 0, F@_1,
-				      F@_2, F@_3, F@_4, F@_5, _) ->
+				      F@_2, F@_3, F@_4, F@_5, F@_6, _) ->
     #'MensagemUtilizador'{tipo = F@_1,
 			  tipoUtilizador = F@_2, utilizador = F@_3,
-			  empresa = F@_4, investidor = F@_5};
+			  empresa = F@_4, investidor = F@_5, subscricao = F@_6};
 dfp_read_field_def_MensagemUtilizador(Other, Z1, Z2,
-				      F@_1, F@_2, F@_3, F@_4, F@_5,
+				      F@_1, F@_2, F@_3, F@_4, F@_5, F@_6,
 				      TrUserData) ->
     dg_read_field_def_MensagemUtilizador(Other, Z1, Z2,
-					 F@_1, F@_2, F@_3, F@_4, F@_5,
+					 F@_1, F@_2, F@_3, F@_4, F@_5, F@_6,
 					 TrUserData).
 
 dg_read_field_def_MensagemUtilizador(<<1:1, X:7,
 				       Rest/binary>>,
-				     N, Acc, F@_1, F@_2, F@_3, F@_4, F@_5,
+				     N, Acc, F@_1, F@_2, F@_3, F@_4, F@_5, F@_6,
 				     TrUserData)
     when N < 32 - 7 ->
     dg_read_field_def_MensagemUtilizador(Rest, N + 7,
 					 X bsl N + Acc, F@_1, F@_2, F@_3, F@_4,
-					 F@_5, TrUserData);
+					 F@_5, F@_6, TrUserData);
 dg_read_field_def_MensagemUtilizador(<<0:1, X:7,
 				       Rest/binary>>,
-				     N, Acc, F@_1, F@_2, F@_3, F@_4, F@_5,
+				     N, Acc, F@_1, F@_2, F@_3, F@_4, F@_5, F@_6,
 				     TrUserData) ->
     Key = X bsl N + Acc,
     case Key of
       8 ->
 	  d_field_MensagemUtilizador_tipo(Rest, 0, 0, F@_1, F@_2,
-					  F@_3, F@_4, F@_5, TrUserData);
+					  F@_3, F@_4, F@_5, F@_6, TrUserData);
       16 ->
 	  d_field_MensagemUtilizador_tipoUtilizador(Rest, 0, 0,
 						    F@_1, F@_2, F@_3, F@_4,
-						    F@_5, TrUserData);
+						    F@_5, F@_6, TrUserData);
       26 ->
 	  d_field_MensagemUtilizador_utilizador(Rest, 0, 0, F@_1,
-						F@_2, F@_3, F@_4, F@_5,
+						F@_2, F@_3, F@_4, F@_5, F@_6,
 						TrUserData);
       34 ->
 	  d_field_MensagemUtilizador_empresa(Rest, 0, 0, F@_1,
-					     F@_2, F@_3, F@_4, F@_5,
+					     F@_2, F@_3, F@_4, F@_5, F@_6,
 					     TrUserData);
       42 ->
 	  d_field_MensagemUtilizador_investidor(Rest, 0, 0, F@_1,
-						F@_2, F@_3, F@_4, F@_5,
+						F@_2, F@_3, F@_4, F@_5, F@_6,
+						TrUserData);
+      50 ->
+	  d_field_MensagemUtilizador_subscricao(Rest, 0, 0, F@_1,
+						F@_2, F@_3, F@_4, F@_5, F@_6,
 						TrUserData);
       _ ->
 	  case Key band 7 of
 	    0 ->
 		skip_varint_MensagemUtilizador(Rest, 0, 0, F@_1, F@_2,
-					       F@_3, F@_4, F@_5, TrUserData);
+					       F@_3, F@_4, F@_5, F@_6,
+					       TrUserData);
 	    1 ->
 		skip_64_MensagemUtilizador(Rest, 0, 0, F@_1, F@_2, F@_3,
-					   F@_4, F@_5, TrUserData);
+					   F@_4, F@_5, F@_6, TrUserData);
 	    2 ->
 		skip_length_delimited_MensagemUtilizador(Rest, 0, 0,
 							 F@_1, F@_2, F@_3, F@_4,
-							 F@_5, TrUserData);
+							 F@_5, F@_6,
+							 TrUserData);
 	    3 ->
 		skip_group_MensagemUtilizador(Rest, Key bsr 3, 0, F@_1,
-					      F@_2, F@_3, F@_4, F@_5,
+					      F@_2, F@_3, F@_4, F@_5, F@_6,
 					      TrUserData);
 	    5 ->
 		skip_32_MensagemUtilizador(Rest, 0, 0, F@_1, F@_2, F@_3,
-					   F@_4, F@_5, TrUserData)
+					   F@_4, F@_5, F@_6, TrUserData)
 	  end
     end;
 dg_read_field_def_MensagemUtilizador(<<>>, 0, 0, F@_1,
-				     F@_2, F@_3, F@_4, F@_5, _) ->
+				     F@_2, F@_3, F@_4, F@_5, F@_6, _) ->
     #'MensagemUtilizador'{tipo = F@_1,
 			  tipoUtilizador = F@_2, utilizador = F@_3,
-			  empresa = F@_4, investidor = F@_5}.
+			  empresa = F@_4, investidor = F@_5, subscricao = F@_6}.
 
 d_field_MensagemUtilizador_tipo(<<1:1, X:7,
 				  Rest/binary>>,
-				N, Acc, F@_1, F@_2, F@_3, F@_4, F@_5,
+				N, Acc, F@_1, F@_2, F@_3, F@_4, F@_5, F@_6,
 				TrUserData)
     when N < 57 ->
     d_field_MensagemUtilizador_tipo(Rest, N + 7,
 				    X bsl N + Acc, F@_1, F@_2, F@_3, F@_4, F@_5,
-				    TrUserData);
+				    F@_6, TrUserData);
 d_field_MensagemUtilizador_tipo(<<0:1, X:7,
 				  Rest/binary>>,
-				N, Acc, _, F@_2, F@_3, F@_4, F@_5,
+				N, Acc, _, F@_2, F@_3, F@_4, F@_5, F@_6,
 				TrUserData) ->
     {NewFValue, RestF} = {id(d_enum_TipoMensagem(begin
 						   <<Res:32/signed-native>> =
@@ -1320,20 +1353,20 @@ d_field_MensagemUtilizador_tipo(<<0:1, X:7,
 			  Rest},
     dfp_read_field_def_MensagemUtilizador(RestF, 0, 0,
 					  NewFValue, F@_2, F@_3, F@_4, F@_5,
-					  TrUserData).
+					  F@_6, TrUserData).
 
 d_field_MensagemUtilizador_tipoUtilizador(<<1:1, X:7,
 					    Rest/binary>>,
 					  N, Acc, F@_1, F@_2, F@_3, F@_4, F@_5,
-					  TrUserData)
+					  F@_6, TrUserData)
     when N < 57 ->
     d_field_MensagemUtilizador_tipoUtilizador(Rest, N + 7,
 					      X bsl N + Acc, F@_1, F@_2, F@_3,
-					      F@_4, F@_5, TrUserData);
+					      F@_4, F@_5, F@_6, TrUserData);
 d_field_MensagemUtilizador_tipoUtilizador(<<0:1, X:7,
 					    Rest/binary>>,
 					  N, Acc, F@_1, _, F@_3, F@_4, F@_5,
-					  TrUserData) ->
+					  F@_6, TrUserData) ->
     {NewFValue, RestF} = {id(d_enum_TipoUtilizador(begin
 						     <<Res:32/signed-native>> =
 							 <<(X bsl N +
@@ -1343,20 +1376,20 @@ d_field_MensagemUtilizador_tipoUtilizador(<<0:1, X:7,
 			     TrUserData),
 			  Rest},
     dfp_read_field_def_MensagemUtilizador(RestF, 0, 0, F@_1,
-					  NewFValue, F@_3, F@_4, F@_5,
+					  NewFValue, F@_3, F@_4, F@_5, F@_6,
 					  TrUserData).
 
 d_field_MensagemUtilizador_utilizador(<<1:1, X:7,
 					Rest/binary>>,
 				      N, Acc, F@_1, F@_2, F@_3, F@_4, F@_5,
-				      TrUserData)
+				      F@_6, TrUserData)
     when N < 57 ->
     d_field_MensagemUtilizador_utilizador(Rest, N + 7,
 					  X bsl N + Acc, F@_1, F@_2, F@_3, F@_4,
-					  F@_5, TrUserData);
+					  F@_5, F@_6, TrUserData);
 d_field_MensagemUtilizador_utilizador(<<0:1, X:7,
 					Rest/binary>>,
-				      N, Acc, F@_1, F@_2, _, F@_4, F@_5,
+				      N, Acc, F@_1, F@_2, _, F@_4, F@_5, F@_6,
 				      TrUserData) ->
     {NewFValue, RestF} = begin
 			   Len = X bsl N + Acc,
@@ -1366,20 +1399,20 @@ d_field_MensagemUtilizador_utilizador(<<0:1, X:7,
 			    Rest2}
 			 end,
     dfp_read_field_def_MensagemUtilizador(RestF, 0, 0, F@_1,
-					  F@_2, NewFValue, F@_4, F@_5,
+					  F@_2, NewFValue, F@_4, F@_5, F@_6,
 					  TrUserData).
 
 d_field_MensagemUtilizador_empresa(<<1:1, X:7,
 				     Rest/binary>>,
-				   N, Acc, F@_1, F@_2, F@_3, F@_4, F@_5,
+				   N, Acc, F@_1, F@_2, F@_3, F@_4, F@_5, F@_6,
 				   TrUserData)
     when N < 57 ->
     d_field_MensagemUtilizador_empresa(Rest, N + 7,
 				       X bsl N + Acc, F@_1, F@_2, F@_3, F@_4,
-				       F@_5, TrUserData);
+				       F@_5, F@_6, TrUserData);
 d_field_MensagemUtilizador_empresa(<<0:1, X:7,
 				     Rest/binary>>,
-				   N, Acc, F@_1, F@_2, F@_3, Prev, F@_5,
+				   N, Acc, F@_1, F@_2, F@_3, Prev, F@_5, F@_6,
 				   TrUserData) ->
     {NewFValue, RestF} = begin
 			   Len = X bsl N + Acc,
@@ -1396,20 +1429,20 @@ d_field_MensagemUtilizador_empresa(<<0:1, X:7,
 									   NewFValue,
 									   TrUserData)
 					  end,
-					  F@_5, TrUserData).
+					  F@_5, F@_6, TrUserData).
 
 d_field_MensagemUtilizador_investidor(<<1:1, X:7,
 					Rest/binary>>,
 				      N, Acc, F@_1, F@_2, F@_3, F@_4, F@_5,
-				      TrUserData)
+				      F@_6, TrUserData)
     when N < 57 ->
     d_field_MensagemUtilizador_investidor(Rest, N + 7,
 					  X bsl N + Acc, F@_1, F@_2, F@_3, F@_4,
-					  F@_5, TrUserData);
+					  F@_5, F@_6, TrUserData);
 d_field_MensagemUtilizador_investidor(<<0:1, X:7,
 					Rest/binary>>,
 				      N, Acc, F@_1, F@_2, F@_3, F@_4, Prev,
-				      TrUserData) ->
+				      F@_6, TrUserData) ->
     {NewFValue, RestF} = begin
 			   Len = X bsl N + Acc,
 			   <<Bs:Len/binary, Rest2/binary>> = Rest,
@@ -1425,55 +1458,88 @@ d_field_MensagemUtilizador_investidor(<<0:1, X:7,
 									      NewFValue,
 									      TrUserData)
 					  end,
+					  F@_6, TrUserData).
+
+d_field_MensagemUtilizador_subscricao(<<1:1, X:7,
+					Rest/binary>>,
+				      N, Acc, F@_1, F@_2, F@_3, F@_4, F@_5,
+				      F@_6, TrUserData)
+    when N < 57 ->
+    d_field_MensagemUtilizador_subscricao(Rest, N + 7,
+					  X bsl N + Acc, F@_1, F@_2, F@_3, F@_4,
+					  F@_5, F@_6, TrUserData);
+d_field_MensagemUtilizador_subscricao(<<0:1, X:7,
+					Rest/binary>>,
+				      N, Acc, F@_1, F@_2, F@_3, F@_4, F@_5,
+				      Prev, TrUserData) ->
+    {NewFValue, RestF} = begin
+			   Len = X bsl N + Acc,
+			   <<Bs:Len/binary, Rest2/binary>> = Rest,
+			   {id(decode_msg_Subscricao(Bs, TrUserData),
+			       TrUserData),
+			    Rest2}
+			 end,
+    dfp_read_field_def_MensagemUtilizador(RestF, 0, 0, F@_1,
+					  F@_2, F@_3, F@_4, F@_5,
+					  if Prev == undefined -> NewFValue;
+					     true ->
+						 merge_msg_Subscricao(Prev,
+								      NewFValue,
+								      TrUserData)
+					  end,
 					  TrUserData).
 
 skip_varint_MensagemUtilizador(<<1:1, _:7,
 				 Rest/binary>>,
-			       Z1, Z2, F@_1, F@_2, F@_3, F@_4, F@_5,
+			       Z1, Z2, F@_1, F@_2, F@_3, F@_4, F@_5, F@_6,
 			       TrUserData) ->
     skip_varint_MensagemUtilizador(Rest, Z1, Z2, F@_1, F@_2,
-				   F@_3, F@_4, F@_5, TrUserData);
+				   F@_3, F@_4, F@_5, F@_6, TrUserData);
 skip_varint_MensagemUtilizador(<<0:1, _:7,
 				 Rest/binary>>,
-			       Z1, Z2, F@_1, F@_2, F@_3, F@_4, F@_5,
+			       Z1, Z2, F@_1, F@_2, F@_3, F@_4, F@_5, F@_6,
 			       TrUserData) ->
     dfp_read_field_def_MensagemUtilizador(Rest, Z1, Z2,
-					  F@_1, F@_2, F@_3, F@_4, F@_5,
+					  F@_1, F@_2, F@_3, F@_4, F@_5, F@_6,
 					  TrUserData).
 
 skip_length_delimited_MensagemUtilizador(<<1:1, X:7,
 					   Rest/binary>>,
 					 N, Acc, F@_1, F@_2, F@_3, F@_4, F@_5,
-					 TrUserData)
+					 F@_6, TrUserData)
     when N < 57 ->
     skip_length_delimited_MensagemUtilizador(Rest, N + 7,
 					     X bsl N + Acc, F@_1, F@_2, F@_3,
-					     F@_4, F@_5, TrUserData);
+					     F@_4, F@_5, F@_6, TrUserData);
 skip_length_delimited_MensagemUtilizador(<<0:1, X:7,
 					   Rest/binary>>,
 					 N, Acc, F@_1, F@_2, F@_3, F@_4, F@_5,
-					 TrUserData) ->
+					 F@_6, TrUserData) ->
     Length = X bsl N + Acc,
     <<_:Length/binary, Rest2/binary>> = Rest,
     dfp_read_field_def_MensagemUtilizador(Rest2, 0, 0, F@_1,
-					  F@_2, F@_3, F@_4, F@_5, TrUserData).
+					  F@_2, F@_3, F@_4, F@_5, F@_6,
+					  TrUserData).
 
 skip_group_MensagemUtilizador(Bin, FNum, Z2, F@_1, F@_2,
-			      F@_3, F@_4, F@_5, TrUserData) ->
+			      F@_3, F@_4, F@_5, F@_6, TrUserData) ->
     {_, Rest} = read_group(Bin, FNum),
     dfp_read_field_def_MensagemUtilizador(Rest, 0, Z2, F@_1,
-					  F@_2, F@_3, F@_4, F@_5, TrUserData).
+					  F@_2, F@_3, F@_4, F@_5, F@_6,
+					  TrUserData).
 
 skip_32_MensagemUtilizador(<<_:32, Rest/binary>>, Z1,
-			   Z2, F@_1, F@_2, F@_3, F@_4, F@_5, TrUserData) ->
+			   Z2, F@_1, F@_2, F@_3, F@_4, F@_5, F@_6,
+			   TrUserData) ->
     dfp_read_field_def_MensagemUtilizador(Rest, Z1, Z2,
-					  F@_1, F@_2, F@_3, F@_4, F@_5,
+					  F@_1, F@_2, F@_3, F@_4, F@_5, F@_6,
 					  TrUserData).
 
 skip_64_MensagemUtilizador(<<_:64, Rest/binary>>, Z1,
-			   Z2, F@_1, F@_2, F@_3, F@_4, F@_5, TrUserData) ->
+			   Z2, F@_1, F@_2, F@_3, F@_4, F@_5, F@_6,
+			   TrUserData) ->
     dfp_read_field_def_MensagemUtilizador(Rest, Z1, Z2,
-					  F@_1, F@_2, F@_3, F@_4, F@_5,
+					  F@_1, F@_2, F@_3, F@_4, F@_5, F@_6,
 					  TrUserData).
 
 decode_msg_MensagemEmpresa(Bin, TrUserData) ->
@@ -3433,6 +3499,7 @@ skip_64_Subscricao(<<_:64, Rest/binary>>, Z1, Z2, F@_1,
 
 d_enum_TipoMensagem(1) -> 'LEILAO';
 d_enum_TipoMensagem(2) -> 'EMISSAO';
+d_enum_TipoMensagem(3) -> 'SUBSCRICAO';
 d_enum_TipoMensagem(V) -> V.
 
 d_enum_TipoUtilizador(1) -> 'EMPRESA';
@@ -3444,9 +3511,9 @@ d_enum_TipoResposta(2) -> 'NOTIFICACAO';
 d_enum_TipoResposta(3) -> 'RESPOSTA';
 d_enum_TipoResposta(V) -> V.
 
-d_enum_TipoSubscricao(1) -> 'LEILAO';
-d_enum_TipoSubscricao(2) -> 'EMISSAO';
-d_enum_TipoSubscricao(3) -> 'EMPRESA';
+d_enum_TipoSubscricao(1) -> 'LEILAOSUB';
+d_enum_TipoSubscricao(2) -> 'EMISSAOSUB';
+d_enum_TipoSubscricao(3) -> 'EMPRESASUB';
 d_enum_TipoSubscricao(V) -> V.
 
 read_group(Bin, FieldNum) ->
@@ -3607,13 +3674,15 @@ merge_msg_RespostaAutenticacao(#'RespostaAutenticacao'{papel
 -compile({nowarn_unused_function,merge_msg_MensagemUtilizador/3}).
 merge_msg_MensagemUtilizador(#'MensagemUtilizador'{empresa
 						       = PFempresa,
-						   investidor = PFinvestidor},
+						   investidor = PFinvestidor,
+						   subscricao = PFsubscricao},
 			     #'MensagemUtilizador'{tipo = NFtipo,
 						   tipoUtilizador =
 						       NFtipoUtilizador,
 						   utilizador = NFutilizador,
 						   empresa = NFempresa,
-						   investidor = NFinvestidor},
+						   investidor = NFinvestidor,
+						   subscricao = NFsubscricao},
 			     TrUserData) ->
     #'MensagemUtilizador'{tipo = NFtipo,
 			  tipoUtilizador = NFtipoUtilizador,
@@ -3635,6 +3704,15 @@ merge_msg_MensagemUtilizador(#'MensagemUtilizador'{empresa
 								  TrUserData);
 				 PFinvestidor == undefined -> NFinvestidor;
 				 NFinvestidor == undefined -> PFinvestidor
+			      end,
+			  subscricao =
+			      if PFsubscricao /= undefined,
+				 NFsubscricao /= undefined ->
+				     merge_msg_Subscricao(PFsubscricao,
+							  NFsubscricao,
+							  TrUserData);
+				 PFsubscricao == undefined -> NFsubscricao;
+				 NFsubscricao == undefined -> PFsubscricao
 			      end}.
 
 -compile({nowarn_unused_function,merge_msg_MensagemEmpresa/3}).
@@ -3913,7 +3991,8 @@ v_msg_MensagemUtilizador(#'MensagemUtilizador'{tipo =
 						   F1,
 					       tipoUtilizador = F2,
 					       utilizador = F3, empresa = F4,
-					       investidor = F5},
+					       investidor = F5,
+					       subscricao = F6},
 			 Path, TrUserData) ->
     v_enum_TipoMensagem(F1, [tipo | Path], TrUserData),
     v_enum_TipoUtilizador(F2, [tipoUtilizador | Path],
@@ -3927,6 +4006,10 @@ v_msg_MensagemUtilizador(#'MensagemUtilizador'{tipo =
        true ->
 	   v_msg_MensagemInvestidor(F5, [investidor | Path],
 				    TrUserData)
+    end,
+    if F6 == undefined -> ok;
+       true ->
+	   v_msg_Subscricao(F6, [subscricao | Path], TrUserData)
     end,
     ok;
 v_msg_MensagemUtilizador(X, Path, _TrUserData) ->
@@ -4114,6 +4197,8 @@ v_msg_Subscricao(X, Path, _TrUserData) ->
 v_enum_TipoMensagem('LEILAO', _Path, _TrUserData) -> ok;
 v_enum_TipoMensagem('EMISSAO', _Path, _TrUserData) ->
     ok;
+v_enum_TipoMensagem('SUBSCRICAO', _Path, _TrUserData) ->
+    ok;
 v_enum_TipoMensagem(V, Path, TrUserData)
     when is_integer(V) ->
     v_type_sint32(V, Path, TrUserData);
@@ -4151,11 +4236,14 @@ v_enum_TipoResposta(X, Path, _TrUserData) ->
 
 -compile({nowarn_unused_function,v_enum_TipoSubscricao/3}).
 -dialyzer({nowarn_function,v_enum_TipoSubscricao/3}).
-v_enum_TipoSubscricao('LEILAO', _Path, _TrUserData) ->
+v_enum_TipoSubscricao('LEILAOSUB', _Path,
+		      _TrUserData) ->
     ok;
-v_enum_TipoSubscricao('EMISSAO', _Path, _TrUserData) ->
+v_enum_TipoSubscricao('EMISSAOSUB', _Path,
+		      _TrUserData) ->
     ok;
-v_enum_TipoSubscricao('EMPRESA', _Path, _TrUserData) ->
+v_enum_TipoSubscricao('EMPRESASUB', _Path,
+		      _TrUserData) ->
     ok;
 v_enum_TipoSubscricao(V, Path, TrUserData)
     when is_integer(V) ->
@@ -4269,14 +4357,15 @@ cons(Elem, Acc, _TrUserData) -> [Elem | Acc].
 
 get_msg_defs() ->
     [{{enum, 'TipoMensagem'},
-      [{'LEILAO', 1}, {'EMISSAO', 2}]},
+      [{'LEILAO', 1}, {'EMISSAO', 2}, {'SUBSCRICAO', 3}]},
      {{enum, 'TipoUtilizador'},
       [{'EMPRESA', 1}, {'INVESTIDOR', 2}]},
      {{enum, 'TipoResposta'},
       [{'RESULTADO', 1}, {'NOTIFICACAO', 2},
        {'RESPOSTA', 3}]},
      {{enum, 'TipoSubscricao'},
-      [{'LEILAO', 1}, {'EMISSAO', 2}, {'EMPRESA', 3}]},
+      [{'LEILAOSUB', 1}, {'EMISSAOSUB', 2},
+       {'EMPRESASUB', 3}]},
      {{msg, 'Autenticacao'},
       [#field{name = username, fnum = 1, rnum = 2,
 	      type = string, occurrence = required, opts = []},
@@ -4307,7 +4396,10 @@ get_msg_defs() ->
 	      opts = []},
        #field{name = investidor, fnum = 5, rnum = 6,
 	      type = {msg, 'MensagemInvestidor'},
-	      occurrence = optional, opts = []}]},
+	      occurrence = optional, opts = []},
+       #field{name = subscricao, fnum = 6, rnum = 7,
+	      type = {msg, 'Subscricao'}, occurrence = optional,
+	      opts = []}]},
      {{msg, 'MensagemEmpresa'},
       [#field{name = leilao, fnum = 2, rnum = 2,
 	      type = {msg, 'CriacaoLeilao'}, occurrence = optional,
@@ -4391,7 +4483,7 @@ get_msg_defs() ->
      {{msg, 'Subscricao'},
       [#field{name = tipo, fnum = 1, rnum = 2,
 	      type = {enum, 'TipoSubscricao'}, occurrence = required,
-	      opts = [{default, 'LEILAO'}]},
+	      opts = [{default, 'LEILAOSUB'}]},
        #field{name = eSubscricao, fnum = 2, rnum = 3,
 	      type = bool, occurrence = required, opts = []},
        #field{name = empresa, fnum = 3, rnum = 4,
@@ -4468,7 +4560,10 @@ find_msg_def('MensagemUtilizador') ->
 	    opts = []},
      #field{name = investidor, fnum = 5, rnum = 6,
 	    type = {msg, 'MensagemInvestidor'},
-	    occurrence = optional, opts = []}];
+	    occurrence = optional, opts = []},
+     #field{name = subscricao, fnum = 6, rnum = 7,
+	    type = {msg, 'Subscricao'}, occurrence = optional,
+	    opts = []}];
 find_msg_def('MensagemEmpresa') ->
     [#field{name = leilao, fnum = 2, rnum = 2,
 	    type = {msg, 'CriacaoLeilao'}, occurrence = optional,
@@ -4552,7 +4647,7 @@ find_msg_def('Resultado') ->
 find_msg_def('Subscricao') ->
     [#field{name = tipo, fnum = 1, rnum = 2,
 	    type = {enum, 'TipoSubscricao'}, occurrence = required,
-	    opts = [{default, 'LEILAO'}]},
+	    opts = [{default, 'LEILAOSUB'}]},
      #field{name = eSubscricao, fnum = 2, rnum = 3,
 	    type = bool, occurrence = required, opts = []},
      #field{name = empresa, fnum = 3, rnum = 4,
@@ -4561,13 +4656,14 @@ find_msg_def(_) -> error.
 
 
 find_enum_def('TipoMensagem') ->
-    [{'LEILAO', 1}, {'EMISSAO', 2}];
+    [{'LEILAO', 1}, {'EMISSAO', 2}, {'SUBSCRICAO', 3}];
 find_enum_def('TipoUtilizador') ->
     [{'EMPRESA', 1}, {'INVESTIDOR', 2}];
 find_enum_def('TipoResposta') ->
     [{'RESULTADO', 1}, {'NOTIFICACAO', 2}, {'RESPOSTA', 3}];
 find_enum_def('TipoSubscricao') ->
-    [{'LEILAO', 1}, {'EMISSAO', 2}, {'EMPRESA', 3}];
+    [{'LEILAOSUB', 1}, {'EMISSAOSUB', 2},
+     {'EMPRESASUB', 3}];
 find_enum_def(_) -> error.
 
 
@@ -4592,11 +4688,13 @@ enum_value_by_symbol('TipoSubscricao', Sym) ->
 
 
 enum_symbol_by_value_TipoMensagem(1) -> 'LEILAO';
-enum_symbol_by_value_TipoMensagem(2) -> 'EMISSAO'.
+enum_symbol_by_value_TipoMensagem(2) -> 'EMISSAO';
+enum_symbol_by_value_TipoMensagem(3) -> 'SUBSCRICAO'.
 
 
 enum_value_by_symbol_TipoMensagem('LEILAO') -> 1;
-enum_value_by_symbol_TipoMensagem('EMISSAO') -> 2.
+enum_value_by_symbol_TipoMensagem('EMISSAO') -> 2;
+enum_value_by_symbol_TipoMensagem('SUBSCRICAO') -> 3.
 
 enum_symbol_by_value_TipoUtilizador(1) -> 'EMPRESA';
 enum_symbol_by_value_TipoUtilizador(2) -> 'INVESTIDOR'.
@@ -4614,14 +4712,14 @@ enum_value_by_symbol_TipoResposta('RESULTADO') -> 1;
 enum_value_by_symbol_TipoResposta('NOTIFICACAO') -> 2;
 enum_value_by_symbol_TipoResposta('RESPOSTA') -> 3.
 
-enum_symbol_by_value_TipoSubscricao(1) -> 'LEILAO';
-enum_symbol_by_value_TipoSubscricao(2) -> 'EMISSAO';
-enum_symbol_by_value_TipoSubscricao(3) -> 'EMPRESA'.
+enum_symbol_by_value_TipoSubscricao(1) -> 'LEILAOSUB';
+enum_symbol_by_value_TipoSubscricao(2) -> 'EMISSAOSUB';
+enum_symbol_by_value_TipoSubscricao(3) -> 'EMPRESASUB'.
 
 
-enum_value_by_symbol_TipoSubscricao('LEILAO') -> 1;
-enum_value_by_symbol_TipoSubscricao('EMISSAO') -> 2;
-enum_value_by_symbol_TipoSubscricao('EMPRESA') -> 3.
+enum_value_by_symbol_TipoSubscricao('LEILAOSUB') -> 1;
+enum_value_by_symbol_TipoSubscricao('EMISSAOSUB') -> 2;
+enum_value_by_symbol_TipoSubscricao('EMPRESASUB') -> 3.
 
 
 get_service_names() -> [].
