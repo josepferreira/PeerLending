@@ -15,6 +15,124 @@ import org.json.*;
 
 import cliente.CcsCliente.*;
 
+class Informacoes{
+    Enderecos end;
+    BufferedReader inP;
+
+    public Informacoes(Enderecos end){
+        this.end = end;
+        this.inP = new BufferedReader(new InputStreamReader(System.in));
+    }
+
+    private void selecionaDeTodos(String acao, boolean ativo){
+        switch(acao){
+            case "leilao":
+                if(ativo)
+                    end.leiloesAtivos();
+                else
+                    end.leiloesFinalizados();
+                break;
+            case "emissao":
+                if(ativo)
+                    end.emissoesAtivas();
+                else
+                    end.emissoesFinalizadas();
+        }
+    }
+
+    private void selecionaDeEmpresa(String acao, boolean ativo){
+        String empresa = null;
+        boolean lido = false;
+        do{
+            System.out.print("Insira a Empresa: ");
+            try{
+                empresa = inP.readLine();
+                if(empresa.length() > 0)
+                    lido = true;
+                /**
+                 * Tenho de validar se é multiplo de 100?
+                 */
+            } catch(Exception e){
+                System.out.println("O valor introduzido não é valido!");
+            }
+        }while(!lido);
+        
+        switch(acao){
+            case "leilao":
+                if(ativo)
+                    end.leiloesAtivos(empresa);
+                else
+                    end.leiloesFinalizados(empresa);
+                break;
+            case "emissao":
+                if(ativo)
+                    end.emissoesAtivas(empresa);
+                else
+                    end.emissoesFinalizadas(empresa);
+        }
+    }
+
+    private void apresentaOpcoes(String acao, boolean ativo){
+        boolean continua = true;
+        while(continua){
+
+            System.out.println("1 - Visualizar todos!");
+            System.out.println("2 - Visualizar de uma Empresa!");
+            System.out.print("Opção: ");
+            boolean lido = false;
+            int opcao = 0;
+            while(!lido){
+                try{
+                    opcao = Integer.parseInt(inP.readLine());
+                    lido = true;
+                } catch(Exception e){
+                    System.out.println("O valor introduzido não é valido!");
+                    System.out.print("Opção: ");
+                }
+            }
+
+            switch(opcao){
+                case 1: selecionaDeTodos(acao, ativo); break;
+                case 2: selecionaDeEmpresa(acao, ativo); break;
+                default: continua = false;
+            }
+        }
+        
+    }
+
+    public void menuInicial() {
+        boolean continua = true;
+        while(continua){
+
+            System.out.println("1 - Visualizar Leilões Ativos");
+            System.out.println("2 - Visualizar Emissões Ativas");
+            System.out.println("3 - Visualizar Leilões Terminados");
+            System.out.println("4 - Visualizar Emissões Terminadas");
+            System.out.print("Opção: ");
+            boolean lido = false;
+            int opcao = 0;
+            while(!lido){
+                try{
+                    opcao = Integer.parseInt(inP.readLine());
+                    lido = true;
+                } catch(Exception e){
+                    System.out.println("O valor introduzido não é valido!");
+                    System.out.print("Opção: ");
+                }
+            }
+
+            switch(opcao){
+                case 1: apresentaOpcoes("leilao", true); break;
+                case 2: apresentaOpcoes("emissao", true); break;
+                case 3: apresentaOpcoes("leilao", false); break;
+                case 4: apresentaOpcoes("emissao", false); break;
+                default: continua = false;
+            }
+        }
+
+    }
+}
+
 class RecebeMensagens implements Runnable{
 
     CodedInputStream cis;
@@ -88,6 +206,7 @@ class Licitador{
     GerirSubscricoes subscricoes;
     ZMQ.Context context = ZMQ.context(1);
     //Enderecos enderecos;
+    Informacoes informacoes;
 
     public Licitador(String username, Socket s, Enderecos enderecos, boolean leilao, boolean emissao, List<String> emps) throws Exception{
         this.username = username;
@@ -100,7 +219,7 @@ class Licitador{
         Notificacoes n = new Notificacoes(context, subscricoes,enderecos,username);
         (new Thread(n)).start();
         subscricoes.ativaSubscricoes();
-        
+        informacoes = new Informacoes(enderecos);
     }
 
     public static int little2big(int i) {
@@ -253,6 +372,7 @@ class Licitador{
             System.out.println("1 - Licitar Leilao");
             System.out.println("2 - Emissão Taxa Fixa");
             System.out.println("3 - Gerir Subscrições");
+            System.out.println("4 - Informações");
             System.out.print("Opção: ");
             boolean lido = false;
             int opcao = 0;
@@ -270,6 +390,7 @@ class Licitador{
                 case 1: apresentaLicitacaoLeilao(); break;
                 case 2: apresentaSubscricaoTaxaFixa(); break;
                 case 3: subscricoes.menuInicial(); break;
+                case 4: informacoes.menuInicial(); break;
                 default: continua = false;
             }
         }
@@ -288,6 +409,7 @@ class Licitador{
     CodedOutputStream cos;
     GerirSubscricoes subscricoes;
     ZMQ.Context context = ZMQ.context(1);
+    Informacoes informacoes;
 
     public Empresa(String username, Socket s, Enderecos enderecos, boolean leilao, boolean emissao, List<String> emps) throws Exception{
         this.username = username;
@@ -300,7 +422,7 @@ class Licitador{
         Notificacoes n = new Notificacoes(context, subscricoes,enderecos, username);
         (new Thread(n)).start();
         subscricoes.ativaSubscricoes();
-        
+        informacoes = new Informacoes(enderecos);
 
     }
 
@@ -471,6 +593,7 @@ class Licitador{
             System.out.println("1 - Criar Leilao");
             System.out.println("2 - Emissão Taxa Fixa");
             System.out.println("3 - Gerir Subscrições");
+            System.out.println("4 - Informações");
             System.out.print("Opção: ");
             boolean lido = false;
             int opcao = 0;
@@ -488,6 +611,7 @@ class Licitador{
                 case 1: apresentaCriacaoLeilao(); break;
                 case 2: apresentaEmissaoTaxaFixa(); break;
                 case 3: subscricoes.menuInicial(); break;
+                case 4: informacoes.menuInicial(); break;
                 default: continua = false;
             }
         }
@@ -607,37 +731,6 @@ class Licitador{
         return opcao;
     }
 
-    // private static void leiloesAtivos(){
-    //     try{
-    //         URL url = new URL("http://" + enderecos.enderecoDiretorio + ":" + enderecos.portaDiretorio + "/leilao");
-    //         HttpURLConnection con = (HttpURLConnection) url.openConnection();
-    //         con.setRequestMethod("GET");
-    //         con.setRequestProperty("Content-Type", "application/json");
-
-    //         con.connect();
-
-    //         BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-	// 	    String inputLine;
-	// 	    StringBuffer response = new StringBuffer();
-
-	// 	    while ((inputLine = in.readLine()) != null) {
-	// 		    response.append(inputLine);
-	// 	    }
-    //         in.close();
-            
-    //         String resposta = response.toString();
-    //         JSONArray jsonArray = new JSONArray(resposta);
-    //         System.out.println("Os leilões ativos são: ");
-    //         for(int i=0; i<jsonArray.length(); i++){
-    //             JSONObject objetoJSON = jsonArray.getJSONObject(i);
-    //             System.out.println("Empresa: " + objetoJSON.get("empresa"));
-    //         }
-
-    //     }catch(Exception exc){
-    //         System.out.println(exc);
-    //     }
-    // }
-
     public static void main(String args[]) throws Exception{
         Thread outraT = null;
         Scanner sc = new Scanner(System.in);
@@ -711,13 +804,11 @@ class Licitador{
                     }
                 }
 
-                
-
             }
         }
         finally{
             sc.close();
         }
-        
-    }
+        return; 
+    }  
 }

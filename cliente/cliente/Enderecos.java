@@ -68,6 +68,7 @@ public class Enderecos{
             for(int i=0; i<jsonArray.length(); i++){
                 JSONObject objetoJSON = jsonArray.getJSONObject(i);
                 System.out.println("Empresa: " + objetoJSON.get("empresa"));
+                System.out.println(objetoJSON.toString());
             }
 
         }catch(Exception exc){
@@ -99,6 +100,7 @@ public class Enderecos{
             for(int i=0; i<jsonArray.length(); i++){
                 JSONObject objetoJSON = jsonArray.getJSONObject(i);
                 System.out.println("Empresa: " + objetoJSON.get("empresa"));
+                System.out.println(objetoJSON.toString());
             }
 
         }catch(Exception exc){
@@ -130,6 +132,7 @@ public class Enderecos{
             for(int i=0; i<jsonArray.length(); i++){
                 JSONObject objetoJSON = jsonArray.getJSONObject(i);
                 System.out.println("Empresa: " + objetoJSON.get("empresa"));
+                System.out.println(objetoJSON.toString());
             }
 
         }catch(Exception exc){
@@ -161,6 +164,7 @@ public class Enderecos{
             for(int i=0; i<jsonArray.length(); i++){
                 JSONObject objetoJSON = jsonArray.getJSONObject(i);
                 System.out.println("Empresa: " + objetoJSON.get("empresa"));
+                System.out.println(objetoJSON.toString());
             }
 
         }catch(Exception exc){
@@ -192,6 +196,7 @@ public class Enderecos{
             for(int i=0; i<jsonArray.length(); i++){
                 JSONObject objetoJSON = jsonArray.getJSONObject(i);
                 System.out.println("Empresa: " + objetoJSON.get("empresa"));
+                System.out.println(objetoJSON.toString());
             }
 
         }catch(Exception exc){
@@ -223,6 +228,7 @@ public class Enderecos{
             for(int i=0; i<jsonArray.length(); i++){
                 JSONObject objetoJSON = jsonArray.getJSONObject(i);
                 System.out.println("Empresa: " + objetoJSON.get("empresa"));
+                System.out.println(objetoJSON.toString());
             }
 
         }catch(Exception exc){
@@ -254,6 +260,7 @@ public class Enderecos{
             for(int i=0; i<jsonArray.length(); i++){
                 JSONObject objetoJSON = jsonArray.getJSONObject(i);
                 System.out.println("Empresa: " + objetoJSON.get("empresa"));
+                System.out.println(objetoJSON.toString());
             }
 
         }catch(Exception exc){
