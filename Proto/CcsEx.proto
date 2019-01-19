@@ -20,6 +20,7 @@ enum TipoMensagem {
     LEILAO = 1;
     EMISSAO = 2;
     SUBSCRICAO = 3;
+    AUTENTICACAO = 4;
 }
 
 enum TipoUtilizador {

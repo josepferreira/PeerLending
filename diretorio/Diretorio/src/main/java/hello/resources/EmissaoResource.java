@@ -79,6 +79,7 @@ public class EmissaoResource {
             System.out.println(emissao);
             emissao.terminado = true;
             emissao.propostas = em.propostas;
+            emissao.sucesso = em.sucesso;
 
             ArrayList<Emissao> emissaoF = emissoesFinalizadas.get(empresa);
             if (emissaoF == null)

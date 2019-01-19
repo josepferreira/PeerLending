@@ -60,7 +60,13 @@ loopEmpresa(Sock, User, PidState) ->
                     %{iniciaEmissao, Empresa, From, ProtoBufBin}
                     PidState ! {iniciaEmissao, Utilizador, self(), MensagemEmpresa},
                     loopEmpresa(Sock, User, PidState)
-                ;  
+                ;
+                'AUTENTICACAO' ->
+                    Binario = ccs:encode_msg(#'Autenticacao'{username=User,password="pass"}),
+                    io:format("VOu enviar uma resposta de ERRO para o cliente~n"),
+                    gen_tcp:send(Sock, Binario),
+                    loopEmpresa(Sock, User, PidState)
+                ;
                 _ -> 
                     io:format("Não recebemos uma Emissao nem Leilao, algo aqui correu mesmo muito mal"),
                     Binario = ccs:encode_msg(#'Resultado'{tipo='EMISSAO',empresa=Utilizador,texto="INSUCESSO"}),
@@ -200,6 +206,12 @@ loopLicitador(Sock, User, MapState) ->
                     %         loopLicitador(Sock, User, MapState)
                     % end;
                 ;
+                'AUTENTICACAO' ->
+                    Binario = ccs:encode_msg(#'Autenticacao'{username=User,password="pass"}),
+                    io:format("VOu enviar uma resposta de ERRO para o cliente~n"),
+                    gen_tcp:send(Sock, Binario),
+                    loopLicitador(Sock, User, MapState);
+
                 _ -> 
                     io:format("Não recebemos uma Emissao nem Leilao, algo aqui correu mesmo muito mal")
                     %Binario = ccs:encode_msg(#'Resultado'{tipo='EMISSAO',empresa=Utilizador,texto="INSUCESSO"}),
