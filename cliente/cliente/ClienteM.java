@@ -602,36 +602,36 @@ class Licitador{
         return opcao;
     }
 
-    private static void leiloesAtivos(){
-        try{
-            URL url = new URL("http://" + enderecos.enderecoDiretorio + ":" + enderecos.portaDiretorio + "/leilao");
-            HttpURLConnection con = (HttpURLConnection) url.openConnection();
-            con.setRequestMethod("GET");
-            con.setRequestProperty("Content-Type", "application/json");
+    // private static void leiloesAtivos(){
+    //     try{
+    //         URL url = new URL("http://" + enderecos.enderecoDiretorio + ":" + enderecos.portaDiretorio + "/leilao");
+    //         HttpURLConnection con = (HttpURLConnection) url.openConnection();
+    //         con.setRequestMethod("GET");
+    //         con.setRequestProperty("Content-Type", "application/json");
 
-            con.connect();
+    //         con.connect();
 
-            BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-		    String inputLine;
-		    StringBuffer response = new StringBuffer();
+    //         BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+	// 	    String inputLine;
+	// 	    StringBuffer response = new StringBuffer();
 
-		    while ((inputLine = in.readLine()) != null) {
-			    response.append(inputLine);
-		    }
-            in.close();
+	// 	    while ((inputLine = in.readLine()) != null) {
+	// 		    response.append(inputLine);
+	// 	    }
+    //         in.close();
             
-            String resposta = response.toString();
-            JSONArray jsonArray = new JSONArray(resposta);
-            System.out.println("Os leilões ativos são: ");
-            for(int i=0; i<jsonArray.length(); i++){
-                JSONObject objetoJSON = jsonArray.getJSONObject(i);
-                System.out.println("Empresa: " + objetoJSON.get("empresa"));
-            }
+    //         String resposta = response.toString();
+    //         JSONArray jsonArray = new JSONArray(resposta);
+    //         System.out.println("Os leilões ativos são: ");
+    //         for(int i=0; i<jsonArray.length(); i++){
+    //             JSONObject objetoJSON = jsonArray.getJSONObject(i);
+    //             System.out.println("Empresa: " + objetoJSON.get("empresa"));
+    //         }
 
-        }catch(Exception exc){
-            System.out.println(exc);
-        }
-    }
+    //     }catch(Exception exc){
+    //         System.out.println(exc);
+    //     }
+    // }
 
     public static void main(String args[]) throws Exception{
         Thread outraT = null;
@@ -685,7 +685,7 @@ class Licitador{
                 switch(opcao){
                     //Se calhar só vamos buscar o resposta se o user nao for nulo (poed acontecer se der uma exceçao)
                     case 1: user = autenticaCliente(inP,cos); resposta = leMensagemInicial(cis); break;
-                    case 2: leiloesAtivos(); break;
+                    case 2: enderecos.leiloesAtivos(); break;
                     default: sair = true; System.out.println("bye!"); break;
                 }
                 

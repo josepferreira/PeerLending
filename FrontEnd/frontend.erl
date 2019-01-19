@@ -61,7 +61,7 @@ start() ->
     
   
   % Modificar a passar o que obtemos do JSON
-
+  io:format("cheguei, falta chumack~n"),
   application:start(chumak),
 
   
@@ -87,8 +87,8 @@ start() ->
 
 acceptor(LSock, MapState) ->
   {ok, Sock} = gen_tcp:accept(LSock),
-  spawn(fun() -> acceptor(LSock, MapState) end),
-  autenticaCliente(Sock, MapState),
+  Pid = spawn(fun() -> autenticaCliente(Sock, MapState) end),
+  gen_tcp:controlling_process(Sock, Pid),
   acceptor(LSock, MapState).
 
 
@@ -124,9 +124,10 @@ autenticaCliente(Sock, MapState) ->
                         Bin = ccs:encode_msg(#'RespostaAutenticacao'{sucesso = true, papel = Papel, leilaoSubscrito = L, emissaoSubscrita = E, empresasSubscritas = List }),
                         gen_tcp:send(Sock, Bin),
                         %%Agora vou iniciar o ator que vai tratar do cliente
-                        Pid = spawn(frontend_client, start, [Sock, User, Papel, MapState]),
-                        gen_tcp:controlling_process(Sock, Pid),
-                        io:format("O PID do processo criado é: ~p~n", [Pid]);
+                        %Pid = spawn(frontend_client, start, [Sock, User, Papel, MapState]),
+                        %gen_tcp:controlling_process(Sock, Pid),
+%                        io:format("O PID do processo criado é: ~p~n", [Pid]),
+                        frontend_client:start(Sock, User, Papel, MapState);
 
                     "empresa" -> 
                         io:format("Vou pedir papel~n"),
@@ -139,9 +140,8 @@ autenticaCliente(Sock, MapState) ->
                         io:format("~p~n",[Papel]),
                         io:format("~p~n",[MapState]),
                         %%Agora vou iniciar o ator que vai tratar da empresa
-                        Pid = spawn(frontend_client, start, [Sock, User, Papel, MapState]),
-                        gen_tcp:controlling_process(Sock, Pid),
-                        io:format("O PID do processo criado é: ~p~n", [Pid])
+                        frontend_client:start(Sock, User, Papel, MapState)
+                        %io:format("O PID do processo criado é: ~p~n", [Pid])
                     end
                 end
                 ;

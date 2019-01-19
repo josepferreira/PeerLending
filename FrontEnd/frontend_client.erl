@@ -99,9 +99,11 @@ loopLicitador(Sock, User, MapState) ->
     receive
         {tcp, _ , MensagemLicitador} ->
             io:format("Recebi uma mensagem do utilizador e agora vou tratar dela~n"),
+            io:format("~s~n",[MensagemLicitador]),
             {'MensagemUtilizador', Tipo, _, Utilizador, _, Investidor, Subscricao} = ccs:decode_msg(MensagemLicitador, 'MensagemUtilizador'),
             %{'MensagemLicitador', Tipo, Leilao, Emissao, Utilizador} = ccs:decode_msg(MensagemLicitador,'MensagemLicitador'),
-            io:format("~p~n",[Tipo]),
+            io:format("Tipo:~p~n",[Tipo]),
+            io:format("Utilizador:~p~n",[Utilizador]),
             case Tipo of
                 'LEILAO' -> 
                     %Vou ter de mandar a mensagem para o frontend_state
@@ -130,7 +132,8 @@ loopLicitador(Sock, User, MapState) ->
                 ;
                 'SUBSCRICAO' ->
                     {'Subscricao', TipoSub, ESubscricao, Empresa  } = Subscricao,
-
+                    io:format("Tiposub: ~p~n",[TipoSub]),
+                    io:format("Empresa: ~p~n",[Empresa]),
                     case TipoSub of
                         'LEILAOSUB' ->
                             login_manager:alteraSubscricaoLeilao(User, ESubscricao),

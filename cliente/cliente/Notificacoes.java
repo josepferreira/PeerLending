@@ -216,7 +216,7 @@ public class Notificacoes implements Runnable{
 
     public void run(){
         //Vou ter de me associar às exchanges
-        try{
+        /*try{
             FileWriter fw = new FileWriter("notificacoes-" + this.username + ".txt", true); //true para fazer append
             fw.write("\n:::::::::::::::::::::::::::::::Novo início de sessão!:::::::::::::::::::::::\n\n");
             fw.close();
@@ -226,6 +226,7 @@ public class Notificacoes implements Runnable{
         catch(Exception exce){
             System.out.println(exce);
         }
+        */
         ZMQ.Socket socket = context.socket(ZMQ.SUB);
         socket.connect("inproc://notificacoes");
         socket.subscribe("comuSub");

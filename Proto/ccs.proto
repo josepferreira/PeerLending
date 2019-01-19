@@ -1,7 +1,5 @@
 syntax = "proto2";
 
-package cliente;
-
 
 message Autenticacao{
     required string username = 1;

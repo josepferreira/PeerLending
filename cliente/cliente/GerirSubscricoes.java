@@ -93,6 +93,10 @@ public class GerirSubscricoes{
       
         byte[] ba = mensagem.toByteArray();
 
+        System.out.println("Mensagem: " + ba);
+        System.out.println("Tamanho: " + ba.length);
+        System.out.println("Tamanho: " + little2big(ba.length));
+
         try{
             cos.writeSFixed32NoTag(little2big(ba.length));
             cos.writeRawBytes(ba);
