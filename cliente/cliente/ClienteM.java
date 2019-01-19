@@ -299,6 +299,8 @@ class Licitador{
         subscricoes = new GerirSubscricoes(context, leilao, emissao, emps, cos, username, "empresa");
         Notificacoes n = new Notificacoes(context, subscricoes,enderecos, username);
         (new Thread(n)).start();
+        subscricoes.ativaSubscricoes();
+        
 
     }
 
