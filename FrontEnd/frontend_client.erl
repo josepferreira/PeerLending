@@ -44,7 +44,7 @@ loopEmpresa(Sock, User, PidState) ->
         {tcp, _, MensagemEmpresa} ->
             io:format("Recebi uma mensagem do utilizador via TCP e agora vou tratar dela~n"),
             io:format(MensagemEmpresa),
-            {'MensagemUtilizador', Tipo, _, Utilizador, _, _,_} = ccs:decode_msg(MensagemEmpresa, 'MensagemUtilizador'),
+            {'MensagemUtilizador', Tipo, _, Utilizador, _, _,Subscricao} = ccs:decode_msg(MensagemEmpresa, 'MensagemUtilizador'),
             %{'MensagemEmpresa', Tipo, _, _, Utilizador} = ccs:decode_msg(MensagemEmpresa,'MensagemEmpresa'),
             case Tipo of
                 'LEILAO' -> 
@@ -55,6 +55,29 @@ loopEmpresa(Sock, User, PidState) ->
 
                     PidState ! {iniciaLeilao, Utilizador, self(), MensagemEmpresa},
                     loopEmpresa(Sock, User, PidState)
+                ;
+
+                'SUBSCRICAO' ->
+                    {'Subscricao', TipoSub, ESubscricao, Empresa  } = Subscricao,
+                    io:format("Tiposub: ~p~n",[TipoSub]),
+                    io:format("Empresa: ~p~n",[Empresa]),
+                    case TipoSub of
+                        'LEILAOSUB' ->
+                            login_manager:alteraSubscricaoLeilao(User, ESubscricao),
+                            loopEmpresa(Sock, User, PidState)
+                        ;
+                        'EMISSAOSUB' ->
+                            login_manager:alteraSubscricaoEmissao(User, ESubscricao),
+                            loopEmpresa(Sock, User, PidState)
+                        ;
+                        'EMPRESASUB' when ESubscricao == true ->
+                            login_manager:adicionaSubscricaoEmpresa(User, Empresa),
+                            loopEmpresa(Sock, User, PidState)
+                        ;
+                        'EMPRESASUB' when ESubscricao == false ->
+                            login_manager:retiraSubscricaoEmpresa(User, Empresa),
+                            loopEmpresa(Sock, User, PidState)
+                    end
                 ;
                 'EMISSAO' ->
                     %{iniciaEmissao, Empresa, From, ProtoBufBin}

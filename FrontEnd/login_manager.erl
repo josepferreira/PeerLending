@@ -80,10 +80,15 @@ loop( Map ) ->
             case maps:find(U, Map) of
                 {ok, {P, true, Papel, Emissao, Leilao, List}} ->
                     From ! {login_manager, ok},
-                    case lists:search(fun(T) ->(T==Emp) end,List) of
-                        false -> 
-                            io:format("Vou adicionar emp sub~n"),
-                            loop (maps:put (U, {P, true, Papel, Emissao, Leilao, [Emp | List] },Map));
+                    case lists:member(Emp, List) of
+                        false ->
+                            case lists:member(Emp, maps:keys(Map)) of
+                                true ->
+                                        io:format("Vou adicionar emp sub~n"),
+                                        loop (maps:put (U, {P, true, Papel, Emissao, Leilao, [Emp | List] },Map));
+                                    _ ->
+                                        loop(Map)
+                            end;
                         _ -> loop(Map)
                     end;
                 _ ->
