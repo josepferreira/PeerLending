@@ -1,2 +1,0 @@
-Se já esta logado consegue entrar com o mesmo utilizador?
-Quando ele faz logout, aparece um erro a dizer que não foi feito com sucesso ... verificar isto

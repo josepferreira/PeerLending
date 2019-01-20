@@ -1,7 +1,0 @@
-Duvidas:
-
-ao licitar, pode-se retornar:   
-    -> excecao a dizer q leilao ja acabou
-    -> excecao a dizer q foi ultrapassado
-    -> ou uma mensagem resposta mesmo, no entanto é necessario q o 
-    emprestimo conheça o protocolo de comunicacao
