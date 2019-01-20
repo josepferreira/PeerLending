@@ -36,6 +36,8 @@ public class EmissaoResource {
             return emissoes;
         }
 
+        if(emissoesAtivas.get(empresa.get()) == null)
+            return new ArrayList<>();
         return emissoesAtivas.get(empresa.get());
     }
 
@@ -51,6 +53,8 @@ public class EmissaoResource {
             return emissoes;
         }
 
+        if(emissoesAtivas.get(empresa.get()) == null)
+            return new ArrayList<>();
         return emissoesFinalizadas.get(empresa.get());
     }
 

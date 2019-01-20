@@ -42,6 +42,8 @@ public class LeilaoResource {
             return leiloes;
         }
 
+        if(leiloesAtivos.get(empresa.get()) == null)
+            return new ArrayList<>();
         return leiloesAtivos.get(empresa.get());
     }
 
@@ -56,7 +58,8 @@ public class LeilaoResource {
             }
             return leiloes;
         }
-
+        if(leiloesAtivos.get(empresa.get()) == null)
+            return new ArrayList<>();
         return leiloesFinalizados.get(empresa.get());
     }
 

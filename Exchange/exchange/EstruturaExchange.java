@@ -600,6 +600,10 @@ class EstruturaExchange{
             }
         }
 
+        if(eliminar.size()==0){
+            System.out.println("Estranho!");
+        }
+
         paraTerminar.removeAll(eliminar);
         
     }

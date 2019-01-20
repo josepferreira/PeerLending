@@ -79,10 +79,10 @@ public class GerirSubscricoes{
         return opcao;
     }
 
-    public void adicionaEmpresa(String empresa){
+    public synchronized void adicionaEmpresa(String empresa){
         empresasSubscritas.add(empresa);
         
-        System.out.println("\n\nVou enviar mensagem para sibscrever 1 empresa\n\n");
+        System.out.println("\nVou enviar mensagem para sibscrever 1 empresa: " + empresa);
         
         Subscricao leilao = Subscricao.newBuilder()
                                             .setTipo(TipoSubscricao.EMPRESASUB)
@@ -99,10 +99,6 @@ public class GerirSubscricoes{
       
         byte[] ba = mensagem.toByteArray();
 
-        System.out.println("Mensagem: " + ba);
-        System.out.println("Tamanho: " + ba.length);
-        System.out.println("Tamanho: " + little2big(ba.length));
-
         try{
             cos.writeSFixed32NoTag(little2big(ba.length));
             cos.writeRawBytes(ba);
@@ -111,6 +107,11 @@ public class GerirSubscricoes{
         catch(Exception exc){
             System.out.println(exc);
         }
+    }
+
+    public synchronized void retiraEmpresaList(String empresa){
+        //System.out.println("Vou retirar a empresa: " + empresa);
+        empresasSubscritas.remove(empresa);
     }
 
     public void removeEmpresa(String empresa){
@@ -246,10 +247,9 @@ public class GerirSubscricoes{
                         System.out.print("Escreva o nome da empresa: ");
                         String empresa = inP.readLine();
                         if(!empresasSubscritas.contains(empresa)){
-                            System.out.println("Vou mandar uma empresa para subscrever! " + empresa);
+                            adicionaEmpresa(empresa);
                             socket.send(headSub + "sub@leilao::" + empresa + "::");
                             socket.send(headSub + "sub@emissao::" + empresa + "::");
-                            adicionaEmpresa(empresa);
                         }else{
                             System.out.println("ERRO: Empresa já se encontra subscrita ... Ação inválida!");
                         }
@@ -278,6 +278,7 @@ public class GerirSubscricoes{
             System.out.println("1 - Vetar todos os leiloes");
             System.out.println("2 - Vetar todas as emissões");
             System.out.println("3 - Vetar uma empresa");
+            System.out.println("0 - Voltar");
             System.out.print("Opção: ");
             
             try{
@@ -365,6 +366,7 @@ public class GerirSubscricoes{
                         }
                         continua = false;
                         break;
+                    case 0: continua = false; break;
                     default:
                         System.out.println("Opção Inválida!");
                 }

@@ -49,7 +49,6 @@ class ComunicaCliente{
     }
 
     private void registaTodosEnderecos(){
-        System.out.println("Vou fazer connect a todos!");
         try{
             URL url = new URL("http://" + end.enderecoDiretorio + 
                                         ":" + end.portaDiretorio + "/exchange/todas");
@@ -69,7 +68,7 @@ class ComunicaCliente{
 		    in.close();
 
 		    //print result
-            System.out.println(response.toString());
+            //System.out.println(response.toString());
             JSONArray jsonArray = new JSONArray(response.toString());
             for(int ij=0; ij<jsonArray.length(); ij++){
                 JSONObject exchange = jsonArray.getJSONObject(ij);
@@ -83,7 +82,7 @@ class ComunicaCliente{
                 }
 
                 enderecos.put(endExchange, empresas);
-                System.out.println(endExchange);
+                //System.out.println(endExchange);
                 this.sub.connect("tcp://*:"+endExchange);
             }
             temTodos = true;
@@ -94,9 +93,9 @@ class ComunicaCliente{
         }
     }
 
-    private void registaNovoEndereco(String empresa){
-        System.out.println("Vou subscrever a empresa " + empresa);
-        
+    private boolean registaNovoEndereco(String empresa){
+        //System.out.println("Vou subscrever a empresa " + empresa);
+        boolean resultadoR = false;
         try{
             URL url = new URL("http://" + end.enderecoDiretorio + 
                                     ":" + end.portaDiretorio + "/exchange?empresa="+empresa);
@@ -115,26 +114,30 @@ class ComunicaCliente{
 		    }
 		    in.close();
 
-            System.out.println(response.toString());
-            JSONObject exchange = new JSONObject(response.toString());
-            String endExchange = exchange.get("endereco").toString();
-            JSONArray ja = exchange.getJSONArray("empresas");
-            ArrayList<String> empresas = new ArrayList<>();
+            //System.out.println("Resposta: " + response.toString());
+            if(!response.toString().equals("")){
+                resultadoR = true;
+                JSONObject exchange = new JSONObject(response.toString());
+                String endExchange = exchange.get("endereco").toString();
+                JSONArray ja = exchange.getJSONArray("empresas");
+                ArrayList<String> empresas = new ArrayList<>();
 
-            for(int i=0; i<ja.length();i++){
-                System.out.println("E: " + ja.get(i));
-                empresas.add(ja.get(i).toString());
+                for(int i=0; i<ja.length();i++){
+                    System.out.println("E: " + ja.get(i));
+                    empresas.add(ja.get(i).toString());
+                }
+
+                enderecos.put(endExchange, empresas);
+                this.sub.connect("tcp://*:"+endExchange);
             }
-
-            enderecos.put(endExchange, empresas);
-            this.sub.connect("tcp://*:"+endExchange);
             con.disconnect();
+            
 
         }catch(Exception exc){
             System.out.println(exc);
         }
     
-
+        return resultadoR;
     }
 
     public void atoSub(String msgResposta){
@@ -146,47 +149,52 @@ class ComunicaCliente{
              * Se for unsub@ -> então é para tirar o subscribe
              */
 
-            System.out.println("RECEBI A SEGUINTE MENSAGEM: " + msgResposta);
             String decisao = msgResposta.split("@")[0];
             String subResposta = msgResposta.split("@")[1];
-            System.out.println("\nA decisao é " + decisao + ". A subscrição: " + subResposta);
             /**
              * Vou adicionar a subscricao à classe subscricao e ao socket
              */
+            String empresa = null;
             if(decisao.equals("sub")){
+                boolean possoS = true;
                 switch(subResposta){
                     case "leilao::": 
-                    subscricao.leiloesSubscritos = true;
+                    //subscricao.leiloesSubscritos = true;
                     if(!temTodos)
                         registaTodosEnderecos();  
                     break;
                     case "emissao::": 
-                        subscricao.emissoesSubscritas = true; 
+                       // subscricao.emissoesSubscritas = true; 
                         if(!temTodos)
                             registaTodosEnderecos();
                         break;
                     default: 
-                        String empresa = subResposta.split("::")[1]; 
-                        subscricao.adicionaEmpresa(empresa);
+                        empresa = subResposta.split("::")[1]; 
+                        //subscricao.adicionaEmpresa(empresa);
                         if(!jaTemEndereco(empresa)){
-                            registaNovoEndereco(empresa);
+                            possoS = registaNovoEndereco(empresa);
                         } 
                         break;
                 }
-                sub.subscribe(subResposta.getBytes());
-                System.out.println("Ja subscrevi!!");
+                if(possoS){
+                    sub.subscribe(subResposta.getBytes());
+                    System.out.println("Ja subscrevi!!");
+                }
+                else{
+                    if(empresa != null) subscricao.retiraEmpresaList(empresa);
+                }
             }else{
                 if(decisao.equals("unsub")){
                     switch(subResposta){
-                        case "leilao::": subscricao.leiloesSubscritos = false;  break;
-                        case "emissao::": subscricao.emissoesSubscritas = false; break;
+                        case "leilao::": /*subscricao.leiloesSubscritos = false;*/  break;
+                        case "emissao::": /*subscricao.emissoesSubscritas = false;*/ break;
                         default: 
-                            String empresa = subResposta.split("::")[1]; 
-                            subscricao.removeEmpresa(empresa); 
+                            empresa = subResposta.split("::")[1]; 
+                            //subscricao.removeEmpresa(empresa); 
                             break;
                     }
                     sub.unsubscribe(subResposta.getBytes());
-                    System.out.println("Ja tirei a subscricao!!");
+                    System.out.println("Ja retirei a subscricao!!");
                 }else{
                     System.out.println("ERRO: Não vai fazer sub nem unsub!");
                 }
@@ -240,7 +248,6 @@ public class Notificacoes implements Runnable{
              try{
                  byte[] b = socket.recv(0);
             String recebi = new String(b);
-            System.out.println("Recebi: " + recebi);
 
             if(recebi.startsWith("comuSub")){
                 cc.atoSub(recebi.substring(7));
@@ -332,7 +339,6 @@ public class Notificacoes implements Runnable{
             System.out.println("UMA Excep:" + excep);
         }
         }
-        System.out.println("Posso abondanar, notificacoes");
         try{
             socket.close();
         }catch(Exception exc){

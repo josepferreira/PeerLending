@@ -156,9 +156,14 @@ class RecebeMensagens implements Runnable{
                 if(resposta.getTipo() == TipoResposta.RESULTADO){
                     //Vou imprimir o resultado de um leilao
                     Resultado resultado = resposta.getResultado();
+                    String acao = "da empresa";
+                    if(resultado.getTipo() == TipoMensagem.LEILAO)
+                        acao = "do leilão da empresa ";
+                    if(resultado.getTipo() == TipoMensagem.EMISSAO)
+                            acao = "da emissão da empresa ";
                     System.out.println("\n -----");
                     String resultadoMsg = resultado.hasTexto() ? resultado.getTexto() : "Impossivel apresentar";
-                    System.out.println("O resultado do leilão da empresa " + resultado.getEmpresa() + " é: " + (resultadoMsg.equals("[]") ? "sem qualquer proposta apresentada!" : resultadoMsg));
+                    System.out.println("O resultado " + acao + resultado.getEmpresa() + " é: " + (resultadoMsg.equals("[]") ? "sem qualquer proposta apresentada!" : resultadoMsg));
                     System.out.println(" O resultado obtido foi " + (resultado.getSucesso() ? " sucesso! " : " insucesso!"));
                     System.out.println(" -----");
                 }else{
@@ -319,7 +324,7 @@ class Licitador{
 
     public void apresentaSubscricaoTaxaFixa() throws Exception{
         String empresa = null;
-        System.out.println("Subscricao!");
+        //System.out.println("Subscricao!");
 
         do{
             System.out.println("Insira a empresa: ");
@@ -397,7 +402,10 @@ class Licitador{
                 case 3: subscricoes.menuInicial(); break;
                 case 4: informacoes.menuInicial(); break;
                 default:
+                    //System.out.println("Vou sair no clienteM");
                     subscricoes.fechaSocket();
+                    recebeMensagensThread.interrupt();
+                    notificacoesThread.interrupt();
                     MensagemUtilizador mensagem = MensagemUtilizador.newBuilder()
                     .setTipo(TipoMensagem.AUTENTICACAO)
                     .setTipoUtilizador(TipoUtilizador.EMPRESA)
@@ -409,11 +417,9 @@ class Licitador{
                     cos.writeSFixed32NoTag(little2big(ba.length));
                     cos.writeRawBytes(ba);
                     cos.flush();
-                    recebeMensagensThread.interrupt();
-                    notificacoesThread.interrupt();
                     recebeMensagensThread.join();
                     notificacoesThread.join();
-                    System.out.println("JOIN FEITO");
+                    //System.out.println("JOIN FEITO");
                     continua = false;
             }
         }
@@ -641,6 +647,8 @@ class Licitador{
                 case 4: informacoes.menuInicial(); break;
                 default:
                     subscricoes.fechaSocket();
+                    recebeMensagensThread.interrupt();
+                    notificacoesThread.interrupt();
                     MensagemUtilizador mensagem = MensagemUtilizador.newBuilder()
                     .setTipo(TipoMensagem.AUTENTICACAO)
                     .setTipoUtilizador(TipoUtilizador.EMPRESA)
@@ -652,11 +660,9 @@ class Licitador{
                     cos.writeSFixed32NoTag(little2big(ba.length));
                     cos.writeRawBytes(ba);
                     cos.flush();
-                    recebeMensagensThread.interrupt();
-                    notificacoesThread.interrupt();
                     recebeMensagensThread.join();
                     notificacoesThread.join();
-                    System.out.println("JOIN FEITO");
+                    //System.out.println("JOIN FEITO");
                     continua = false;
             }
         }
@@ -852,7 +858,7 @@ class Licitador{
             }
         }
         finally{
-            System.out.println("Posso acabar!");
+            //System.out.println("Posso acabar!");
             if(outraT != null){
                 outraT.join();
             }
