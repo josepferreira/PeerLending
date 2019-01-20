@@ -19,6 +19,12 @@ carregaMapa(M, [H | T]) ->
     M1 = maps:put (Username, {Password, false, Papel,false,false,[]}, M),
     carregaMapa(M1, T).
 
+eEmpresa(Elem, Map)->
+    Pred = fun(_,{_, _, Papel,_,_,_}) -> Papel == "empresa" end,
+    MapaEmpresas = maps:filter(Pred, Map),
+    Boolean = maps:is_key(Elem, MapaEmpresas ),
+    Boolean.
+
 
 login( User, Pass ) ->
     rpc( { login, User, Pass, self() } ).
@@ -82,14 +88,18 @@ loop( Map ) ->
                     From ! {login_manager, ok},
                     case lists:member(Emp, List) of
                         false ->
-                            case lists:member(Emp, maps:keys(Map)) of
+                            case eEmpresa(Emp, Map) of
                                 true ->
                                         io:format("Vou adicionar emp sub~n"),
+                                        io:format("Lista de Subscricoes de ~p : ~p~n", [U, [Emp | List]]),
                                         loop (maps:put (U, {P, true, Papel, Emissao, Leilao, [Emp | List] },Map));
                                     _ ->
+                                        io:format("~p nao e uma EMPRESA!!!~n", [Emp]),
                                         loop(Map)
                             end;
-                        _ -> loop(Map)
+                        _ -> 
+                            io:format("~p nao existe no SISTEMA!!!~n", [Emp]),
+                            loop(Map)
                     end;
                 _ ->
                     From ! {login_manager, invalid},
