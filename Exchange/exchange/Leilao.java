@@ -16,17 +16,21 @@ public class Leilao extends Emprestimo implements Comparable{
         throws ExcecaoUltrapassado{
         long montanteAmealhado = 0;
         ArrayList<Proposta> clientes = new ArrayList<>();
+        System.out.println("Verificar ultrapassados");
         for(Proposta p: propostas.descendingSet()){
-            if(montanteAmealhado > montante){
+            System.out.println("m: " + montanteAmealhado);
+            if(montanteAmealhado >= montante){
                 clientes.add(p);
             }
             else{
                 montanteAmealhado += p.montante;
             }
         }
+
         
         if(clientes.size() != 0){
             propostas.removeAll(clientes);
+            System.out.println("Ultrapassados");
             throw new ExcecaoUltrapassado(propostas.first(),clientes,"A sua proposta foi ultrapassada!");
         }
 
@@ -44,6 +48,7 @@ public class Leilao extends Emprestimo implements Comparable{
         //metodo que verifica se a proposta vai ficar colocada, em caso afirmativo adiciona a mesma
         //retorna a proposta que foi removida, ou null no caso de nenhuma ter sido
         //caso a proposta nao seja adicionada retorna-a
+        System.out.println("Adicionar propostas");
         if(this.montanteAmealhado() < montante){
             propostas.add(p);
             return verificaUltrapassados();

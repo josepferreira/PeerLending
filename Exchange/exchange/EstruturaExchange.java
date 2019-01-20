@@ -445,7 +445,7 @@ class EstruturaExchange{
             //manda aos que foram ultrapassados
             for(Proposta p : eu.propostas){
                 NotificacaoUltrapassado nu = NotificacaoUltrapassado.newBuilder()
-                                    .setEmpresa(eu.empresa)
+                                    .setEmpresa(empresa)
                                     .setUtilizador(p.cliente)
                                     .setTaxa(p.taxa)
                                     .setValor(p.montante)

@@ -121,6 +121,7 @@ loop (Push, Pull, MapEstado) ->
                 'NOTIFICACAO' ->
                     io:format("É do tipo NOTIFICACAO ~n"),
                     {_, Empresa, Utilizador, _, _, _} = Notificacao,
+                    io:format("~p~n",[Empresa]),
                     case maps:find(Empresa, MapEstado) of 
                         {ok, {_, _, _, ListaUsers}} ->
                             [{_, UserPid }] = lists:filter( fun({U,_}) -> U == Utilizador end, ListaUsers),
