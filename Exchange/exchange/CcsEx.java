@@ -31,6 +31,10 @@ public final class CcsEx {
      * <code>SUBSCRICAO = 3;</code>
      */
     SUBSCRICAO(3),
+    /**
+     * <code>AUTENTICACAO = 4;</code>
+     */
+    AUTENTICACAO(4),
     ;
 
     /**
@@ -45,6 +49,10 @@ public final class CcsEx {
      * <code>SUBSCRICAO = 3;</code>
      */
     public static final int SUBSCRICAO_VALUE = 3;
+    /**
+     * <code>AUTENTICACAO = 4;</code>
+     */
+    public static final int AUTENTICACAO_VALUE = 4;
 
 
     public final int getNumber() {
@@ -64,6 +72,7 @@ public final class CcsEx {
         case 1: return LEILAO;
         case 2: return EMISSAO;
         case 3: return SUBSCRICAO;
+        case 4: return AUTENTICACAO;
         default: return null;
       }
     }
@@ -13208,13 +13217,13 @@ public final class CcsEx {
       "empresa\030\002 \002(\t\022\r\n\005texto\030\003 \002(\t\022\017\n\007sucesso\030" +
       "\004 \002(\010\"e\n\nSubscricao\0221\n\004tipo\030\001 \002(\0162\030.exch" +
       "ange.TipoSubscricao:\tLEILAOSUB\022\023\n\013eSubsc" +
-      "ricao\030\002 \002(\010\022\017\n\007empresa\030\003 \001(\t*7\n\014TipoMens" +
+      "ricao\030\002 \002(\010\022\017\n\007empresa\030\003 \001(\t*I\n\014TipoMens" +
       "agem\022\n\n\006LEILAO\020\001\022\013\n\007EMISSAO\020\002\022\016\n\nSUBSCRI" +
-      "CAO\020\003*-\n\016TipoUtilizador\022\013\n\007EMPRESA\020\001\022\016\n\n" +
-      "INVESTIDOR\020\002*<\n\014TipoResposta\022\r\n\tRESULTAD" +
-      "O\020\001\022\017\n\013NOTIFICACAO\020\002\022\014\n\010RESPOSTA\020\003*?\n\016Ti" +
-      "poSubscricao\022\r\n\tLEILAOSUB\020\001\022\016\n\nEMISSAOSU" +
-      "B\020\002\022\016\n\nEMPRESASUB\020\003"
+      "CAO\020\003\022\020\n\014AUTENTICACAO\020\004*-\n\016TipoUtilizado" +
+      "r\022\013\n\007EMPRESA\020\001\022\016\n\nINVESTIDOR\020\002*<\n\014TipoRe" +
+      "sposta\022\r\n\tRESULTADO\020\001\022\017\n\013NOTIFICACAO\020\002\022\014" +
+      "\n\010RESPOSTA\020\003*?\n\016TipoSubscricao\022\r\n\tLEILAO" +
+      "SUB\020\001\022\016\n\nEMISSAOSUB\020\002\022\016\n\nEMPRESASUB\020\003"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {

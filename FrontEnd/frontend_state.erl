@@ -44,7 +44,8 @@ loop (Push, Pull, MapEstado) ->
             io:format("Loop recebeu licitacao vinda do frontend ~n"),
             case maps:find(Empresa, MapEstado) of
                 {ok, {Leilao, Emissao, UtilizadoresInteressados }} when Leilao == true -> 
-                    NovaLista = [{User, From} | UtilizadoresInteressados],
+                    ListaAux = lists:filter(fun ({UE,_}) -> UE /= User end,UtilizadoresInteressados),
+                    NovaLista = [{User,From} | ListaAux],
                     NewMap = maps:put(Empresa, {Leilao, Emissao, NovaLista}, MapEstado),
                     chumak:send(Push, ProtoBufBin),
                     loop(Push, Pull, NewMap)
@@ -58,7 +59,8 @@ loop (Push, Pull, MapEstado) ->
             io:format("Loop recebeu emissao vinda do frontend ~n"),
             case maps:find(Empresa, MapEstado) of
                 {ok, {Leilao, Emissao, UtilizadoresInteressados }} when Emissao == true -> 
-                    NovaLista = [{User, From} | UtilizadoresInteressados],
+                    ListaAux = lists:filter(fun ({UE,_}) -> UE /= User end,UtilizadoresInteressados),
+                    NovaLista = [{User,From} | ListaAux],
                     NewMap = maps:put(Empresa, {Leilao, Emissao, NovaLista}, MapEstado),
                     chumak:send(Push, ProtoBufBin),
                     loop(Push, Pull, NewMap)
@@ -122,8 +124,9 @@ loop (Push, Pull, MapEstado) ->
                     io:format("É do tipo NOTIFICACAO ~n"),
                     {_, Empresa, Utilizador, _, _, _} = Notificacao,
                     io:format("~p~n",[Empresa]),
+                    io:format("Mapa: ~p~n",[MapEstado]),
                     case maps:find(Empresa, MapEstado) of 
-                        {ok, {_, _, _, ListaUsers}} ->
+                        {ok, {_, _, ListaUsers}} ->
                             [{_, UserPid }] = lists:filter( fun({U,_}) -> U == Utilizador end, ListaUsers),
                             UserPid ! {self(), RespostaExchange},
                             loop(Push, Pull, MapEstado)
