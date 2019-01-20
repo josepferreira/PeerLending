@@ -1,4 +1,0 @@
-Corrigir
-
--> Se falhar a autenticação, empanca
--> Quando o utilizador faz logout, o login_manager da erro

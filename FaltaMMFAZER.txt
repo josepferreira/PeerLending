@@ -1,5 +1,0 @@
---MUITO IMPORTANTE--
-* ver melhor o proto das respostas
-* Adicionar o SUCESSO no diretorio
-
-
