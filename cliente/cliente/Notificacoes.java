@@ -236,7 +236,9 @@ public class Notificacoes implements Runnable{
              * Aqui recebe os bytes de subscrição
              */
             
-            byte[] b = socket.recv(0);
+            
+             try{
+                 byte[] b = socket.recv(0);
             String recebi = new String(b);
             System.out.println("Recebi: " + recebi);
 
@@ -326,7 +328,16 @@ public class Notificacoes implements Runnable{
                 }
                 
             }
+        }catch(Exception excep){
+            System.out.println("UMA Excep:" + excep);
         }
-        socket.close();
+        }
+        System.out.println("Posso abondanar, notificacoes");
+        try{
+            socket.close();
+        }catch(Exception exc){
+            System.out.println("excecao a fechar o socket nas notificacoes: " + exc);
+        }
+        return;
     }
 }

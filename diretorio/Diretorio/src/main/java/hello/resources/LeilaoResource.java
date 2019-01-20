@@ -85,6 +85,7 @@ public class LeilaoResource {
             System.out.println(leilao);
             leilao.terminado = true;
             leilao.propostas = leilaoA.propostas;
+            leilao.sucesso = leilaoA.sucesso;
 
             ArrayList<Leilao> leiloesF = leiloesFinalizados.get(empresa);
             if (leiloesF == null)

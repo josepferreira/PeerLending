@@ -191,6 +191,7 @@ class RecebeMensagens implements Runnable{
                 System.out.println("Houve uma exceção: " + e);
             }
         }
+        System.out.println("Posso sair, recebe");
     }
 
 }
@@ -396,9 +397,23 @@ class Licitador{
                 case 3: subscricoes.menuInicial(); break;
                 case 4: informacoes.menuInicial(); break;
                 default:
-                    subscricoes.fechaSocket(); 
+                    subscricoes.fechaSocket();
+                    MensagemUtilizador mensagem = MensagemUtilizador.newBuilder()
+                    .setTipo(TipoMensagem.AUTENTICACAO)
+                    .setTipoUtilizador(TipoUtilizador.EMPRESA)
+                    .setUtilizador(this.username)
+                    .build();
+
+                    byte[] ba = mensagem.toByteArray();
+
+                    cos.writeSFixed32NoTag(little2big(ba.length));
+                    cos.writeRawBytes(ba);
+                    cos.flush();
                     recebeMensagensThread.interrupt();
                     notificacoesThread.interrupt();
+                    recebeMensagensThread.join();
+                    notificacoesThread.join();
+                    System.out.println("JOIN FEITO");
                     continua = false;
             }
         }
@@ -625,9 +640,23 @@ class Licitador{
                 case 3: subscricoes.menuInicial(); break;
                 case 4: informacoes.menuInicial(); break;
                 default:
-                    subscricoes.fechaSocket(); 
+                    subscricoes.fechaSocket();
+                    MensagemUtilizador mensagem = MensagemUtilizador.newBuilder()
+                    .setTipo(TipoMensagem.AUTENTICACAO)
+                    .setTipoUtilizador(TipoUtilizador.EMPRESA)
+                    .setUtilizador(this.username)
+                    .build();
+
+                    byte[] ba = mensagem.toByteArray();
+
+                    cos.writeSFixed32NoTag(little2big(ba.length));
+                    cos.writeRawBytes(ba);
+                    cos.flush();
                     recebeMensagensThread.interrupt();
                     notificacoesThread.interrupt();
+                    recebeMensagensThread.join();
+                    notificacoesThread.join();
+                    System.out.println("JOIN FEITO");
                     continua = false;
             }
         }
@@ -823,6 +852,10 @@ class Licitador{
             }
         }
         finally{
+            System.out.println("Posso acabar!");
+            if(outraT != null){
+                outraT.join();
+            }
             sc.close();
         }
         return; 
