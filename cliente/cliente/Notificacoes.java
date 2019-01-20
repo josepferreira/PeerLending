@@ -49,7 +49,6 @@ class ComunicaCliente{
     }
 
     private void registaTodosEnderecos(){
-        System.out.println("Vou fazer connect a todos!");
         try{
             URL url = new URL("http://" + end.enderecoDiretorio + 
                                         ":" + end.portaDiretorio + "/exchange/todas");
@@ -69,7 +68,7 @@ class ComunicaCliente{
 		    in.close();
 
 		    //print result
-            System.out.println(response.toString());
+            //System.out.println(response.toString());
             JSONArray jsonArray = new JSONArray(response.toString());
             for(int ij=0; ij<jsonArray.length(); ij++){
                 JSONObject exchange = jsonArray.getJSONObject(ij);
@@ -83,7 +82,7 @@ class ComunicaCliente{
                 }
 
                 enderecos.put(endExchange, empresas);
-                System.out.println(endExchange);
+                //System.out.println(endExchange);
                 this.sub.connect("tcp://*:"+endExchange);
             }
             temTodos = true;
@@ -95,7 +94,7 @@ class ComunicaCliente{
     }
 
     private boolean registaNovoEndereco(String empresa){
-        System.out.println("Vou subscrever a empresa " + empresa);
+        //System.out.println("Vou subscrever a empresa " + empresa);
         boolean resultadoR = false;
         try{
             URL url = new URL("http://" + end.enderecoDiretorio + 
@@ -115,7 +114,7 @@ class ComunicaCliente{
 		    }
 		    in.close();
 
-            System.out.println("Resposta: " + response.toString());
+            //System.out.println("Resposta: " + response.toString());
             if(!response.toString().equals("")){
                 resultadoR = true;
                 JSONObject exchange = new JSONObject(response.toString());
@@ -150,10 +149,8 @@ class ComunicaCliente{
              * Se for unsub@ -> então é para tirar o subscribe
              */
 
-            System.out.println("RECEBI A SEGUINTE MENSAGEM: " + msgResposta);
             String decisao = msgResposta.split("@")[0];
             String subResposta = msgResposta.split("@")[1];
-            System.out.println("\nA decisao é " + decisao + ". A subscrição: " + subResposta);
             /**
              * Vou adicionar a subscricao à classe subscricao e ao socket
              */
@@ -197,7 +194,7 @@ class ComunicaCliente{
                             break;
                     }
                     sub.unsubscribe(subResposta.getBytes());
-                    System.out.println("Ja tirei a subscricao!!");
+                    System.out.println("Ja retirei a subscricao!!");
                 }else{
                     System.out.println("ERRO: Não vai fazer sub nem unsub!");
                 }
@@ -251,7 +248,6 @@ public class Notificacoes implements Runnable{
              try{
                  byte[] b = socket.recv(0);
             String recebi = new String(b);
-            System.out.println("Recebi: " + recebi);
 
             if(recebi.startsWith("comuSub")){
                 cc.atoSub(recebi.substring(7));
@@ -343,7 +339,6 @@ public class Notificacoes implements Runnable{
             System.out.println("UMA Excep:" + excep);
         }
         }
-        System.out.println("Posso abondanar, notificacoes");
         try{
             socket.close();
         }catch(Exception exc){

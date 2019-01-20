@@ -99,10 +99,6 @@ public class GerirSubscricoes{
       
         byte[] ba = mensagem.toByteArray();
 
-        System.out.println("Mensagem: " + ba);
-        System.out.println("Tamanho: " + ba.length);
-        System.out.println("Tamanho: " + little2big(ba.length));
-
         try{
             cos.writeSFixed32NoTag(little2big(ba.length));
             cos.writeRawBytes(ba);
@@ -114,7 +110,7 @@ public class GerirSubscricoes{
     }
 
     public synchronized void retiraEmpresaList(String empresa){
-        System.out.println("Vou retirar a empresa: " + empresa);
+        //System.out.println("Vou retirar a empresa: " + empresa);
         empresasSubscritas.remove(empresa);
     }
 
@@ -251,7 +247,6 @@ public class GerirSubscricoes{
                         System.out.print("Escreva o nome da empresa: ");
                         String empresa = inP.readLine();
                         if(!empresasSubscritas.contains(empresa)){
-                            System.out.println("Vou mandar uma empresa para subscrever! " + empresa);
                             adicionaEmpresa(empresa);
                             socket.send(headSub + "sub@leilao::" + empresa + "::");
                             socket.send(headSub + "sub@emissao::" + empresa + "::");
