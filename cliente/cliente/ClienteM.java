@@ -397,7 +397,10 @@ class Licitador{
                 case 3: subscricoes.menuInicial(); break;
                 case 4: informacoes.menuInicial(); break;
                 default:
+                    System.out.println("Vou sair no clienteM");
                     subscricoes.fechaSocket();
+                    recebeMensagensThread.interrupt();
+                    notificacoesThread.interrupt();
                     MensagemUtilizador mensagem = MensagemUtilizador.newBuilder()
                     .setTipo(TipoMensagem.AUTENTICACAO)
                     .setTipoUtilizador(TipoUtilizador.EMPRESA)
@@ -409,8 +412,6 @@ class Licitador{
                     cos.writeSFixed32NoTag(little2big(ba.length));
                     cos.writeRawBytes(ba);
                     cos.flush();
-                    recebeMensagensThread.interrupt();
-                    notificacoesThread.interrupt();
                     recebeMensagensThread.join();
                     notificacoesThread.join();
                     System.out.println("JOIN FEITO");
@@ -641,6 +642,8 @@ class Licitador{
                 case 4: informacoes.menuInicial(); break;
                 default:
                     subscricoes.fechaSocket();
+                    recebeMensagensThread.interrupt();
+                    notificacoesThread.interrupt();
                     MensagemUtilizador mensagem = MensagemUtilizador.newBuilder()
                     .setTipo(TipoMensagem.AUTENTICACAO)
                     .setTipoUtilizador(TipoUtilizador.EMPRESA)
@@ -652,8 +655,6 @@ class Licitador{
                     cos.writeSFixed32NoTag(little2big(ba.length));
                     cos.writeRawBytes(ba);
                     cos.flush();
-                    recebeMensagensThread.interrupt();
-                    notificacoesThread.interrupt();
                     recebeMensagensThread.join();
                     notificacoesThread.join();
                     System.out.println("JOIN FEITO");
