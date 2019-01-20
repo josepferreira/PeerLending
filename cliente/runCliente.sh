@@ -1,0 +1,1 @@
+./run cliente/ClienteM cliente.json
