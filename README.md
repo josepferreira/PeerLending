@@ -11,6 +11,12 @@ sh downloadDependencies.sh
 ```
 2. Executar o Diretorio.
 
+```console
+cd diretorio/Diretorio
+java -jar target/Hello-1.0-SNAPSHOT.jar server hello.yml
+
+```
+
 3. Executar as Exchanges.
 
 ```console
