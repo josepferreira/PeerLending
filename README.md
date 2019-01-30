@@ -1,6 +1,6 @@
 # PeerLending
 
-Distributed system for loan management, built using Erlang, Java and Dropwizard (REST).
+Distributed system for loan management, built using Erlang, Java, Dropwizard (REST), ZeroMQ and Protocol Buffers.
 
 How to get it running:
 
